@@ -1,0 +1,189 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Agency {
+  id        String    @id @default(cuid())
+  name      String
+  createdAt DateTime  @default(now())
+  accounts  Account[]
+  users     User[]
+}
+
+model Account {
+  id           String        @id @default(cuid())
+  agencyId     String
+  agency       Agency        @relation(fields: [agencyId], references: [id])
+  name         String
+  createdAt    DateTime      @default(now())
+  users        User[]
+  contacts     Contact[]
+  pipelines    Pipeline[]
+  sequences    Sequence[]
+  landingPages LandingPage[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(CLIENT)
+  agencyId  String?
+  agency    Agency?  @relation(fields: [agencyId], references: [id])
+  accountId String?
+  account   Account? @relation(fields: [accountId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  AGENCY_ADMIN
+  CLIENT
+}
+
+model Contact {
+  id          String               @id @default(cuid())
+  accountId   String
+  account     Account              @relation(fields: [accountId], references: [id])
+  firstName   String
+  lastName    String
+  email       String?
+  phone       String?
+  tags        String[]
+  source      ContactSource        @default(MANUAL)
+  createdAt   DateTime             @default(now())
+  deals       Deal[]
+  enrollments SequenceEnrollment[]
+  submissions FormSubmission[]
+}
+
+enum ContactSource {
+  MANUAL
+  FORM
+  WEBHOOK
+}
+
+model Pipeline {
+  id        String          @id @default(cuid())
+  accountId String
+  account   Account         @relation(fields: [accountId], references: [id])
+  name      String
+  createdAt DateTime        @default(now())
+  stages    PipelineStage[]
+}
+
+model PipelineStage {
+  id         String   @id @default(cuid())
+  pipelineId String
+  pipeline   Pipeline @relation(fields: [pipelineId], references: [id])
+  name       String
+  order      Int
+  color      String   @default("#3B82F6")
+  deals      Deal[]
+}
+
+model Deal {
+  id        String        @id @default(cuid())
+  contactId String
+  contact   Contact       @relation(fields: [contactId], references: [id])
+  stageId   String
+  stage     PipelineStage @relation(fields: [stageId], references: [id])
+  value     Float         @default(0)
+  createdAt DateTime      @default(now())
+}
+
+model Sequence {
+  id          String               @id @default(cuid())
+  accountId   String
+  account     Account              @relation(fields: [accountId], references: [id])
+  name        String
+  triggerType TriggerType          @default(MANUAL)
+  active      Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  steps       SequenceStep[]
+  enrollments SequenceEnrollment[]
+}
+
+enum TriggerType {
+  MANUAL
+  FORM_SUBMIT
+  WEBHOOK
+}
+
+model SequenceStep {
+  id           String              @id @default(cuid())
+  sequenceId   String
+  sequence     Sequence            @relation(fields: [sequenceId], references: [id])
+  stepType     StepType
+  delayMinutes Int                 @default(0)
+  subject      String?
+  body         String
+  order        Int
+  logs         SequenceStepLog[]
+}
+
+enum StepType {
+  SMS
+  EMAIL
+}
+
+model SequenceEnrollment {
+  id          String            @id @default(cuid())
+  contactId   String
+  contact     Contact           @relation(fields: [contactId], references: [id])
+  sequenceId  String
+  sequence    Sequence          @relation(fields: [sequenceId], references: [id])
+  currentStep Int               @default(0)
+  status      EnrollmentStatus  @default(ACTIVE)
+  startedAt   DateTime          @default(now())
+  logs        SequenceStepLog[]
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  STOPPED
+}
+
+model SequenceStepLog {
+  id           String             @id @default(cuid())
+  enrollmentId String
+  enrollment   SequenceEnrollment @relation(fields: [enrollmentId], references: [id])
+  stepId       String
+  step         SequenceStep       @relation(fields: [stepId], references: [id])
+  sentAt       DateTime           @default(now())
+  status       LogStatus
+  error        String?
+}
+
+enum LogStatus {
+  SENT
+  FAILED
+}
+
+model LandingPage {
+  id          String          @id @default(cuid())
+  accountId   String
+  account     Account         @relation(fields: [accountId], references: [id])
+  name        String
+  slug        String          @unique
+  published   Boolean         @default(false)
+  content     Json            @default("[]")
+  createdAt   DateTime        @default(now())
+  submissions FormSubmission[]
+}
+
+model FormSubmission {
+  id            String      @id @default(cuid())
+  landingPageId String
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id])
+  contactId     String?
+  contact       Contact?    @relation(fields: [contactId], references: [id])
+  data          Json
+  createdAt     DateTime    @default(now())
+}
