@@ -1,20 +1,19 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
   darkMode: 'class',
-  content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      colors: {
-        brand: {
-          light: '#38BDF8',
-          DEFAULT: '#1E40AF',
-          dark: '#1E3A8A',
-        },
-      },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      colors: {
+        'brand-blue': '#38BDF8',
+        'brand-dark': '#1E40AF',
+        'sidebar': '#0F172A',
+        'card-dark': '#1E293B',
       },
     },
   },
-  plugins: [],
-};
+  plugins: [require('@tailwindcss/forms')],
+}

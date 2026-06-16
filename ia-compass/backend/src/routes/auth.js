@@ -7,18 +7,23 @@ const prisma = new PrismaClient();
 
 router.post('/register', async (req, res) => {
   try {
-    const { agencyName, name, email, password } = req.body;
+    const { name, agencyName, email, password } = req.body;
+    const displayName = name || agencyName;
+    if (!displayName || !email || !password) {
+      return res.status(400).json({ error: 'name, email and password required' });
+    }
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) return res.status(400).json({ error: 'Email already in use' });
 
-    const agency = await prisma.agency.create({ data: { name: agencyName } });
+    const agency = await prisma.agency.create({ data: { name: displayName } });
+    const account = await prisma.account.create({ data: { agencyId: agency.id, name: displayName } });
     const hashed = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
-      data: { email, password: hashed, name, role: 'AGENCY_ADMIN', agencyId: agency.id },
+      data: { email, password: hashed, name: displayName, role: 'AGENCY_ADMIN', agencyId: agency.id, accountId: account.id },
     });
 
     const token = jwt.sign(
-      { userId: user.id, role: user.role, agencyId: agency.id, accountId: null },
+      { userId: user.id, role: user.role, agencyId: agency.id, accountId: account.id },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );

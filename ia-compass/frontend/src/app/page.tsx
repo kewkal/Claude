@@ -1,12 +1,16 @@
 'use client';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { isLoggedIn } from '@/lib/auth';
+import { isAuthenticated } from '@/lib/auth';
 
 export default function Home() {
   const router = useRouter();
   useEffect(() => {
-    router.replace(isLoggedIn() ? '/dashboard' : '/login');
+    if (isAuthenticated()) {
+      router.replace('/dashboard');
+    } else {
+      router.replace('/login');
+    }
   }, [router]);
   return null;
 }

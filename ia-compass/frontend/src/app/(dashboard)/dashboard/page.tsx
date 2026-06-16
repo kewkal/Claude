@@ -1,93 +1,94 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { api } from '@/lib/api';
 import { Users, Mail, Globe, TrendingUp } from 'lucide-react';
-import api from '@/lib/api';
-import { getUser } from '@/lib/auth';
+
+interface StatCard {
+  label: string;
+  value: number | string;
+  icon: React.ElementType;
+  color: string;
+}
 
 export default function DashboardPage() {
-  const user = getUser();
-  const [accounts, setAccounts] = useState<any[]>([]);
-  const [selectedAccount, setSelectedAccount] = useState('');
-  const [stats, setStats] = useState({ contacts: 0, sequences: 0, pages: 0 });
+  const [contacts, setContacts] = useState<unknown[]>([]);
+  const [sequences, setSequences] = useState<unknown[]>([]);
+  const [pages, setPages] = useState<unknown[]>([]);
+  const [deals, setDeals] = useState<unknown[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.role === 'AGENCY_ADMIN') {
-      api.get('/accounts').then((r) => {
-        setAccounts(r.data);
-        if (r.data.length > 0) setSelectedAccount(r.data[0].id);
-      });
-    }
+    Promise.all([
+      api.contacts.list(),
+      api.sequences.list(),
+      api.landingPages.list(),
+      api.deals.list(),
+    ]).then(([c, s, p, d]) => {
+      setContacts(c);
+      setSequences(s);
+      setPages(p);
+      setDeals(d);
+    }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    const accountId = user?.role === 'AGENCY_ADMIN' ? selectedAccount : undefined;
-    if (!accountId && user?.role === 'AGENCY_ADMIN') return;
-    const params = accountId ? { accountId } : {};
-    Promise.all([
-      api.get('/contacts', { params }),
-      api.get('/sequences', { params }),
-      api.get('/landing-pages', { params }),
-    ]).then(([c, s, p]) => {
-      setStats({ contacts: c.data.length, sequences: s.data.length, pages: p.data.length });
-    }).catch(() => {});
-  }, [selectedAccount]);
-
-  const statCards = [
-    { label: 'Total Contacts', value: stats.contacts, icon: Users, color: 'text-sky-400', bg: 'bg-sky-400/10' },
-    { label: 'Active Sequences', value: stats.sequences, icon: Mail, color: 'text-purple-400', bg: 'bg-purple-400/10' },
-    { label: 'Landing Pages', value: stats.pages, icon: Globe, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
-    { label: 'Accounts', value: accounts.length, icon: TrendingUp, color: 'text-orange-400', bg: 'bg-orange-400/10' },
+  const stats: StatCard[] = [
+    { label: 'Total Contacts', value: contacts.length, icon: Users, color: 'bg-sky-500/20 text-sky-400' },
+    { label: 'Active Sequences', value: (sequences as {active: boolean}[]).filter(s => s.active).length, icon: Mail, color: 'bg-purple-500/20 text-purple-400' },
+    { label: 'Landing Pages', value: pages.length, icon: Globe, color: 'bg-emerald-500/20 text-emerald-400' },
+    { label: 'Deals in Pipeline', value: deals.length, icon: TrendingUp, color: 'bg-orange-500/20 text-orange-400' },
   ];
 
-  return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-          <p className="text-slate-500 mt-1">Welcome back, {user?.name}</p>
-        </div>
-        {user?.role === 'AGENCY_ADMIN' && accounts.length > 0 && (
-          <select
-            value={selectedAccount}
-            onChange={(e) => setSelectedAccount(e.target.value)}
-            className="px-4 py-2 border border-slate-200 rounded-lg bg-white text-sm"
-          >
-            {accounts.map((a: any) => (
-              <option key={a.id} value={a.id}>{a.name}</option>
-            ))}
-          </select>
-        )}
-      </div>
+  const recentContacts = (contacts as {id: string; firstName: string; lastName: string; email?: string; source: string; createdAt: string}[]).slice(0, 5);
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {statCards.map((s) => (
-          <div key={s.label} className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-            <div className={`inline-flex p-3 rounded-xl ${s.bg} mb-4`}>
-              <s.icon className={`w-6 h-6 ${s.color}`} />
+  return (
+    <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {stats.map((stat) => (
+          <div key={stat.label} className="bg-card-dark rounded-xl p-5 border border-slate-700">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-slate-400 text-sm">{stat.label}</p>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${stat.color}`}>
+                <stat.icon className="w-4 h-4" />
+              </div>
             </div>
-            <div className="text-3xl font-bold text-slate-900">{s.value}</div>
-            <div className="text-sm text-slate-500 mt-1">{s.label}</div>
+            <p className="text-3xl font-bold text-white">
+              {loading ? '...' : stat.value}
+            </p>
           </div>
         ))}
       </div>
 
-      {user?.role === 'AGENCY_ADMIN' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-          <h2 className="text-lg font-semibold mb-4">Client Accounts</h2>
-          {accounts.length === 0 ? (
-            <p className="text-slate-400 text-sm">No accounts yet. Go to Settings to create one.</p>
-          ) : (
-            <div className="divide-y divide-slate-100">
-              {accounts.map((a: any) => (
-                <div key={a.id} className="py-3 flex items-center justify-between">
-                  <span className="font-medium text-slate-800">{a.name}</span>
-                  <span className="text-sm text-slate-400">{a._count?.contacts || 0} contacts</span>
-                </div>
+      <div className="bg-card-dark rounded-xl border border-slate-700 p-5">
+        <h2 className="text-base font-semibold text-white mb-4">Recent Contacts</h2>
+        {loading ? (
+          <p className="text-slate-400 text-sm">Loading...</p>
+        ) : recentContacts.length === 0 ? (
+          <p className="text-slate-400 text-sm">No contacts yet. Add your first contact.</p>
+        ) : (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-slate-400 border-b border-slate-700">
+                <th className="text-left pb-3 font-medium">Name</th>
+                <th className="text-left pb-3 font-medium">Email</th>
+                <th className="text-left pb-3 font-medium">Source</th>
+                <th className="text-left pb-3 font-medium">Added</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentContacts.map((c) => (
+                <tr key={c.id} className="border-b border-slate-800 last:border-0">
+                  <td className="py-3 text-white font-medium">{c.firstName} {c.lastName}</td>
+                  <td className="py-3 text-slate-300">{c.email || '—'}</td>
+                  <td className="py-3">
+                    <span className="px-2 py-0.5 rounded text-xs bg-slate-700 text-slate-300">{c.source}</span>
+                  </td>
+                  <td className="py-3 text-slate-400">{new Date(c.createdAt).toLocaleDateString()}</td>
+                </tr>
               ))}
-            </div>
-          )}
-        </div>
-      )}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }
