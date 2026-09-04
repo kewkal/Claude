@@ -212,6 +212,74 @@ CREATE TABLE IF NOT EXISTS email_outbox (
 );
 CREATE INDEX IF NOT EXISTS idx_outbox_created ON email_outbox(created_at DESC);
 
+CREATE TABLE IF NOT EXISTS messages (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  lead_id      INTEGER REFERENCES leads(id) ON DELETE SET NULL,
+  direction    TEXT NOT NULL DEFAULT 'outbound',
+  channel      TEXT NOT NULL DEFAULT 'sms',
+  to_addr      TEXT,
+  from_addr    TEXT,
+  body         TEXT NOT NULL DEFAULT '',
+  status       TEXT NOT NULL DEFAULT 'queued',
+  source       TEXT NOT NULL DEFAULT 'manual',
+  provider_sid TEXT,
+  error        TEXT,
+  created_at   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_messages_lead    ON messages(lead_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_messages_created ON messages(created_at DESC);
+
+CREATE TABLE IF NOT EXISTS sequences (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  name        TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  trigger     TEXT NOT NULL DEFAULT 'manual',
+  active      INTEGER NOT NULL DEFAULT 1,
+  created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS sequence_steps (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  sequence_id   INTEGER NOT NULL REFERENCES sequences(id) ON DELETE CASCADE,
+  position      INTEGER NOT NULL DEFAULT 0,
+  delay_minutes INTEGER NOT NULL DEFAULT 0,
+  channel       TEXT NOT NULL DEFAULT 'email',
+  subject       TEXT,
+  body          TEXT NOT NULL DEFAULT '',
+  active        INTEGER NOT NULL DEFAULT 1
+);
+CREATE INDEX IF NOT EXISTS idx_steps_seq ON sequence_steps(sequence_id, position);
+
+CREATE TABLE IF NOT EXISTS enrollments (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  sequence_id  INTEGER NOT NULL REFERENCES sequences(id) ON DELETE CASCADE,
+  lead_id      INTEGER NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
+  status       TEXT NOT NULL DEFAULT 'active',
+  step_index   INTEGER NOT NULL DEFAULT 0,
+  next_run_at  TEXT,
+  stop_reason  TEXT,
+  started_at   TEXT NOT NULL DEFAULT (datetime('now')),
+  completed_at TEXT,
+  UNIQUE (sequence_id, lead_id)
+);
+CREATE INDEX IF NOT EXISTS idx_enroll_due ON enrollments(status, next_run_at);
+
+CREATE TABLE IF NOT EXISTS scheduled_jobs (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  kind         TEXT NOT NULL,
+  dedupe_key   TEXT UNIQUE,
+  run_at       TEXT NOT NULL,
+  payload_json TEXT NOT NULL DEFAULT '{}',
+  status       TEXT NOT NULL DEFAULT 'pending',
+  attempts     INTEGER NOT NULL DEFAULT 0,
+  result       TEXT,
+  last_error   TEXT,
+  created_at   TEXT NOT NULL DEFAULT (datetime('now')),
+  ran_at       TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_jobs_due ON scheduled_jobs(status, run_at);
+
 CREATE TABLE IF NOT EXISTS activity (
   id         INTEGER PRIMARY KEY AUTOINCREMENT,
   lead_id    INTEGER REFERENCES leads(id) ON DELETE CASCADE,

@@ -175,6 +175,73 @@ Takes about 8 minutes. Once it's in, you get a first draft within 72 hours.
   },
 ];
 
+/**
+ * The default drip. Days become minutes here because the scheduler works
+ * in minutes: 0, 3 days, 4 days, 8 days.
+ */
+const SEQUENCE = {
+  name: 'Cold outreach — no website',
+  description: 'Four touches over eight days. Stops the moment they reply or book.',
+  trigger: 'lead_status:queued',
+  steps: [
+    {
+      delay_minutes: 0,
+      channel: 'email',
+      subject: '{{name}} — quick question about your website',
+      body: `Hi,
+
+Found {{name}} on Google — {{review_count}} reviews at {{rating}} stars. That's real. But I couldn't find a website.
+
+If someone searches "{{category}} in {{city}}" and lands on your listing, there's nowhere for them to go. They call the next name down.
+
+I build 5-page sites for {{category}} businesses. Live in 72 hours, written to turn a search into a phone call.
+
+Worth 15 minutes? Reply "yes" and I'll send times.
+
+{{owner_name}}`,
+    },
+    {
+      delay_minutes: 3 * 24 * 60,
+      channel: 'email',
+      subject: 'Re: {{name}} — quick question about your website',
+      body: `Hi,
+
+Bumping this once in case it got buried.
+
+Short version: you've got the reviews, you don't have the site. That gap costs you calls every week.
+
+Two options:
+1. Fifteen minutes this week, I show you what it'd look like.
+2. Tell me no and I'll stop emailing.
+
+Either works.
+
+{{owner_name}}`,
+    },
+    {
+      delay_minutes: 24 * 60,
+      channel: 'sms',
+      body: `Hi {{first_name}}, {{owner_name}} here — emailed you about a website for {{name}}. Worth 15 mins? Reply Y or N, either is fine. Reply STOP to opt out.`,
+    },
+    {
+      delay_minutes: 4 * 24 * 60,
+      channel: 'email',
+      subject: 'Closing the file on {{name}}',
+      body: `Hi,
+
+Last one from me.
+
+I'm assuming a website isn't a priority right now, which is fair. I'll close the file.
+
+If that changes — busy season, a competitor outranking you, whatever — reply to this email and I'll pick it back up.
+
+Good luck either way.
+
+{{owner_name}}`,
+    },
+  ],
+};
+
 /** Mon-Fri, 9am-5pm UTC, 30 minute slots. */
 const AVAILABILITY = [1, 2, 3, 4, 5].map((weekday) => ({
   weekday, start_min: 9 * 60, end_min: 17 * 60, slot_min: 30,
@@ -215,6 +282,16 @@ export function seedIfEmpty() {
           [a.weekday, a.start_min, a.end_min, a.slot_min]);
       }
       console.log('[seed] added Mon-Fri 9-5 availability');
+    }
+    if (!get('SELECT id FROM sequences LIMIT 1')) {
+      const info = run('INSERT INTO sequences (name, description, trigger, active) VALUES (?, ?, ?, 0)',
+        [SEQUENCE.name, SEQUENCE.description, SEQUENCE.trigger]);
+      const seqId = Number(info.lastInsertRowid);
+      SEQUENCE.steps.forEach((step, i) => {
+        run('INSERT INTO sequence_steps (sequence_id, position, delay_minutes, channel, subject, body) VALUES (?, ?, ?, ?, ?, ?)',
+          [seqId, i, step.delay_minutes, step.channel, step.subject || null, step.body]);
+      });
+      console.log(`[seed] added the "${SEQUENCE.name}" sequence (off until you switch it on)`);
     }
     if (!hasLeads) {
       for (const l of DEMO_LEADS) {

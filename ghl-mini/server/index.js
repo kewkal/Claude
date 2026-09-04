@@ -24,6 +24,9 @@ const onboardingRoutes = (await import('./api/onboarding.js')).default;
 const dailyRoutes = (await import('./api/daily.js')).default;
 const settingsRoutes = (await import('./api/settings.js')).default;
 const agentsRoutes = (await import('./api/agents.js')).default;
+const automationRoutes = (await import('./api/automations.js')).default;
+const webhookRoutes = (await import('./api/webhooks.js')).default;
+const scheduler = await import('./lib/scheduler.js');
 
 const { all, get, run } = await import('./lib/db.js');
 const { allSettings } = await import('./lib/settings.js');
@@ -100,6 +103,8 @@ publicRouter.post('/api/public/book', async ({ req, res, body }) => {
   await handler({ req, res, params: {}, query: {}, body: { ...body, source: 'public' } });
 });
 
+publicRouter.merge(webhookRoutes);
+
 publicRouter.get('/health', ({ res }) => json(res, { ok: true, uptime: Math.round(process.uptime()) }));
 
 // ---------------------------------------------------------------------------
@@ -113,7 +118,8 @@ const apiRouter = new Router()
   .merge(onboardingRoutes)
   .merge(dailyRoutes)
   .merge(settingsRoutes)
-  .merge(agentsRoutes);
+  .merge(agentsRoutes)
+  .merge(automationRoutes);
 
 /** GET /api/overview — one call that fills the dashboard. */
 apiRouter.get('/api/overview', ({ res }) => {
@@ -203,6 +209,7 @@ function loadEnv(path) {
 
 server.listen(PORT, () => {
   const s = allSettings();
+  if (s.scheduler_enabled === '1') scheduler.start();
   console.log('');
   console.log(`  ghl-mini running`);
   console.log(`  ───────────────────────────────────────`);
@@ -211,6 +218,7 @@ server.listen(PORT, () => {
   console.log(`  Booking page  http://localhost:${PORT}/book`);
   console.log(`  Sign in as    ${get('SELECT email FROM users LIMIT 1')?.email || '—'}`);
   console.log(`  Integrations  maps:${s.google_maps_api_key ? 'on' : 'off'} · twilio:${s.twilio_account_sid ? 'on' : 'off'} · email:${s.email_provider !== 'none' ? s.email_provider : 'off'}`);
+  console.log(`  Automations   ${s.scheduler_enabled === '1' ? 'scheduler on' : 'scheduler OFF'} · quiet ${s.quiet_start}-${s.quiet_end} ${s.timezone}`);
   console.log('');
 });
 

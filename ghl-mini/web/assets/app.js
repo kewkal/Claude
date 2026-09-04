@@ -1,4 +1,4 @@
-import { api, err, toast } from './ui.js';
+import { api, err, toast, closeModal } from './ui.js';
 
 import dailyView from './views/daily.js';
 import leadsView from './views/leads.js';
@@ -8,6 +8,7 @@ import callsView from './views/calls.js';
 import calendarView from './views/calendar.js';
 import onboardingView from './views/onboarding.js';
 import agentsView from './views/agents.js';
+import automationsView from './views/automations.js';
 import settingsView from './views/settings.js';
 
 const ROUTES = [
@@ -18,6 +19,7 @@ const ROUTES = [
   { path: 'scripts',    title: 'Scripts',      icon: '📝', view: scriptsView },
   { path: 'calls',      title: 'Call history', icon: '📊', view: callsView },
   { path: 'calendar',   title: 'Calendar',     icon: '📅', view: calendarView },
+  { path: 'automations',title: 'Automations',  icon: '⚡', view: automationsView },
   { path: 'onboarding', title: 'Onboarding',   icon: '📋', view: onboardingView },
   { path: 'settings',   title: 'Settings',     icon: '⚙️', view: settingsView },
 ];
@@ -88,6 +90,9 @@ async function render() {
 async function renderOnce() {
   const { path, arg } = parseHash();
   const route = ROUTES.find((r) => r.path === path) || ROUTES[0];
+
+  // A modal left open would sit over the new screen and swallow clicks.
+  closeModal();
 
   titleEl.textContent = route.title;
   document.title = `${route.title} — ${state.business}`;

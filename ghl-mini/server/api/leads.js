@@ -44,9 +44,20 @@ router.get('/api/leads', ({ res, query }) => {
   if (query.has_phone === '1') where.push("(phone IS NOT NULL AND phone != '')");
   if (query.min_score) { where.push('score >= ?'); params.push(Number(query.min_score)); }
   if (query.q) {
-    where.push('(name LIKE ? OR phone LIKE ? OR email LIKE ? OR address LIKE ? OR category LIKE ?)');
     const like = `%${query.q}%`;
-    params.push(like, like, like, like, like);
+    // Someone typing a number back from a missed call types digits, not
+    // "(404) 555-1234", so match against the stripped number too.
+    const digits = String(query.q).replace(/\D/g, '');
+    if (digits.length >= 4) {
+      where.push(
+        `(name LIKE ? OR phone LIKE ? OR email LIKE ? OR address LIKE ? OR category LIKE ?
+          OR replace(replace(replace(replace(replace(phone,'(',''),')',''),'-',''),' ',''),'+','') LIKE ?)`
+      );
+      params.push(like, like, like, like, like, `%${digits}%`);
+    } else {
+      where.push('(name LIKE ? OR phone LIKE ? OR email LIKE ? OR address LIKE ? OR category LIKE ?)');
+      params.push(like, like, like, like, like);
+    }
   }
   if (query.due === '1') {
     where.push("next_action_at IS NOT NULL AND next_action_at <= datetime('now')");

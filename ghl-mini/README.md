@@ -59,8 +59,54 @@ script tracks its own booking rate so you know which one actually works.
 **Onboarding** — shareable forms. The client fills it out once, and you get a
 complete build brief written to `briefs/` that the Site Builder agent works from.
 
+**Automations** — the four automations, your drip sequences, what's queued to
+send, and every text in and out.
+
 **Settings** — every connection in one place with a Test button, plus targets,
 password and the email outbox.
+
+## The automations
+
+A scheduler runs every minute and drives four things:
+
+| | What it does |
+|---|---|
+| **Missed-call text-back** | Someone rings you and doesn't get through, so they get a text within seconds. Unknown callers get captured as leads automatically. |
+| **Appointment reminder** | Texts and emails the client before the call. Book on short notice and the reminder still goes, just sooner. |
+| **No-show recovery** | Marks the booking and offers two new times. A call logged near the slot counts as held, not missed. |
+| **Drip sequences** | Multi-day email and text follow-ups that run themselves. |
+
+Every sequence stops on its own the moment the lead replies, books, or texts STOP.
+
+### Texting people responsibly
+
+This is built in, not optional:
+
+- **STOP is honored instantly** and belongs to the phone number, not the lead
+  row. Text STOP before you're in the database and you stay opted out even if
+  that number gets scraped in later.
+- **Quiet hours** default to 8am–9pm in your timezone. Anything due outside the
+  window is held until it opens, never dropped and never sent at 3am.
+- **Do-not-call leads are never texted**, by any automation.
+- **A real reply stops the drip** and moves the lead to callback, so nobody ever
+  gets an automated follow-up on top of a live conversation.
+
+US law (TCPA) is strict about business texting. These defaults keep you inside
+it, but read the rules for where you operate before you switch anything on.
+
+### Wiring up Twilio
+
+Reminders, no-show recovery and drips work on your laptop. Missed-call
+text-back and reply handling need Twilio to reach you, which means a public
+address — set `PUBLIC_URL` to your real domain, then paste these into your
+Twilio number:
+
+```
+A call comes in     https://yourdomain.com/webhooks/twilio/voice
+A message comes in  https://yourdomain.com/webhooks/twilio/sms
+```
+
+Both are signature-verified, so an unsigned request is rejected with a 403.
 
 ## The six agents
 
@@ -144,12 +190,22 @@ GET    /api/agents
 POST   /api/agents/:id/run
 GET    /api/agents/runs
 
+GET    /api/automations         the four, plus scheduler health
+POST   /api/automations/tick    run a pass right now
+POST   /api/automations/:id/test
+GET    /api/sequences
+POST   /api/sequences/:id/enroll  {"lead_ids":[1,2,3]}
+GET    /api/enrollments
+GET    /api/jobs                what is scheduled
+GET    /api/messages            texts in and out
+POST   /api/messages            send one
+
 GET    /api/settings
 POST   /api/settings/test/:integration
 ```
 
 Public, no session needed: `/f/:slug` (onboarding form), `/book` (booking page),
-`/health`.
+`/health`, and `/webhooks/twilio/*` (signature-verified).
 
 ## Data
 
@@ -190,7 +246,8 @@ form and booking links are right.
 ## What this is not
 
 It isn't GoHighLevel. There's no funnel builder, no membership sites, no white-label
-reseller layer, no native review-request automation, no built-in payments. If you need
+reseller layer, no review-request automation, no built-in payments, and no visual
+workflow builder — sequences are a list of steps, not a flowchart. If you need
 those, pay for the real thing.
 
 What it does have is the loop that actually makes the money: find leads, call them,

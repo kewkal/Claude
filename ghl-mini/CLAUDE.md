@@ -19,6 +19,10 @@ npm run reset            # wipe the database and re-seed
 | `server/index.js` | HTTP server, routing, public pages, auth gate |
 | `server/lib/db.js` | SQLite connection, schema, `all` / `get` / `run` / `tx` |
 | `server/lib/agents.js` | The six agent definitions and the run queue |
+| `server/lib/scheduler.js` | The every-minute tick that drives all automations |
+| `server/lib/automations.js` | The four automations plus the sequence engine |
+| `server/lib/messaging.js` | SMS send/receive, opt-out, quiet hours, token rendering |
+| `server/api/webhooks.js` | Twilio voice and SMS webhooks, signature-verified |
 | `server/lib/maps.js` | Google Places scraping and lead scoring |
 | `server/lib/telephony.js` | Twilio calls and SMS |
 | `server/lib/email.js` | Resend / Mailgun / Postmark over HTTP |
@@ -36,7 +40,24 @@ sqlite3 -json data/ghl.db "SELECT * FROM leads WHERE id = 1;"
 ```
 
 Tables: `leads`, `calls`, `scripts`, `bookings`, `availability`, `onboarding_forms`,
-`onboarding_responses`, `daily_logs`, `tasks`, `agent_runs`, `email_outbox`, `activity`, `settings`, `users`.
+`onboarding_responses`, `daily_logs`, `tasks`, `agent_runs`, `email_outbox`, `activity`,
+`settings`, `users`, `messages`, `sequences`, `sequence_steps`, `enrollments`, `scheduled_jobs`.
+
+## Automations
+
+The scheduler ticks every 60s (`SCHEDULER_TICK_MS` to change it). Each pass queues
+newly due work, then runs whatever is due. Everything is idempotent, so a missed
+tick or a restart mid-pass costs nothing — `scheduled_jobs.dedupe_key` is what
+makes repeat sweeps safe.
+
+Rules that must not be weakened:
+
+- Every automated SMS goes through `sendMessage()` in `messaging.js`. That is
+  where do-not-call, per-number STOP suppression and quiet hours are enforced.
+  Never call `sendSms()` from telephony.js directly for an automated send.
+- Quiet-hours jobs are **deferred**, never dropped — `runJob()` pushes `run_at`
+  forward instead of failing.
+- Any inbound reply stops that lead's active enrollments.
 
 ## Conventions
 

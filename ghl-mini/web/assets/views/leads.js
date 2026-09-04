@@ -72,6 +72,7 @@ function layout(data, stats) {
           ${raw(stats.statuses.map((s) => h`<option value="${s}">${titleCase(s)}</option>`).join(''))}
         </select>
         <button class="btn sm" data-bulk="tag">Tag</button>
+        <button class="btn sm" data-bulk="sequence">Start a sequence</button>
         <button class="btn sm danger" data-bulk="delete">Delete</button>
       </div>
     </div>
@@ -172,6 +173,32 @@ function wire(root, ctx, data, stats) {
           ok(`Deleted ${r.deleted}`);
           selected.clear();
           reload(root, ctx);
+        });
+      }
+      if (action === 'sequence') {
+        const { sequences } = await api.get('/api/sequences');
+        if (!sequences.length) return err('Build a sequence first, over on Automations.');
+        return modal((card, close) => {
+          card.innerHTML = h`
+            <div class="modal-head"><h2>Start a sequence</h2></div>
+            <p class="muted" style="margin-top:0">${ids.length} lead${ids.length === 1 ? '' : 's'}.
+            Anyone marked do-not-call is skipped, and each sequence stops itself the moment they reply.</p>
+            <label class="field"><span>Which one</span><select id="seqPick">
+              ${raw(sequences.map((s) => h`<option value="${s.id}">${s.name} (${s.steps.length} steps)</option>`).join(''))}
+            </select></label>
+            <div class="modal-foot">
+              <button class="btn" data-cancel>Cancel</button>
+              <button class="btn primary" data-go>Start it</button>
+            </div>`;
+          card.querySelector('[data-cancel]').onclick = close;
+          card.querySelector('[data-go]').onclick = guard(async () => {
+            const seqId = card.querySelector('#seqPick').value;
+            const r = await api.post(`/api/sequences/${seqId}/enroll`, { lead_ids: ids });
+            ok(`${r.enrolled} started${r.skipped ? `, ${r.skipped} skipped` : ''}`);
+            close();
+            selected.clear();
+            reload(root, ctx);
+          });
         });
       }
       if (action === 'tag') {

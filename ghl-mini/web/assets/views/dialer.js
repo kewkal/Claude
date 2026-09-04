@@ -100,6 +100,7 @@ function cardBody(lead) {
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
       ${raw(lead.phone ? h`<a class="btn primary" href="tel:${lead.phone}" id="tapCall">📱 Call from this device</a>` : '')}
       <button class="btn" id="twilioBtn">☎️ Dial via Twilio</button>
+      <button class="btn" id="smsBtn">💬 Text them</button>
       <span class="pill mono" id="timer" style="align-self:center">00:00</span>
       <button class="btn sm ghost" id="timerBtn">Start timer</button>
     </div>
@@ -206,12 +207,60 @@ function wireCard(root, ctx) {
   }));
 
   root.querySelector('#bookBtn')?.addEventListener('click', () => openBooking(root, ctx));
+  root.querySelector('#smsBtn')?.addEventListener('click', () => openSms(root, ctx));
 }
 
 function stopTimer(reset = false) {
   clearInterval(timer);
   timer = null;
   if (reset) elapsed = 0;
+}
+
+async function openSms(root, ctx) {
+  const lead = current;
+  if (!lead) return;
+  const { modal } = await import('../ui.js');
+  const [{ scripts }] = await Promise.all([api.get('/api/scripts', { kind: 'sms' })]);
+
+  modal((card, close) => {
+    card.innerHTML = h`
+      <div class="modal-head"><h2>Text ${lead.name}</h2><button class="icon-btn" data-close>×</button></div>
+      <div class="muted mono" style="margin-bottom:12px">${lead.phone || 'no number on file'}</div>
+      ${raw(scripts.length ? h`<label class="field"><span>Start from a script</span>
+        <select id="smsScript"><option value="">Write my own</option>
+          ${raw(scripts.map((s) => h`<option value="${s.id}">${s.name}</option>`).join(''))}
+        </select></label>` : '')}
+      <label class="field"><span>Message</span><textarea id="smsBody" style="min-height:110px"></textarea></label>
+      <div class="hint" id="smsCount">0 characters</div>
+      <div class="modal-foot">
+        <button class="btn" data-cancel>Cancel</button>
+        <button class="btn primary" data-send>Send</button>
+      </div>`;
+
+    const box = card.querySelector('#smsBody');
+    const count = card.querySelector('#smsCount');
+    box.oninput = () => {
+      const n = box.value.length;
+      count.textContent = `${n} characters · ${Math.max(1, Math.ceil(n / 160))} text${n > 160 ? 's' : ''}`;
+    };
+
+    card.querySelector('#smsScript')?.addEventListener('change', guard(async (e) => {
+      if (!e.target.value) return;
+      const r = await api.post(`/api/scripts/${e.target.value}/render`, { lead_id: lead.id });
+      box.value = r.body;
+      box.dispatchEvent(new Event('input'));
+    }));
+
+    card.querySelector('[data-close]').onclick = close;
+    card.querySelector('[data-cancel]').onclick = close;
+    card.querySelector('[data-send]').onclick = guard(async (e) => {
+      if (!box.value.trim()) return err('Nothing to send');
+      e.target.disabled = true;
+      await api.post('/api/messages', { lead_id: lead.id, body: box.value });
+      ok('Text sent');
+      close();
+    });
+  });
 }
 
 async function openBooking(root, ctx) {

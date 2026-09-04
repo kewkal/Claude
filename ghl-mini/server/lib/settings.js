@@ -34,6 +34,33 @@ export const DEFAULTS = {
   claude_bin: process.env.CLAUDE_BIN || 'claude',
   agents_enabled: '1',
 
+  // --- Automations ---
+  scheduler_enabled: '1',
+  // Where missed calls get forwarded before the text-back fires.
+  owner_phone: '',
+  // US TCPA puts texting between 8am and 9pm local. Jobs due outside the
+  // window are deferred to the next opening, never dropped.
+  quiet_start: '08:00',
+  quiet_end: '21:00',
+
+  automation_missed_call: '0',
+  automation_missed_call_body:
+    "Hi, this is {{business_name}} — sorry I missed your call. I'm on a job right now. What do you need a hand with? Text me here and I'll come straight back to you.",
+
+  automation_reminder: '1',
+  automation_reminder_hours: '24',
+  automation_reminder_sms: '1',
+  automation_reminder_email: '1',
+  automation_reminder_body:
+    "Hi {{name}}, {{owner_name}} from {{business_name}} here. Confirming our call {{when}}. I'll ring you on this number. Reply here if you need to move it.",
+
+  automation_no_show: '1',
+  automation_no_show_minutes: '15',
+  automation_no_show_body:
+    "Hi {{name}}, tried you just now for our call and couldn't get through — no problem at all. Does tomorrow morning or Thursday afternoon suit you better?",
+
+  automation_sequences: '1',
+
   booking_title: 'Discovery call',
   booking_duration_min: '30',
   daily_target_hours: '6',

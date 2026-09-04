@@ -71,6 +71,15 @@ export function guard(fn) {
   };
 }
 
+/** Force any open modal shut. Called on every route change. */
+export function closeModal() {
+  const wrap = document.getElementById('modal');
+  if (!wrap || wrap.hidden) return;
+  wrap.hidden = true;
+  wrap.onclick = null;
+  document.getElementById('modalCard').innerHTML = '';
+}
+
 /** Open a modal. `render` gets a `close` function. Returns close. */
 export function modal(render) {
   const wrap = document.getElementById('modal');
