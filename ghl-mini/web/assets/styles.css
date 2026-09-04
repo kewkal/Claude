@@ -192,6 +192,7 @@ td .sub { color: var(--dim); font-size: 12px; }
 .pill.lost, .pill.failed, .pill.no_show, .pill.not_interested { color: var(--err); border-color: var(--err); }
 .pill.dnc { color: var(--err); border-color: var(--err); background: rgba(255,95,95,.1); }
 .pill.running { color: var(--accent); border-color: var(--accent); }
+.pill.needs_manual_run, .pill.not_sent { color: var(--warn); border-color: var(--warn); }
 .pill.score { font-variant-numeric: tabular-nums; }
 .pill.score.hot { color: var(--ok); border-color: var(--ok); }
 .pill.score.warm { color: var(--warn); border-color: var(--warn); }

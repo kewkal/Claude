@@ -175,34 +175,42 @@ function execute(id, bin, prompt) {
 
     let out = '';
     let err = '';
+    let settled = false;
     const cap = 200_000;
     child.stdout.on('data', (d) => { if (out.length < cap) out += d.toString(); });
     child.stderr.on('data', (d) => { if (err.length < cap) err += d.toString(); });
 
-    child.on('error', () => {
-      run("UPDATE agent_runs SET status = 'needs_manual_run', output = ?, finished_at = datetime('now') WHERE id = ?", [
-        `Claude Code CLI ("${bin}") not found on this machine. The task file is queued in agent-queue/ — open it in Claude Code to run it.`, id,
+    const finish = (status, output) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(killer);
+      run("UPDATE agent_runs SET status = ?, output = ?, finished_at = datetime('now') WHERE id = ?", [
+        status, String(output).slice(0, cap), id,
       ]);
       resolve();
+    };
+
+    // A missing binary fires 'error' and then 'close', so 'error' has to win.
+    child.on('error', (e) => {
+      finish(
+        'needs_manual_run',
+        `Could not run "${bin}" (${e.code || e.message}).\n\n` +
+        `The task is queued in agent-queue/ — open it in Claude Code to run it by hand, ` +
+        `or set the right path in Settings > Agents.`
+      );
     });
 
     child.on('close', (code) => {
-      const status = code === 0 ? 'done' : 'failed';
-      run("UPDATE agent_runs SET status = ?, output = ?, finished_at = datetime('now') WHERE id = ?", [
-        status, (out + (err ? `\n\n[stderr]\n${err}` : '')).slice(0, cap), id,
-      ]);
-      resolve();
+      if (code === 0) return finish('done', out || 'Finished with no output.');
+      finish('failed', (out + (err ? `\n\n[stderr]\n${err}` : '')) || `Exited with code ${code}.`);
     });
 
     // Don't let a stuck agent hold a slot forever.
-    setTimeout(() => {
-      if (!child.killed) {
-        child.kill('SIGTERM');
-        run("UPDATE agent_runs SET status = 'failed', output = ?, finished_at = datetime('now') WHERE id = ?", [
-          'Timed out after 15 minutes.', id,
-        ]);
-      }
-    }, 15 * 60 * 1000).unref?.();
+    const killer = setTimeout(() => {
+      child.kill('SIGTERM');
+      finish('failed', 'Timed out after 15 minutes.');
+    }, 15 * 60 * 1000);
+    killer.unref?.();
   });
 }
 
