@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Boot ghl-mini. Creates .env on first run.
+set -euo pipefail
+cd "$(dirname "$0")"
+
+if [ ! -f .env ]; then
+  echo "First run — creating .env"
+  cp .env.example .env
+  SECRET=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s|^GHL_SECRET=.*|GHL_SECRET=$SECRET|" .env
+  else
+    sed -i "s|^GHL_SECRET=.*|GHL_SECRET=$SECRET|" .env
+  fi
+  echo "Edit .env and set OWNER_EMAIL and OWNER_PASSWORD, then run this again."
+  exit 0
+fi
+
+NODE_MAJOR=$(node -p "process.versions.node.split('.')[0]")
+NODE_MINOR=$(node -p "process.versions.node.split('.')[1]")
+if [ "$NODE_MAJOR" -lt 22 ] || { [ "$NODE_MAJOR" -eq 22 ] && [ "$NODE_MINOR" -lt 5 ]; }; then
+  echo "Node 22.5 or newer is required (built-in SQLite). You have $(node -v)."
+  exit 1
+fi
+
+exec node server/index.js

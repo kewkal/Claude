@@ -1,0 +1,11 @@
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+.env
+node_modules/
+briefs/*
+!briefs/.gitkeep
+agent-queue/*
+!agent-queue/.gitkeep
+web/uploads/*

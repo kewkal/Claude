@@ -1,0 +1,14 @@
+{
+  "name": "ghl-mini",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A self-hosted mini GHL: leads, dialer, scripts, calendar, onboarding and six Claude Code agents. Zero npm dependencies.",
+  "type": "module",
+  "engines": { "node": ">=22.5.0" },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "seed": "node server/seed.js",
+    "reset": "rm -f data/ghl.db && node server/seed.js"
+  }
+}

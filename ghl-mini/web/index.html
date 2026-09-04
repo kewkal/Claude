@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HQ — ghl-mini</title>
+<link rel="stylesheet" href="/assets/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>⚡</text></svg>">
+</head>
+<body>
+  <div id="app" class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">⚡</span>
+        <span class="brand-name" id="brandName">HQ</span>
+      </div>
+      <nav id="nav"></nav>
+      <div class="sidebar-foot">
+        <a href="/logout" class="nav-item subtle">Sign out</a>
+        <div class="version">ghl-mini</div>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+        <h1 id="pageTitle">Daily HQ</h1>
+        <div class="topbar-actions" id="topbarActions"></div>
+      </header>
+      <div id="view" class="view"><div class="loading">Loading…</div></div>
+    </main>
+  </div>
+  <div id="toast" class="toast" hidden></div>
+  <div id="modal" class="modal" hidden><div class="modal-card" id="modalCard"></div></div>
+  <script type="module" src="/assets/app.js"></script>
+</body>
+</html>
