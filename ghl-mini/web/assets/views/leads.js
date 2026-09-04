@@ -205,19 +205,25 @@ function scrapeModal(onDone) {
   modal((card, close) => {
     card.innerHTML = h`
       <div class="modal-head"><h2>Scrape leads from Google Maps</h2></div>
-      <p class="muted" style="margin-top:0">Search the way you'd search Maps. Each page is 20 results, 60 is the Google cap per query. Run the same trade across a few cities to build volume.</p>
+      <p class="muted" style="margin-top:0">Search the way you'd search Maps. Each page is 20 businesses, with the phone number and website included. Run the same trade across a few cities to build real volume.</p>
       <form id="scrapeForm">
         <label class="field"><span>Search</span>
           <input name="query" placeholder="roofers in Tampa FL" required autofocus></label>
         <div class="inline">
           <label class="field"><span>Pages</span>
-            <select name="pages"><option value="1">1 (20 leads)</option><option value="2">2 (40)</option><option value="3" selected>3 (60)</option></select></label>
+            <select name="pages">
+              <option value="1">1 (20 leads)</option>
+              <option value="2">2 (40)</option>
+              <option value="3" selected>3 (60)</option>
+              <option value="5">5 (100)</option>
+              <option value="10">10 (200)</option>
+            </select></label>
           <label class="field"><span>Minimum rating</span>
             <input type="number" name="min_rating" step="0.1" min="0" max="5" placeholder="4.0"></label>
           <label class="field"><span>Max reviews</span>
             <input type="number" name="max_reviews" min="0" placeholder="no limit"></label>
         </div>
-        <div class="hint">Duplicates are skipped automatically. Details lookups cost one extra API call per business.</div>
+        <div class="hint">Duplicates are skipped automatically. One API call per page of 20, so a 3-page scrape costs 3 calls.</div>
         <div class="modal-foot">
           <button type="button" class="btn" data-cancel>Cancel</button>
           <button type="button" class="btn" id="agentBtn">Hand to Lead Scout</button>

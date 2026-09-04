@@ -102,13 +102,33 @@ router.post('/api/settings/test/:integration', async ({ res, params, body }) => 
   if (which === 'google_maps') {
     if (!s.google_maps_api_key) throw bad('No Google Maps API key saved');
     const url = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json');
-    url.searchParams.set('query', 'coffee shop');
+    url.searchParams.set('query', 'coffee shop in Austin TX');
     url.searchParams.set('key', s.google_maps_api_key);
     const r = await fetch(url, { signal: AbortSignal.timeout(15000) });
     const data = await r.json();
-    const ok = data.status === 'OK' || data.status === 'ZERO_RESULTS';
-    if (!ok) throw new HttpError(400, `Google: ${data.error_message || data.status}`);
-    return json(res, { ok: true, results: (data.results || []).length });
+    if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
+      throw new HttpError(400, `Google: ${data.error_message || data.status}`);
+    }
+    const results = (data.results || []).length;
+    // Text Search working does not prove Place Details is enabled, and that
+    // is where phone numbers and websites come from.
+    let detailsOk = false;
+    if (results) {
+      const d = new URL('https://maps.googleapis.com/maps/api/place/details/json');
+      d.searchParams.set('place_id', data.results[0].place_id);
+      d.searchParams.set('fields', 'formatted_phone_number,website');
+      d.searchParams.set('key', s.google_maps_api_key);
+      const dr = await fetch(d, { signal: AbortSignal.timeout(15000) });
+      detailsOk = (await dr.json()).status === 'OK';
+    }
+    return json(res, {
+      ok: true,
+      results,
+      details: detailsOk,
+      message: detailsOk
+        ? `Search and details both working (${results} test results).`
+        : 'Text Search works, but Place Details did not respond. Phone numbers and websites will be missing.',
+    });
   }
 
   if (which === 'twilio') {

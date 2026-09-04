@@ -195,7 +195,6 @@ router.post('/api/leads/scrape', async ({ res, body }) => {
     pages: Number(body.pages) || 3,
     minRating: Number(body.min_rating) || 0,
     maxReviews: body.max_reviews ? Number(body.max_reviews) : null,
-    withDetails: body.details !== false,
   });
 
   let inserted = 0;
