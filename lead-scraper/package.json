@@ -1,0 +1,39 @@
+{
+  "name": "b2b-lead-scraper",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Asynchronous B2B lead discovery and website enrichment pipeline with streaming CSV output.",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "scrape": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "tsx tests/e2e/smoke.ts"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "commander": "^15.0.0",
+    "csv-stringify": "^6.8.3",
+    "domhandler": "^6.0.1",
+    "libphonenumber-js": "^1.13.12",
+    "p-limit": "^7.3.2",
+    "playwright": "^1.62.1",
+    "robots-parser": "^3.0.1",
+    "tldts": "^7.4.11"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@types/node": "^24.0.0",
+    "eslint": "^9.39.5",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.69.0",
+    "vitest": "^3.2.4"
+  }
+}

@@ -1,0 +1,8 @@
+[
+  { "businessName": "Smith Roofing", "website": "/smithroofing/", "phone": "(512) 555-0142", "rating": 4.8, "reviewCount": 127, "address": "1200 Congress Ave, Austin" },
+  { "businessName": "Bluebonnet Dental", "website": "/bluebonnetdental/", "phone": "(713) 555-0100", "rating": 4.6, "reviewCount": 89, "address": "10 Main St, Houston" },
+  { "businessName": "Northside Air", "website": "/northsideair/", "phone": "(713) 555-0111", "address": "5 North Rd, Houston" },
+  { "businessName": "Smith Roofing LLC", "website": "/smithroofing/index.html", "phone": "512-555-0142", "address": "1200 Congress Ave, Austin" },
+  { "businessName": "Ghost Plumbing", "website": "/doesnotexist/", "phone": "(713) 555-0999", "address": "Nowhere" },
+  { "businessName": "No Website Co", "phone": "(713) 555-0888", "address": "Somewhere, Houston" }
+]
