@@ -12,7 +12,22 @@ if [ ! -f .env ]; then
   else
     sed -i "s|^GHL_SECRET=.*|GHL_SECRET=$SECRET|" .env
   fi
-  echo "Edit .env and set OWNER_EMAIL and OWNER_PASSWORD, then run this again."
+  echo ""
+  echo "  Your settings file is here:"
+  echo ""
+  echo "      $(pwd)/.env"
+  echo ""
+  echo "  It starts with a dot, so Finder and Explorer hide it by default."
+  echo "  Open it with whichever of these works on your machine:"
+  echo ""
+  echo "      open -e .env      # Mac"
+  echo "      notepad .env      # Windows"
+  echo "      code .env         # VS Code"
+  echo "      nano .env         # any terminal"
+  echo ""
+  echo "  Set OWNER_EMAIL and OWNER_PASSWORD, paste your Google Maps key,"
+  echo "  then run ./start.sh again."
+  echo ""
   exit 0
 fi
 
