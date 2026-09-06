@@ -21,10 +21,13 @@ GoHighLevel starts at $97 and runs to $497.
 
 ## Getting started
 
+**Windows:** double-click `start.bat`.
+
+**Mac / Linux:** double-click `start.sh`, or in a terminal:
+
 ```bash
 cd ghl-mini
-./start.sh                 # Mac / Linux
-node server/index.js       # Windows
+./start.sh
 ```
 
 That's the whole thing. First boot writes a `.env`, creates the database, ten
