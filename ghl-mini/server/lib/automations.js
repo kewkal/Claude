@@ -84,11 +84,15 @@ export function sweepBookings() {
 
   if (s.automation_reminder === '1') {
     const hours = Number(s.automation_reminder_hours) || 24;
+    // Look well past the reminder point rather than only just past it. The
+    // exact send time comes from `fireAt` below, so a wide window costs
+    // nothing and means a booking cannot slip through unreminded while the
+    // app happens to be stopped.
     const bookings = all(
       `SELECT * FROM bookings
        WHERE status = 'confirmed' AND starts_at > datetime('now')
          AND starts_at <= datetime('now', ?)`,
-      [`+${hours + 1} hours`]
+      [`+${hours + 72} hours`]
     );
     // Short notice is exactly when a reminder earns its keep, so a booking
     // made inside the window still gets one — just sent right away rather

@@ -212,7 +212,14 @@ router.get('/api/jobs', ({ res, query }) => {
   const where = query.status && query.status !== 'all' ? 'WHERE status = ?' : '';
   const params = where ? [query.status] : [];
   json(res, {
-    jobs: all(`SELECT * FROM scheduled_jobs ${where} ORDER BY run_at DESC LIMIT 100`, params)
+    // What is about to happen matters more than what already did:
+    // pending first, soonest at the top, then history newest first.
+    jobs: all(
+      `SELECT * FROM scheduled_jobs ${where}
+       ORDER BY status = 'pending' DESC,
+                CASE WHEN status = 'pending' THEN run_at END ASC,
+                run_at DESC
+       LIMIT 100`, params)
       .map((j) => ({ ...j, payload: JSON.parse(j.payload_json || '{}') })),
     counts: Object.fromEntries(
       all('SELECT status, COUNT(*) AS n FROM scheduled_jobs GROUP BY status').map((r) => [r.status, r.n])
