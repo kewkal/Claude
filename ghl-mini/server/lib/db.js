@@ -293,6 +293,38 @@ CREATE INDEX IF NOT EXISTS idx_activity_lead ON activity(lead_id, created_at DES
 
 db.exec(SCHEMA);
 
+/**
+ * Columns added after the first release. ALTER TABLE ADD COLUMN is the only
+ * safe migration here — it never touches existing rows, and re-running it on
+ * an already-migrated database is a no-op we swallow.
+ */
+const LATER_COLUMNS = [
+  ['leads', 'site_status', 'TEXT'],
+  ['leads', 'site_checked_at', 'TEXT'],
+  ['leads', 'site_platform', 'TEXT'],
+  ['leads', 'site_title', 'TEXT'],
+  ['leads', 'has_meta_pixel', 'INTEGER NOT NULL DEFAULT 0'],
+  ['leads', 'has_google_tag', 'INTEGER NOT NULL DEFAULT 0'],
+  ['leads', 'has_google_ads', 'INTEGER NOT NULL DEFAULT 0'],
+  ['leads', 'has_analytics', 'INTEGER NOT NULL DEFAULT 0'],
+  ['leads', 'runs_ads', 'INTEGER NOT NULL DEFAULT 0'],
+  ['leads', 'mobile_ready', 'INTEGER'],
+  ['leads', 'has_ssl', 'INTEGER'],
+  ['leads', 'tags_json', "TEXT NOT NULL DEFAULT '{}'"],
+  ['leads', 'pitch_angle', 'TEXT'],
+];
+
+for (const [table, column, type] of LATER_COLUMNS) {
+  try {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`);
+  } catch {
+    // Already there.
+  }
+}
+
+db.exec('CREATE INDEX IF NOT EXISTS idx_leads_runs_ads ON leads(runs_ads)');
+db.exec('CREATE INDEX IF NOT EXISTS idx_leads_site_status ON leads(site_status)');
+
 /** Run a SELECT and return all rows. */
 export function all(sql, params = []) {
   return db.prepare(sql).all(...params);

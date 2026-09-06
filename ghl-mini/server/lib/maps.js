@@ -198,16 +198,33 @@ function normalizeLegacy(place, details, query) {
  * Lead score, 0-100. The thesis: a business with lots of happy customers
  * and no website (or a bad one) is the easiest sale for a site builder.
  */
-export function scoreLead({ website, rating, review_count, phone }) {
+export function scoreLead(lead) {
+  const { website, rating, review_count, phone } = lead;
   let score = 30;
+
   if (!website) score += 35;
   else if (/facebook\.com|instagram\.com|wixsite|weebly|godaddysites|business\.site|linktr\.ee/i.test(website)) score += 25;
   if (phone) score += 10;
+
   if ((review_count || 0) >= 100) score += 15;
   else if ((review_count || 0) >= 25) score += 10;
   else if ((review_count || 0) >= 5) score += 5;
+
   if ((rating || 0) >= 4.5) score += 10;
   else if ((rating || 0) >= 4.0) score += 5;
   else if (rating && rating < 3.5) score -= 10;
+
+  // Signals from a site scan, when one has been run. Ad spend is the
+  // strongest of these: it proves there is a budget and someone already
+  // decided the internet is worth paying for.
+  if (lead.runs_ads) score += 18;
+  if (lead.site_status && ['unreachable', 'timeout', 'server_error', 'not_found'].includes(lead.site_status)) score += 22;
+  if (lead.site_status === 'ok') {
+    if (lead.mobile_ready === 0) score += 12;
+    if (lead.has_ssl === 0) score += 8;
+    if (!lead.has_meta_pixel && !lead.has_google_tag && !lead.has_analytics && !lead.has_google_ads) score += 8;
+    if (['wix', 'godaddy', 'weebly', 'duda', 'google_business'].includes(lead.site_platform)) score += 10;
+  }
+
   return Math.max(0, Math.min(100, score));
 }

@@ -142,6 +142,9 @@ export class Router {
 
   add(method, pattern, handler) {
     const keys = [];
+    // How many segments are literal text rather than :params. A route with
+    // more of them is the more specific match.
+    const specificity = pattern.split('/').filter((seg) => seg && !seg.startsWith(':') && seg !== '*').length;
     const regex = new RegExp(
       '^' +
         pattern
@@ -160,7 +163,7 @@ export class Router {
           .join('/') +
         '/?$'
     );
-    this.routes.push({ method, regex, keys, handler });
+    this.routes.push({ method, regex, keys, handler, specificity });
     return this;
   }
 
@@ -170,16 +173,28 @@ export class Router {
   patch(p, h) { return this.add('PATCH', p, h); }
   delete(p, h) { return this.add('DELETE', p, h); }
 
+  /**
+   * Picks the most specific matching route, not the first one registered.
+   * Without this, '/api/leads/:id' declared above '/api/leads/export.csv'
+   * silently swallows the export and reports "lead not found" — a bug that
+   * depends on the order lines happen to sit in the file.
+   */
   match(method, pathname) {
+    let best = null;
+    let bestMatch = null;
     for (const route of this.routes) {
       if (route.method !== method) continue;
       const m = pathname.match(route.regex);
       if (!m) continue;
-      const params = {};
-      route.keys.forEach((k, i) => { params[k] = decodeURIComponent(m[i + 1]); });
-      return { handler: route.handler, params };
+      if (!best || route.specificity > best.specificity) {
+        best = route;
+        bestMatch = m;
+      }
     }
-    return null;
+    if (!best) return null;
+    const params = {};
+    best.keys.forEach((k, i) => { params[k] = decodeURIComponent(bestMatch[i + 1]); });
+    return { handler: best.handler, params };
   }
 
   merge(other) {

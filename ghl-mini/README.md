@@ -72,6 +72,26 @@ as you type.
 **Leads** — the database. Scrape from Google Maps, import CSV, filter, bulk-edit,
 export. Every lead carries a 0-100 score based on how badly they need what you sell.
 
+**Check websites** opens each lead's site and reads what is running on it:
+
+| Signal | What it tells you |
+|---|---|
+| Meta Pixel / Google Ads tag | They pay for traffic. The budget is proven. |
+| Google Tag Manager / GA4 | Somebody is measuring. Probably has an agency. |
+| No tags at all | Live site, zero measurement. They cannot tell you what it earns. |
+| Wix / GoDaddy / Weebly / Duda | DIY build. Nobody is maintaining it. |
+| No mobile viewport | You can demo the problem on their own phone. |
+| Unreachable or 404 | Their site is down and they almost certainly do not know. |
+
+Each scanned lead gets a one-line `pitch_angle` — the reason to pick up the phone —
+and the score is adjusted: an ad spender on a DIY site outranks a business with a
+polished, tracked website, because one has money and a problem and the other has
+neither. Filter chips on the Leads screen slice by all of it, and the CSV export
+carries every column.
+
+These are ordinary page visits, not API calls, so scanning costs nothing. It runs
+five at a time to stay polite.
+
 **Dialer** — a call queue sorted by who's most likely to close, the lead's history,
 a live-rendered script with their details filled in, one-click outcome logging and a
 call timer. Twilio click-to-call if you connect it, `tel:` links if you don't.

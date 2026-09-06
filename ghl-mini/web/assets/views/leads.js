@@ -3,18 +3,24 @@ import {
   fmtDate, ago, formData, emptyState, debounce, titleCase,
 } from '../ui.js';
 
-const filters = { q: '', status: 'all', city: '', has_website: '', min_score: '', sort: 'score', page: 1, limit: 50 };
+const filters = {
+  q: '', status: 'all', city: '', has_website: '', min_score: '', sort: 'score',
+  runs_ads: '', no_tracking: '', site_broken: '', not_mobile: '', unscanned: '', platform: '',
+  page: 1, limit: 50,
+};
 let selected = new Set();
 
 export default {
   async render(root, ctx) {
     ctx.setActions(h`
+      <button class="btn" id="scanBtn">Check websites</button>
       <button class="btn" id="importBtn">Import CSV</button>
       <a class="btn" href="/api/leads/export.csv" download>Export</a>
       <button class="btn primary" id="scrapeBtn">Scrape leads</button>
     `);
     document.getElementById('scrapeBtn').onclick = () => scrapeModal(() => reload(root, ctx));
     document.getElementById('importBtn').onclick = () => importModal(() => reload(root, ctx));
+    document.getElementById('scanBtn').onclick = () => scanModal(() => reload(root, ctx));
     await reload(root, ctx);
   },
 };
@@ -38,6 +44,14 @@ function layout(data, stats) {
       ${raw(stat('Booked', (stats.byStatus.booked || 0).toLocaleString(), `${stats.byStatus.won || 0} won`, 'ok'))}
       ${raw(stat('Follow-ups due', stats.due.toLocaleString(), 'overdue right now', stats.due ? 'warn' : ''))}
     </div>
+
+    ${raw(stats.tech.scanned ? h`<div class="grid cols-5" style="margin-bottom:14px">
+      ${raw(stat('Running ads', stats.tech.runs_ads.toLocaleString(), 'proven budget', stats.tech.runs_ads ? 'ok' : ''))}
+      ${raw(stat('Meta Pixel', stats.tech.meta_pixel.toLocaleString(), 'on their site'))}
+      ${raw(stat('Google tag', stats.tech.google_tag.toLocaleString(), 'GTM or GA4'))}
+      ${raw(stat('Tracking nothing', stats.tech.no_tracking.toLocaleString(), 'live site, zero tags', 'accent'))}
+      ${raw(stat('Site broken', stats.tech.broken.toLocaleString(), 'down or missing', stats.tech.broken ? 'warn' : ''))}
+    </div>` : '')}
 
     <div class="filters">
       <input class="grow" id="qInput" placeholder="Search name, phone, address…" value="${filters.q}">
@@ -64,6 +78,16 @@ function layout(data, stats) {
       <button class="btn ghost" id="clearBtn">Clear</button>
     </div>
 
+    ${raw(stats.tech.scanned ? h`<div class="chips" style="margin-bottom:14px">
+      <span class="dim" style="align-self:center;font-size:12.5px;margin-right:4px">Tech:</span>
+      <button class="chip ${raw(filters.runs_ads === '1' ? 'active' : '')}" data-tech="runs_ads">Running ads (${stats.tech.runs_ads})</button>
+      <button class="chip ${raw(filters.no_tracking === '1' ? 'active' : '')}" data-tech="no_tracking">Tracking nothing (${stats.tech.no_tracking})</button>
+      <button class="chip ${raw(filters.site_broken === '1' ? 'active' : '')}" data-tech="site_broken">Site broken (${stats.tech.broken})</button>
+      <button class="chip ${raw(filters.not_mobile === '1' ? 'active' : '')}" data-tech="not_mobile">Not mobile (${stats.tech.not_mobile})</button>
+      ${raw(stats.tech.unscanned ? h`<button class="chip ${raw(filters.unscanned === '1' ? 'active' : '')}" data-tech="unscanned">Not checked yet (${stats.tech.unscanned})</button>` : '')}
+      ${raw(stats.platforms.map((p) => h`<button class="chip ${raw(filters.platform === p.platform ? 'active' : '')}" data-platform="${p.platform}">${titleCase(p.platform)} (${p.n})</button>`).join(''))}
+    </div>` : '')}
+
     <div class="bar" id="bulkBar" ${raw(selected.size ? '' : 'hidden')}>
       <div><b id="selCount">${selected.size}</b> selected</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -73,6 +97,7 @@ function layout(data, stats) {
         </select>
         <button class="btn sm" data-bulk="tag">Tag</button>
         <button class="btn sm" data-bulk="sequence">Start a sequence</button>
+        <button class="btn sm" data-bulk="scan">Check their websites</button>
         <button class="btn sm danger" data-bulk="delete">Delete</button>
       </div>
     </div>
@@ -94,7 +119,7 @@ function table(data) {
     <thead><tr>
       <th style="width:32px"><input type="checkbox" id="selAll"></th>
       <th>Business</th><th>Phone</th><th>Website</th><th>City</th>
-      <th class="num">Reviews</th><th class="num">Score</th><th>Status</th><th>Next</th><th></th>
+      <th class="num">Reviews</th><th>Tech</th><th class="num">Score</th><th>Status</th><th></th>
     </tr></thead>
     <tbody>${raw(data.leads.map(row).join(''))}</tbody>
   </table></div>`;
@@ -113,11 +138,29 @@ function row(l) {
       : '<span class="pill" style="color:var(--accent);border-color:var(--accent)">none</span>')}</td>
     <td class="nowrap">${l.city || '—'}</td>
     <td class="num">${l.review_count ?? '—'}</td>
+    <td class="nowrap">${raw(techBadges(l))}</td>
     <td class="num">${raw(scorePill(l.score))}</td>
     <td>${raw(pill(l.status))}</td>
-    <td class="nowrap dim">${l.next_action_at ? ago(l.next_action_at) : '—'}</td>
     <td class="right nowrap"><button class="btn sm" data-open>Open</button></td>
   </tr>`;
+}
+
+function techBadges(l) {
+  if (!l.site_status) return '<span class="dim" style="font-size:11.5px">—</span>';
+  const out = [];
+  if (['unreachable', 'timeout', 'server_error', 'not_found'].includes(l.site_status)) {
+    out.push('<span class="pill lost" title="Their website is down">site down</span>');
+    return out.join(' ');
+  }
+  if (l.runs_ads) out.push('<span class="pill won" title="Running paid ads — budget exists">ads</span>');
+  if (l.has_meta_pixel) out.push('<span class="pill" style="color:#4267B2;border-color:#4267B2" title="Meta Pixel installed">meta</span>');
+  if (l.has_google_tag || l.has_analytics) out.push('<span class="pill" style="color:#EA4335;border-color:#EA4335" title="Google Tag Manager or GA4">google</span>');
+  if (!l.has_meta_pixel && !l.has_google_tag && !l.has_analytics && !l.has_google_ads) {
+    out.push('<span class="pill new" title="Live site with no tracking at all">no tags</span>');
+  }
+  if (l.mobile_ready === 0) out.push('<span class="pill callback" title="No mobile viewport">not mobile</span>');
+  if (l.site_platform) out.push(`<span class="pill" title="Built on ${l.site_platform}">${l.site_platform}</span>`);
+  return out.join(' ');
 }
 
 function wire(root, ctx, data, stats) {
@@ -130,9 +173,26 @@ function wire(root, ctx, data, stats) {
   root.querySelector('#webSel').onchange = (e) => { filters.has_website = e.target.value; apply(); };
   root.querySelector('#sortSel').onchange = (e) => { filters.sort = e.target.value; apply(); };
   root.querySelector('#clearBtn').onclick = () => {
-    Object.assign(filters, { q: '', status: 'all', city: '', has_website: '', min_score: '', sort: 'score', page: 1 });
+    Object.assign(filters, {
+      q: '', status: 'all', city: '', has_website: '', min_score: '', sort: 'score',
+      runs_ads: '', no_tracking: '', site_broken: '', not_mobile: '', unscanned: '', platform: '', page: 1,
+    });
     reload(root, ctx);
   };
+
+  root.querySelectorAll('[data-tech]').forEach((b) => {
+    b.onclick = () => {
+      const key = b.dataset.tech;
+      filters[key] = filters[key] === '1' ? '' : '1';
+      apply();
+    };
+  });
+  root.querySelectorAll('[data-platform]').forEach((b) => {
+    b.onclick = () => {
+      filters.platform = filters.platform === b.dataset.platform ? '' : b.dataset.platform;
+      apply();
+    };
+  });
 
   root.querySelector('#prevPage')?.addEventListener('click', () => { filters.page--; reload(root, ctx); });
   root.querySelector('#nextPage')?.addEventListener('click', () => { filters.page++; reload(root, ctx); });
@@ -174,6 +234,13 @@ function wire(root, ctx, data, stats) {
           selected.clear();
           reload(root, ctx);
         });
+      }
+      if (action === 'scan') {
+        ok(`Checking ${ids.length} websites…`);
+        const r = await api.post('/api/leads/scan', { ids });
+        ok(`Checked ${r.scanned}: ${r.runs_ads} running ads, ${r.no_tracking} tracking nothing, ${r.broken} broken.`);
+        selected.clear();
+        return reload(root, ctx);
       }
       if (action === 'sequence') {
         const { sequences } = await api.get('/api/sequences');
@@ -311,6 +378,46 @@ Cedar Park Plumbing,512-555-0198,Cedar Park,"></textarea>
   });
 }
 
+function scanModal(onDone) {
+  modal((card, close) => {
+    card.innerHTML = h`
+      <div class="modal-head"><h2>Check their websites</h2></div>
+      <p class="muted" style="margin-top:0">Opens each lead's site and looks at what is running on it: Meta Pixel,
+      Google Tag Manager, GA4, Google Ads, what it was built with, and whether it works on a phone.</p>
+      <p class="muted">A business already paying for ads has a proven budget. One with a live site and no tracking
+      at all cannot tell you what it earns. Both are far easier calls than a cold open.</p>
+      <label class="field"><span>How many to check</span>
+        <select name="limit">
+          <option value="25" selected>25 (about 30 seconds)</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="200">200 (a few minutes)</option>
+        </select></label>
+      <div class="hint">Works through the highest-scoring leads that have a website and have not been checked yet.
+      Five at a time, so nobody's host sees it as an attack. Costs nothing — these are ordinary page visits, not API calls.</div>
+      <div class="modal-foot">
+        <button type="button" class="btn" data-cancel>Cancel</button>
+        <button type="button" class="btn primary" id="scanGo">Start checking</button>
+      </div>`;
+    card.querySelector('[data-cancel]').onclick = close;
+    card.querySelector('#scanGo').onclick = guard(async (e) => {
+      e.target.disabled = true;
+      e.target.textContent = 'Checking…';
+      const limit = Number(card.querySelector('[name=limit]').value);
+      try {
+        const r = await api.post('/api/leads/scan', { limit });
+        if (!r.scanned) { err(r.message || 'Nothing left to check'); return close(); }
+        ok(`Checked ${r.scanned}: ${r.runs_ads} running ads, ${r.no_tracking} tracking nothing, ${r.broken} broken, ${r.not_mobile} not mobile.`);
+        close();
+        onDone();
+      } finally {
+        e.target.disabled = false;
+        e.target.textContent = 'Start checking';
+      }
+    });
+  });
+}
+
 export function leadModal(id, onDone) {
   modal(async (card, close) => {
     card.className = 'modal-card wide';
@@ -343,11 +450,31 @@ export function leadModal(id, onDone) {
               <button type="submit" class="btn primary">Save</button>
               ${raw(lead.phone ? h`<a class="btn" href="tel:${lead.phone}">Call</a>` : '')}
               <button type="button" class="btn" id="dialerBtn">Open in dialer</button>
+              ${raw(lead.website ? '<button type="button" class="btn" id="scanOneBtn">Check their site</button>' : '')}
               <button type="button" class="btn danger" id="delBtn">Delete</button>
             </div>
           </form>
         </div>
         <div>
+          ${raw(lead.pitch_angle ? h`<div class="card" style="background:var(--accent-soft);border-color:var(--accent);margin-bottom:14px">
+            <div class="s" style="color:var(--accent);font-weight:650;margin-bottom:4px">HOW TO OPEN THE CALL</div>
+            <div style="font-size:13.5px">${lead.pitch_angle}</div>
+          </div>` : '')}
+          ${raw(lead.site_status ? h`<h3>What is on their site</h3>
+          <div class="list" style="margin-bottom:16px">
+            <div class="list-item"><div class="grow"><div class="s">Site</div><div class="t" style="font-size:13px">
+              ${titleCase(lead.site_status)}${lead.site_platform ? ` · built on ${titleCase(lead.site_platform)}` : ''}
+            </div></div></div>
+            <div class="list-item"><div class="grow"><div class="s">Tracking</div><div class="t" style="font-size:13px">
+              ${[lead.has_meta_pixel && 'Meta Pixel', (lead.has_google_tag || lead.has_analytics) && 'Google tag',
+                 lead.has_google_ads && 'Google Ads'].filter(Boolean).join(', ') || 'nothing at all'}
+            </div></div></div>
+            <div class="list-item"><div class="grow"><div class="s">Basics</div><div class="t" style="font-size:13px">
+              ${lead.mobile_ready ? 'mobile ready' : 'NOT mobile ready'} · ${lead.has_ssl ? 'secure' : 'NO padlock'}
+            </div></div></div>
+            ${raw(lead.site_title ? h`<div class="list-item"><div class="grow"><div class="s">Their page title</div>
+              <div class="t" style="font-size:13px">${lead.site_title}</div></div></div>` : '')}
+          </div>` : '')}
           <h3>Details</h3>
           <div class="list" style="margin-bottom:16px">
             <div class="list-item"><div class="grow"><div class="s">Address</div><div class="t" style="font-size:13px">${lead.address || '—'}</div></div></div>
@@ -364,6 +491,15 @@ export function leadModal(id, onDone) {
 
     card.querySelector('[data-close]').onclick = close;
     card.querySelector('#dialerBtn').onclick = () => { close(); location.hash = `#/dialer/${lead.id}`; };
+    card.querySelector('#scanOneBtn')?.addEventListener('click', guard(async (e) => {
+      e.target.disabled = true;
+      e.target.textContent = 'Checking…';
+      const r = await api.post(`/api/leads/${lead.id}/scan`, {});
+      ok(r.scan.site_status === 'ok' ? 'Checked their site' : `Their site is ${r.scan.site_status}`);
+      close();
+      onDone();
+      leadModal(lead.id, onDone);
+    }));
     card.querySelector('#delBtn').onclick = () =>
       confirmDialog(`Delete ${lead.name}?`, async () => { await api.del(`/api/leads/${lead.id}`); ok('Deleted'); close(); onDone(); });
 

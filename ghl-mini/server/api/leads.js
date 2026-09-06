@@ -1,6 +1,7 @@
 import { Router, json, bad, notFound } from '../lib/http.js';
 import { all, get, run, tx } from '../lib/db.js';
 import { searchPlaces, scoreLead } from '../lib/maps.js';
+import { scanSite, runsAds, pitchAngle } from '../lib/sitescan.js';
 import { queueRun } from '../lib/agents.js';
 
 export const LEAD_STATUSES = [
@@ -41,6 +42,15 @@ router.get('/api/leads', ({ res, query }) => {
   if (query.tag) { where.push('tags LIKE ?'); params.push(`%${query.tag}%`); }
   if (query.has_website === '0') where.push("(website IS NULL OR website = '')");
   if (query.has_website === '1') where.push("(website IS NOT NULL AND website != '')");
+  if (query.runs_ads === '1') where.push('runs_ads = 1');
+  if (query.runs_ads === '0') where.push("(runs_ads = 0 AND site_status = 'ok')");
+  if (query.no_tracking === '1') {
+    where.push("(site_status = 'ok' AND has_meta_pixel = 0 AND has_google_tag = 0 AND has_analytics = 0 AND has_google_ads = 0)");
+  }
+  if (query.site_broken === '1') where.push("site_status IN ('unreachable','timeout','server_error','not_found')");
+  if (query.not_mobile === '1') where.push("(site_status = 'ok' AND mobile_ready = 0)");
+  if (query.platform) { where.push('site_platform = ?'); params.push(query.platform); }
+  if (query.unscanned === '1') where.push("site_status IS NULL AND website IS NOT NULL AND website != ''");
   if (query.has_phone === '1') where.push("(phone IS NOT NULL AND phone != '')");
   if (query.min_score) { where.push('score >= ?'); params.push(Number(query.min_score)); }
   if (query.q) {
@@ -101,7 +111,42 @@ router.get('/api/leads/stats', ({ res }) => {
   const topCities = all(
     "SELECT city, COUNT(*) AS n FROM leads WHERE city IS NOT NULL AND city != '' GROUP BY city ORDER BY n DESC LIMIT 8"
   );
-  json(res, { byStatus, ...totals, due, topCities, statuses: LEAD_STATUSES });
+  const tech = get(`
+    SELECT
+      COALESCE(SUM(CASE WHEN site_status IS NOT NULL THEN 1 ELSE 0 END), 0) AS scanned,
+      COALESCE(SUM(CASE WHEN site_status IS NULL AND website IS NOT NULL AND website != '' THEN 1 ELSE 0 END), 0) AS unscanned,
+      COALESCE(SUM(runs_ads), 0) AS runs_ads,
+      COALESCE(SUM(has_meta_pixel), 0) AS meta_pixel,
+      COALESCE(SUM(CASE WHEN has_google_tag = 1 OR has_analytics = 1 THEN 1 ELSE 0 END), 0) AS google_tag,
+      COALESCE(SUM(CASE WHEN site_status = 'ok' AND has_meta_pixel = 0 AND has_google_tag = 0
+                        AND has_analytics = 0 AND has_google_ads = 0 THEN 1 ELSE 0 END), 0) AS no_tracking,
+      COALESCE(SUM(CASE WHEN site_status IN ('unreachable','timeout','server_error','not_found') THEN 1 ELSE 0 END), 0) AS broken,
+      COALESCE(SUM(CASE WHEN site_status = 'ok' AND mobile_ready = 0 THEN 1 ELSE 0 END), 0) AS not_mobile
+    FROM leads`);
+  const platforms = all(
+    "SELECT site_platform AS platform, COUNT(*) AS n FROM leads WHERE site_platform IS NOT NULL GROUP BY site_platform ORDER BY n DESC"
+  );
+  json(res, { byStatus, ...totals, due, topCities, tech, platforms, statuses: LEAD_STATUSES });
+});
+
+/** GET /api/leads/export.csv */
+router.get('/api/leads/export.csv', ({ res, query }) => {
+  const where = query.status && query.status !== 'all' ? 'WHERE status = ?' : '';
+  const params = where ? [query.status] : [];
+  const rows = all(`SELECT * FROM leads ${where} ORDER BY score DESC`, params);
+  const cols = ['id', 'name', 'category', 'phone', 'email', 'website', 'address', 'city', 'state',
+    'rating', 'review_count', 'status', 'score', 'tags', 'site_status', 'site_platform',
+    'runs_ads', 'has_meta_pixel', 'has_google_tag', 'has_analytics', 'mobile_ready', 'has_ssl',
+    'pitch_angle', 'created_at'];
+  const lines = [cols.join(',')];
+  for (const r of rows) lines.push(cols.map((c) => csvCell(r[c])).join(','));
+  const body = lines.join('\n');
+  res.writeHead(200, {
+    'content-type': 'text/csv; charset=utf-8',
+    'content-disposition': 'attachment; filename="leads.csv"',
+    'content-length': Buffer.byteLength(body),
+  });
+  res.end(body);
 });
 
 /** GET /api/leads/:id — lead plus its history. */
@@ -255,24 +300,6 @@ router.post('/api/leads/import', ({ res, body }) => {
   json(res, { rows: rows.length, inserted });
 });
 
-/** GET /api/leads/export.csv */
-router.get('/api/leads/export.csv', ({ res, query }) => {
-  const where = query.status && query.status !== 'all' ? 'WHERE status = ?' : '';
-  const params = where ? [query.status] : [];
-  const rows = all(`SELECT * FROM leads ${where} ORDER BY score DESC`, params);
-  const cols = ['id', 'name', 'category', 'phone', 'email', 'website', 'address', 'city', 'state',
-    'rating', 'review_count', 'status', 'score', 'tags', 'created_at'];
-  const lines = [cols.join(',')];
-  for (const r of rows) lines.push(cols.map((c) => csvCell(r[c])).join(','));
-  const body = lines.join('\n');
-  res.writeHead(200, {
-    'content-type': 'text/csv; charset=utf-8',
-    'content-disposition': 'attachment; filename="leads.csv"',
-    'content-length': Buffer.byteLength(body),
-  });
-  res.end(body);
-});
-
 /** POST /api/leads/:id/rescore */
 router.post('/api/leads/:id/rescore', ({ res, params }) => {
   const lead = get('SELECT * FROM leads WHERE id = ?', [params.id]);
@@ -280,6 +307,87 @@ router.post('/api/leads/:id/rescore', ({ res, params }) => {
   const score = scoreLead(lead);
   run('UPDATE leads SET score = ? WHERE id = ?', [score, lead.id]);
   json(res, { score });
+});
+
+/** Write one scan result onto a lead and re-score it. */
+function applyScan(lead, scan) {
+  const patch = {
+    site_status: scan.site_status,
+    site_checked_at: scan.site_checked_at,
+    site_platform: scan.platform,
+    site_title: scan.title,
+    has_meta_pixel: scan.tags.meta_pixel ? 1 : 0,
+    has_google_tag: scan.tags.google_tag_manager ? 1 : 0,
+    has_google_ads: scan.tags.google_ads ? 1 : 0,
+    has_analytics: scan.tags.google_analytics || scan.tags.universal_analytics ? 1 : 0,
+    runs_ads: runsAds(scan) ? 1 : 0,
+    mobile_ready: scan.mobile_ready,
+    has_ssl: scan.has_ssl,
+    tags_json: JSON.stringify({ tags: scan.tags, ids: scan.tag_ids }),
+  };
+  patch.pitch_angle = pitchAngle(lead, scan);
+  patch.score = scoreLead({ ...lead, ...patch });
+
+  const cols = Object.keys(patch);
+  run(
+    `UPDATE leads SET ${cols.map((c) => `${c} = ?`).join(', ')}, updated_at = datetime('now') WHERE id = ?`,
+    [...cols.map((c) => patch[c]), lead.id]
+  );
+  return patch;
+}
+
+/** POST /api/leads/:id/scan — check one lead's website. */
+router.post('/api/leads/:id/scan', async ({ res, params }) => {
+  const lead = get('SELECT * FROM leads WHERE id = ?', [params.id]);
+  if (!lead) throw notFound('Lead not found');
+  if (!lead.website) throw bad('That lead has no website to check.');
+  const scan = await scanSite(lead.website);
+  applyScan(lead, scan);
+  json(res, { lead: get('SELECT * FROM leads WHERE id = ?', [params.id]), scan });
+});
+
+/**
+ * POST /api/leads/scan — check a batch. Pass `ids`, or leave it out and it
+ * takes the highest-scoring unscanned leads that actually have a website.
+ */
+router.post('/api/leads/scan', async ({ res, body }) => {
+  const limit = Math.min(200, Math.max(1, Number(body.limit) || 25));
+  const ids = Array.isArray(body.ids) ? body.ids.map(Number).filter(Boolean) : null;
+
+  const targets = ids && ids.length
+    ? all(
+        `SELECT * FROM leads WHERE id IN (${ids.map(() => '?').join(',')})
+           AND website IS NOT NULL AND website != ''`, ids
+      )
+    : all(
+        `SELECT * FROM leads
+         WHERE website IS NOT NULL AND website != '' AND site_status IS NULL
+         ORDER BY score DESC LIMIT ?`, [limit]
+      );
+
+  if (!targets.length) {
+    return json(res, { scanned: 0, message: 'Nothing to check — those leads have no website, or were checked already.' });
+  }
+
+  // Five at a time: fast enough to be useful, polite enough not to look
+  // like an attack to anyone's host.
+  const summary = { scanned: 0, runs_ads: 0, no_tracking: 0, broken: 0, not_mobile: 0 };
+  const CONCURRENCY = 5;
+  for (let i = 0; i < targets.length; i += CONCURRENCY) {
+    const batch = targets.slice(i, i + CONCURRENCY);
+    const scans = await Promise.all(batch.map((l) => scanSite(l.website).catch(() => null)));
+    batch.forEach((lead, j) => {
+      const scan = scans[j];
+      if (!scan) return;
+      const patch = applyScan(lead, scan);
+      summary.scanned++;
+      if (patch.runs_ads) summary.runs_ads++;
+      if (scan.site_status === 'ok' && !Object.keys(scan.tags).length) summary.no_tracking++;
+      if (['unreachable', 'timeout', 'server_error', 'not_found'].includes(scan.site_status)) summary.broken++;
+      if (scan.site_status === 'ok' && !scan.mobile_ready) summary.not_mobile++;
+    });
+  }
+  json(res, summary);
 });
 
 /** POST /api/leads/scout — hand the search to the Lead Scout agent. */

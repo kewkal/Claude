@@ -24,6 +24,7 @@ npm run reset            # wipe the database and re-seed
 | `server/lib/messaging.js` | SMS send/receive, opt-out, quiet hours, token rendering |
 | `server/api/webhooks.js` | Twilio voice and SMS webhooks, signature-verified |
 | `server/lib/maps.js` | Google Places scraping and lead scoring |
+| `server/lib/sitescan.js` | Reads a lead's website: ad pixels, analytics, platform, mobile |
 | `server/lib/telephony.js` | Twilio calls and SMS |
 | `server/lib/email.js` | Resend / Mailgun / Postmark over HTTP |
 | `server/api/*.js` | One router per surface |
@@ -67,6 +68,11 @@ Rules that must not be weakened:
 - Frontend uses the `h` tagged template, which escapes interpolations. Use `raw()` only for HTML you built yourself.
 - Secrets go through `SECRET_KEYS` in `server/lib/settings.js` so they are encrypted at rest and masked in the API.
 - SQLite timestamps are UTC without a zone marker. Parse them with `toDate()` on the frontend, never `new Date(str)`.
+- Columns added after the first release go in `LATER_COLUMNS` in `db.js`, which
+  runs `ALTER TABLE ADD COLUMN` and swallows the error when it is already there.
+  Never edit `SCHEMA` for a new column — existing databases do not re-run it.
+- The router picks the **most specific** matching route, not the first registered,
+  so `/api/leads/export.csv` wins over `/api/leads/:id` regardless of order.
 
 ## Agents
 
