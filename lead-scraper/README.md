@@ -43,6 +43,8 @@ npm run scrape -- --vertical "Dental Practices" --location "Dallas, TX"  --limit
 | `--max-pages-per-site` | `6` | pages crawled per business website (1–50) |
 | `--source` | `auto` | `auto`, `overpass`, `google-places`, `fixture` |
 | `--output-dir` | `output` | where the CSV lands |
+| `--include-seen` | off | re-scrape businesses previous runs already produced |
+| `--ledger` | `<output-dir>/.lead-ledger.jsonl` | where cross-run lead memory lives |
 | `--debug` | off | verbose diagnostics on stderr |
 
 All inputs are validated before any network call is made.
@@ -87,6 +89,27 @@ Google Maps and Yelp HTML scraping is deliberately **not** implemented: it viola
 | `estimated_revenue` | conservative bracket, or empty |
 
 `null` is written as an empty field.
+
+---
+
+## Cross-run memory
+
+Runs remember what they produced. Every lead written to a CSV has its dedupe keys appended to `output/.lead-ledger.jsonl`, and later runs skip anything already in there — so running the same vertical and location twice gives you the *new* businesses, not the same list again.
+
+```
+[LEDGER] 84 lead(s) remembered from previous runs (output\.lead-ledger.jsonl)
+[DISCOVERY] Found 91 candidate businesses (7 to process, 0 duplicate, 84 previously seen)
+```
+
+The summary reports in-run duplicates and previously-seen leads separately, because they mean different things: lots of `duplicate` means the source returned redundant records, lots of `previously seen` means the memory is doing its job.
+
+Memory is **global** — one ledger across every vertical and location. A firm surfaced by a Houston run is skipped by the Dallas run, which is what you want when the output feeds outreach: one business, one contact.
+
+- **Re-scrape everything anyway:** `--include-seen`
+- **Separate memories per campaign:** `--ledger output\hvac-ledger.jsonl`
+- **Start over:** delete `output\.lead-ledger.jsonl`
+
+A lead is recorded only once its CSV row is written, so a run interrupted halfway leaves the rest eligible next time.
 
 ---
 
@@ -152,5 +175,6 @@ output/                          generated CSVs (git-ignored)
 - **`estimated_revenue` will be empty for most small businesses.** Few publish headcount or revenue. That is the honest answer, not a bug — loosening it would mean fabricating numbers.
 - **Only public company LinkedIn pages are captured.** Personal `/in/` profiles are rejected as they are not the business.
 - **Deduplication is conservative.** Separate branches of a chain stay separate rows unless they share a domain or phone line.
+- **Cross-run memory has no expiry.** A lead scraped a year ago is still skipped. Enrichment data does rot, so a "refresh anything older than N days" flag is the natural next feature; for now, `--include-seen` re-scrapes everything.
 - **Some sites will refuse automation.** Those are recorded as failures; no evasion is attempted.
 - **No live external run has been performed from the development container** — its egress is restricted to package registries, so every host returns 403. Unit tests and the local end-to-end smoke test both pass; validate against real sites on a machine with normal network access.

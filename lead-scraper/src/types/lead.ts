@@ -155,7 +155,10 @@ export interface RunStats {
   enriched: number;
   partial: number;
   failed: number;
+  /** Collisions within this run. */
   duplicatesRemoved: number;
+  /** Skipped because a previous run already produced them. */
+  previouslySeen: number;
   written: number;
 }
 
@@ -171,4 +174,8 @@ export interface RunOptions {
   /** Set by the smoke test to point the fixture adapter at a local server. */
   fixtureBaseUrl?: string;
   outputDir: string;
+  /** When false (`--include-seen`), leads from previous runs are scraped again. */
+  useLedger: boolean;
+  /** Where the cross-run lead memory lives. */
+  ledgerPath: string;
 }

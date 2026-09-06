@@ -103,8 +103,9 @@ async function run(): Promise<void> {
   const outputDir = mkdtempSync(join(tmpdir(), 'lead-smoke-'));
   console.log(`[SMOKE] fixture site at ${baseUrl}, output to ${outputDir}\n`);
 
-  try {
-    const exitCode = await main([
+  /** One CLI invocation against the fixture site. */
+  const scrape = (extraArgs: readonly string[] = []): Promise<number> =>
+    main([
       '--vertical', 'HVAC Contractors',
       '--location', 'Houston, TX',
       '--limit', '10',
@@ -115,7 +116,21 @@ async function run(): Promise<void> {
       '--fixture-manifest', join(SITE_ROOT, 'manifest.json'),
       '--fixture-base-url', baseUrl,
       '--output-dir', outputDir,
+      ...extraArgs,
     ]);
+
+  /** Data rows (excluding the header) of the newest CSV in the output directory. */
+  const newestCsvRows = (): string[] => {
+    const csvs = readdirSync(outputDir)
+      .filter((name) => name.endsWith('.csv'))
+      .sort();
+    const newest = csvs[csvs.length - 1];
+    if (newest === undefined) return [];
+    return readFileSync(join(outputDir, newest), 'utf8').trimEnd().split('\n').slice(1);
+  };
+
+  try {
+    const exitCode = await scrape();
 
     console.log('');
     check(exitCode === 0, `CLI exited cleanly (code ${exitCode})`);
@@ -182,6 +197,28 @@ async function run(): Promise<void> {
 
     check(byName.has('Ghost Plumbing'), 'a business with an unreachable website still produced a row');
     check(byName.has('No Website Co'), 'a business with no website at all still produced a row');
+
+    // ---- cross-run lead memory -------------------------------------------
+    // The ledger is what stops a second run re-scraping and re-surfacing every
+    // business you already have, so prove it rather than assume it.
+    console.log('\n[SMOKE] second run — cross-run ledger should skip everything\n');
+    const secondExit = await scrape();
+    check(secondExit === 0, `second run exited cleanly (code ${secondExit})`);
+
+    const secondRows = newestCsvRows();
+    check(secondRows.length === 0, `second run wrote 0 rows (got ${secondRows.length})`);
+
+    console.log('\n[SMOKE] third run with --include-seen — ledger should be bypassed\n');
+    const thirdExit = await scrape(['--include-seen']);
+    check(thirdExit === 0, `third run exited cleanly (code ${thirdExit})`);
+
+    const thirdRows = newestCsvRows();
+    check(thirdRows.length === 5, `--include-seen wrote all 5 rows again (got ${thirdRows.length})`);
+
+    check(
+      existsSync(join(outputDir, '.lead-ledger.jsonl')),
+      'ledger file was created in the output directory',
+    );
 
     console.log(`\n[SMOKE] PASSED — CSV at ${csvPath}\n`);
     console.log(content);

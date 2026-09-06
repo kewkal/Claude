@@ -7,6 +7,7 @@
  */
 
 import { realpathSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { Command, InvalidArgumentError } from 'commander';
@@ -30,6 +31,8 @@ interface RawOptions {
   source: string;
   outputDir: string;
   debug: boolean;
+  includeSeen: boolean;
+  ledger?: string;
   fixtureManifest?: string;
   fixtureBaseUrl?: string;
 }
@@ -75,6 +78,12 @@ export function buildProgram(): Command {
     .option('--source <name>', 'discovery source: auto, overpass, google-places, fixture', DEFAULTS.source)
     .option('--output-dir <path>', 'directory for CSV output', DEFAULTS.outputDir)
     .option('--debug', 'verbose diagnostics on stderr', false)
+    .option(
+      '--include-seen',
+      'scrape businesses that previous runs already produced (default: skip them)',
+      false,
+    )
+    .option('--ledger <path>', 'cross-run lead memory file (default: <output-dir>/.lead-ledger.jsonl)')
     .option('--fixture-manifest <path>', 'JSON manifest for --source fixture')
     .option('--fixture-base-url <url>', 'base URL for relative fixture websites');
   return program;
@@ -111,6 +120,8 @@ export async function main(argv: readonly string[]): Promise<number> {
     source: raw.source,
     debug: raw.debug,
     outputDir: raw.outputDir,
+    useLedger: !raw.includeSeen,
+    ledgerPath: raw.ledger ?? join(raw.outputDir, '.lead-ledger.jsonl'),
   };
 
   const registry = buildRegistry(raw);

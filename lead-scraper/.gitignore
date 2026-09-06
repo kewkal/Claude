@@ -4,4 +4,5 @@ output/*
 !output/.gitkeep
 *.log
 .env
+.lead-ledger.jsonl
 .DS_Store
