@@ -95,6 +95,32 @@ carries every column.
 These are ordinary page visits, not API calls, so scanning costs nothing. It runs
 five at a time to stay polite.
 
+### Franchises are left out
+
+A chain is a dead call: corporate owns the website, the marketing budget is set
+three states away, and whoever answers cannot buy anything. Scraping leaves them
+out by default, on four signals:
+
+1. **A known brand** — Roto-Rooter, Mr. Rooter, ServPro, TruGreen, Terminix,
+   Jiffy Lube, Aspen Dental and a few hundred more, by trade.
+2. **The same name in several cities** — catches regional chains no list knows.
+3. **Three or more listings behind one domain** — a corporate site covering
+   multiple locations.
+4. **Franchise wording on their own site** — "independently owned and operated"
+   is the disclosure a franchise is legally obliged to publish.
+
+Two guards stop it eating good leads. A name has to keep a **distinctive word**
+after the filler is stripped, so "The Roofing Company" and "Florida Roofing Corp"
+are never treated as branches of each other. And site builders and link
+shorteners are ignored as shared domains — four roofers on UENI or Wix are four
+businesses, not one chain.
+
+Two locations behind one domain is *not* flagged: that is a local operator with
+two vans, and the owner still answers the phone.
+
+**Find chains in my list** applies all of it to leads you already have, and any
+lead wrongly flagged has a *This one is independent* button that rescores it.
+
 **Dialer** — a call queue sorted by who's most likely to close, the lead's history,
 a live-rendered script with their details filled in, one-click outcome logging and a
 call timer. Twilio click-to-call if you connect it, `tel:` links if you don't.

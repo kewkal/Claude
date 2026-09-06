@@ -6,7 +6,7 @@ import {
 const filters = {
   q: '', status: 'all', city: '', has_website: '', min_score: '', sort: 'score',
   runs_ads: '', no_tracking: '', site_broken: '', not_mobile: '', unscanned: '', platform: '',
-  page: 1, limit: 50,
+  is_chain: '', page: 1, limit: 50,
 };
 let selected = new Set();
 
@@ -88,6 +88,12 @@ function layout(data, stats) {
       ${raw(stats.platforms.map((p) => h`<button class="chip ${raw(filters.platform === p.platform ? 'active' : '')}" data-platform="${p.platform}">${titleCase(p.platform)} (${p.n})</button>`).join(''))}
     </div>` : '')}
 
+    <div class="chips" style="margin-bottom:14px">
+      <span class="dim" style="align-self:center;font-size:12.5px;margin-right:4px">Chains:</span>
+      <button class="chip ${raw(filters.is_chain === '1' ? 'active' : '')}" data-tech="is_chain">Show only chains (${stats.tech.chains})</button>
+      <button class="chip" id="sweepChains">Find chains in my list</button>
+    </div>
+
     <div class="bar" id="bulkBar" ${raw(selected.size ? '' : 'hidden')}>
       <div><b id="selCount">${selected.size}</b> selected</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -146,8 +152,9 @@ function row(l) {
 }
 
 function techBadges(l) {
-  if (!l.site_status) return '<span class="dim" style="font-size:11.5px">—</span>';
   const out = [];
+  if (l.is_chain) out.push(`<span class="pill lost" title="${esc(l.chain_reason || 'chain')}">chain</span>`);
+  if (!l.site_status) return out.length ? out.join(' ') : '<span class="dim" style="font-size:11.5px">—</span>';
   if (['unreachable', 'timeout', 'server_error', 'not_found'].includes(l.site_status)) {
     out.push('<span class="pill lost" title="Their website is down">site down</span>');
     return out.join(' ');
@@ -187,6 +194,14 @@ function wire(root, ctx, data, stats) {
       apply();
     };
   });
+  root.querySelector('#sweepChains')?.addEventListener('click', guard(async (e) => {
+    e.target.disabled = true;
+    e.target.textContent = 'Checking…';
+    const r = await api.post('/api/leads/sweep-chains', { remove: false });
+    ok(`Found ${r.total_chains} chains — ${r.known_brands} known brands, ${r.multi_location} in several places.`);
+    reload(root, ctx);
+  }));
+
   root.querySelectorAll('[data-platform]').forEach((b) => {
     b.onclick = () => {
       filters.platform = filters.platform === b.dataset.platform ? '' : b.dataset.platform;
@@ -317,7 +332,12 @@ function scrapeModal(onDone) {
           <label class="field"><span>Max reviews</span>
             <input type="number" name="max_reviews" min="0" placeholder="no limit"></label>
         </div>
-        <div class="hint">Duplicates are skipped automatically. One API call per page of 20, so a 3-page scrape costs 3 calls.</div>
+        <label class="field" style="margin-top:4px">
+          <input type="checkbox" name="exclude_chains" checked> Leave out franchises and chains
+        </label>
+        <div class="hint">Chains are dead calls — corporate owns the website and whoever answers cannot buy anything.
+        Catches known brands, the same name across cities, and several listings behind one domain.</div>
+        <div class="hint" style="margin-top:6px">Duplicates are skipped automatically. One API call per page of 20, so a 3-page scrape costs 3 calls.</div>
         <div class="modal-foot">
           <button type="button" class="btn" data-cancel>Cancel</button>
           <button type="button" class="btn" id="agentBtn">Hand to Lead Scout</button>
@@ -343,7 +363,10 @@ function scrapeModal(onDone) {
       try {
         const v = formData(card.querySelector('#scrapeForm'));
         const r = await api.post('/api/leads/scrape', v);
-        ok(`Added ${r.inserted} new leads (${r.duplicates} already had)`);
+        const bits = [`Added ${r.inserted} new leads`];
+        if (r.duplicates) bits.push(`${r.duplicates} already had`);
+        if (r.chains_skipped) bits.push(`${r.chains_skipped} chains left out`);
+        ok(bits.join(', '));
         close();
         onDone();
       } finally {
@@ -456,6 +479,11 @@ export function leadModal(id, onDone) {
           </form>
         </div>
         <div>
+          ${raw(lead.is_chain ? h`<div class="card" style="border-color:var(--err);margin-bottom:14px">
+            <div class="s" style="color:var(--err);font-weight:650;margin-bottom:4px">LOOKS LIKE A CHAIN</div>
+            <div style="font-size:13.5px;margin-bottom:8px">${lead.chain_reason || 'Matched a known brand.'}</div>
+            <button type="button" class="btn sm" id="notChainBtn">This one is independent</button>
+          </div>` : '')}
           ${raw(lead.pitch_angle ? h`<div class="card" style="background:var(--accent-soft);border-color:var(--accent);margin-bottom:14px">
             <div class="s" style="color:var(--accent);font-weight:650;margin-bottom:4px">HOW TO OPEN THE CALL</div>
             <div style="font-size:13.5px">${lead.pitch_angle}</div>
@@ -491,6 +519,12 @@ export function leadModal(id, onDone) {
 
     card.querySelector('[data-close]').onclick = close;
     card.querySelector('#dialerBtn').onclick = () => { close(); location.hash = `#/dialer/${lead.id}`; };
+    card.querySelector('#notChainBtn')?.addEventListener('click', guard(async () => {
+      await api.post(`/api/leads/${lead.id}/not-a-chain`, {});
+      ok('Marked independent and rescored');
+      close();
+      onDone();
+    }));
     card.querySelector('#scanOneBtn')?.addEventListener('click', guard(async (e) => {
       e.target.disabled = true;
       e.target.textContent = 'Checking…';

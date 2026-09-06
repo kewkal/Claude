@@ -2,6 +2,7 @@ import { Router, json, bad, notFound } from '../lib/http.js';
 import { all, get, run, tx } from '../lib/db.js';
 import { searchPlaces, scoreLead } from '../lib/maps.js';
 import { scanSite, runsAds, pitchAngle } from '../lib/sitescan.js';
+import { looksLikeChain, findMultiLocation, matchesKnownBrand } from '../lib/chains.js';
 import { queueRun } from '../lib/agents.js';
 
 export const LEAD_STATUSES = [
@@ -51,6 +52,8 @@ router.get('/api/leads', ({ res, query }) => {
   if (query.not_mobile === '1') where.push("(site_status = 'ok' AND mobile_ready = 0)");
   if (query.platform) { where.push('site_platform = ?'); params.push(query.platform); }
   if (query.unscanned === '1') where.push("site_status IS NULL AND website IS NOT NULL AND website != ''");
+  if (query.is_chain === '1') where.push('is_chain = 1');
+  if (query.is_chain === '0') where.push('is_chain = 0');
   if (query.has_phone === '1') where.push("(phone IS NOT NULL AND phone != '')");
   if (query.min_score) { where.push('score >= ?'); params.push(Number(query.min_score)); }
   if (query.q) {
@@ -121,7 +124,8 @@ router.get('/api/leads/stats', ({ res }) => {
       COALESCE(SUM(CASE WHEN site_status = 'ok' AND has_meta_pixel = 0 AND has_google_tag = 0
                         AND has_analytics = 0 AND has_google_ads = 0 THEN 1 ELSE 0 END), 0) AS no_tracking,
       COALESCE(SUM(CASE WHEN site_status IN ('unreachable','timeout','server_error','not_found') THEN 1 ELSE 0 END), 0) AS broken,
-      COALESCE(SUM(CASE WHEN site_status = 'ok' AND mobile_ready = 0 THEN 1 ELSE 0 END), 0) AS not_mobile
+      COALESCE(SUM(CASE WHEN site_status = 'ok' AND mobile_ready = 0 THEN 1 ELSE 0 END), 0) AS not_mobile,
+      COALESCE(SUM(is_chain), 0) AS chains
     FROM leads`);
   const platforms = all(
     "SELECT site_platform AS platform, COUNT(*) AS n FROM leads WHERE site_platform IS NOT NULL GROUP BY site_platform ORDER BY n DESC"
@@ -137,7 +141,7 @@ router.get('/api/leads/export.csv', ({ res, query }) => {
   const cols = ['id', 'name', 'category', 'phone', 'email', 'website', 'address', 'city', 'state',
     'rating', 'review_count', 'status', 'score', 'tags', 'site_status', 'site_platform',
     'runs_ads', 'has_meta_pixel', 'has_google_tag', 'has_analytics', 'mobile_ready', 'has_ssl',
-    'pitch_angle', 'created_at'];
+    'is_chain', 'chain_reason', 'pitch_angle', 'created_at'];
   const lines = [cols.join(',')];
   for (const r of rows) lines.push(cols.map((c) => csvCell(r[c])).join(','));
   const body = lines.join('\n');
@@ -253,24 +257,45 @@ router.post('/api/leads/scrape', async ({ res, body }) => {
     maxReviews: body.max_reviews ? Number(body.max_reviews) : null,
   });
 
+  const excludeChains = body.exclude_chains !== false;
   let inserted = 0;
   let skipped = 0;
+  let chains = 0;
+  const insertedIds = [];
+
   tx(() => {
     for (const lead of found) {
       const exists = lead.place_id
         ? get('SELECT id FROM leads WHERE place_id = ?', [lead.place_id])
         : get('SELECT id FROM leads WHERE name = ? AND phone IS ? ', [lead.name, lead.phone]);
       if (exists) { skipped++; continue; }
+
+      const chainReason = looksLikeChain(lead);
+      if (chainReason && excludeChains) { chains++; continue; }
+      if (chainReason) {
+        lead.is_chain = 1;
+        lead.chain_reason = chainReason;
+        chains++;
+      }
+
       const cols = Object.keys(lead);
-      run(
+      const info = run(
         `INSERT INTO leads (${cols.join(', ')}) VALUES (${cols.map(() => '?').join(', ')})`,
         cols.map((c) => lead[c])
       );
+      insertedIds.push(Number(info.lastInsertRowid));
       inserted++;
     }
   });
 
-  json(res, { found: found.length, inserted, duplicates: skipped, query });
+  // A known-brand check cannot spot a regional chain. Comparing the whole
+  // database can: the same name in several cities, or several listings
+  // behind one domain.
+  const swept = sweepChains({ excludeChains, onlyIds: insertedIds });
+  chains += swept.flagged;
+  inserted -= swept.removed;
+
+  json(res, { found: found.length, inserted, duplicates: skipped, chains_skipped: chains, query });
 });
 
 /** POST /api/leads/import — paste CSV. */
@@ -300,6 +325,75 @@ router.post('/api/leads/import', ({ res, body }) => {
   json(res, { rows: rows.length, inserted });
 });
 
+/**
+ * Compares leads against each other to find chains no brand list knows.
+ * Runs over everything, because a lead scraped last week only becomes
+ * obviously a chain once its sibling in the next city turns up.
+ */
+function sweepChains({ excludeChains = false, onlyIds = null } = {}) {
+  const everything = all('SELECT id, name, city, website FROM leads');
+  const flaggedMap = findMultiLocation(everything);
+
+  let flagged = 0;
+  let removed = 0;
+  tx(() => {
+    for (const [id, reason] of flaggedMap) {
+      if (onlyIds && !onlyIds.includes(id)) {
+        // Still record it, just do not count it against this batch.
+        run("UPDATE leads SET is_chain = 1, chain_reason = ? WHERE id = ? AND is_chain = 0", [reason, id]);
+        continue;
+      }
+      if (excludeChains) {
+        const info = run("DELETE FROM leads WHERE id = ? AND status = 'new'", [id]);
+        if (info.changes) { removed++; flagged++; continue; }
+      }
+      const info = run("UPDATE leads SET is_chain = 1, chain_reason = ? WHERE id = ? AND is_chain = 0", [reason, id]);
+      if (info.changes) flagged++;
+    }
+  });
+
+  // Rescore whatever changed, since being a chain slashes the score.
+  for (const id of flaggedMap.keys()) {
+    const lead = get('SELECT * FROM leads WHERE id = ?', [id]);
+    if (lead) run('UPDATE leads SET score = ? WHERE id = ?', [scoreLead(lead), lead.id]);
+  }
+  return { flagged, removed };
+}
+
+/** POST /api/leads/sweep-chains — check everything already stored. */
+router.post('/api/leads/sweep-chains', ({ res, body }) => {
+  // Catch known brands that were imported or scraped before this existed.
+  let brands = 0;
+  tx(() => {
+    for (const lead of all("SELECT id, name FROM leads WHERE is_chain = 0")) {
+      const brand = matchesKnownBrand(lead.name);
+      if (!brand) continue;
+      run("UPDATE leads SET is_chain = 1, chain_reason = ? WHERE id = ?", [`known brand: ${brand}`, lead.id]);
+      brands++;
+    }
+  });
+
+  const swept = sweepChains({ excludeChains: body.remove === true });
+  for (const lead of all('SELECT * FROM leads WHERE is_chain = 1')) {
+    run('UPDATE leads SET score = ? WHERE id = ?', [scoreLead(lead), lead.id]);
+  }
+  json(res, {
+    known_brands: brands,
+    multi_location: swept.flagged,
+    removed: swept.removed,
+    total_chains: get('SELECT COUNT(*) AS n FROM leads WHERE is_chain = 1').n,
+  });
+});
+
+/** PATCH /api/leads/:id/not-a-chain — undo a bad call. */
+router.post('/api/leads/:id/not-a-chain', ({ res, params }) => {
+  const lead = get('SELECT * FROM leads WHERE id = ?', [params.id]);
+  if (!lead) throw notFound('Lead not found');
+  run("UPDATE leads SET is_chain = 0, chain_reason = NULL WHERE id = ?", [params.id]);
+  run('UPDATE leads SET score = ? WHERE id = ?', [scoreLead({ ...lead, is_chain: 0 }), params.id]);
+  json(res, { lead: get('SELECT * FROM leads WHERE id = ?', [params.id]) });
+});
+
 /** POST /api/leads/:id/rescore */
 router.post('/api/leads/:id/rescore', ({ res, params }) => {
   const lead = get('SELECT * FROM leads WHERE id = ?', [params.id]);
@@ -325,6 +419,10 @@ function applyScan(lead, scan) {
     has_ssl: scan.has_ssl,
     tags_json: JSON.stringify({ tags: scan.tags, ids: scan.tag_ids }),
   };
+  if (scan.franchise_copy && !lead.is_chain) {
+    patch.is_chain = 1;
+    patch.chain_reason = 'their own site says independently owned and operated';
+  }
   patch.pitch_angle = pitchAngle(lead, scan);
   patch.score = scoreLead({ ...lead, ...patch });
 

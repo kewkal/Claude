@@ -12,6 +12,15 @@
  */
 
 const UA = 'Mozilla/5.0 (compatible; ghl-mini site checker; +https://github.com/)';
+
+/** The disclosure a franchise is legally obliged to publish. */
+const FRANCHISE_COPY = [
+  /independently owned and operated/i,
+  /each (?:franchise|location|office) is independently/i,
+  /franchise opportunit/i,
+  /own a franchise/i,
+  /\bfranchisee\b/i,
+];
 const MAX_BYTES = 900_000;
 
 /** Each detector: a name, the patterns, and how to pull the account id out. */
@@ -80,6 +89,7 @@ export async function scanSite(url, { timeoutMs = 12000 } = {}) {
     mobile_ready: 0,
     title: null,
     http_status: null,
+    franchise_copy: false,
   };
   if (!url || !/^https?:\/\//i.test(String(url).trim())) return result;
 
@@ -125,6 +135,7 @@ export async function scanSite(url, { timeoutMs = 12000 } = {}) {
   const platform = PLATFORMS.find((p) => p.patterns.some((re) => re.test(haystack)));
   if (platform) result.platform = platform.key;
 
+  result.franchise_copy = FRANCHISE_COPY.some((re) => re.test(html));
   result.mobile_ready = /<meta[^>]+name=["']viewport["'][^>]*>/i.test(html) ? 1 : 0;
   const title = html.match(/<title[^>]*>([\s\S]{0,200}?)<\/title>/i);
   if (title) result.title = decodeEntities(title[1]).replace(/\s+/g, ' ').trim().slice(0, 160);

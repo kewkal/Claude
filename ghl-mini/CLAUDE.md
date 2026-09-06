@@ -25,6 +25,7 @@ npm run reset            # wipe the database and re-seed
 | `server/api/webhooks.js` | Twilio voice and SMS webhooks, signature-verified |
 | `server/lib/maps.js` | Google Places scraping and lead scoring |
 | `server/lib/sitescan.js` | Reads a lead's website: ad pixels, analytics, platform, mobile |
+| `server/lib/chains.js` | Franchise and chain detection: brands, multi-location, shared domains |
 | `server/lib/telephony.js` | Twilio calls and SMS |
 | `server/lib/email.js` | Resend / Mailgun / Postmark over HTTP |
 | `server/api/*.js` | One router per surface |
@@ -73,6 +74,13 @@ Rules that must not be weakened:
   Never edit `SCHEMA` for a new column — existing databases do not re-run it.
 - The router picks the **most specific** matching route, not the first registered,
   so `/api/leads/export.csv` wins over `/api/leads/:id` regardless of order.
+- Chain detection must stay conservative — a false positive deletes a real lead.
+  Two rules protect it: a normalized name needs a token outside `GENERIC_TOKENS`
+  before it can prove a shared brand, and hosts in `SHARED_HOST_PATTERNS` (site
+  builders, shorteners, parked domains) never count as a shared corporate domain.
+- Build regexes with more than a couple of alternatives from an array and
+  `new RegExp(list.join('|'))`. A regex literal cannot span lines, and writing
+  one that does fails at import time, not where you are looking.
 
 ## Agents
 

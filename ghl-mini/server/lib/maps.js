@@ -226,5 +226,9 @@ export function scoreLead(lead) {
     if (['wix', 'godaddy', 'weebly', 'duda', 'google_business'].includes(lead.site_platform)) score += 10;
   }
 
+  // A franchise cannot buy from you. Corporate owns the site and the
+  // person answering the phone has no authority to spend.
+  if (lead.is_chain) score = Math.round(score * 0.25);
+
   return Math.max(0, Math.min(100, score));
 }

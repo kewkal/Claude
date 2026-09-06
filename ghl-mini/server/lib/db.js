@@ -312,6 +312,8 @@ const LATER_COLUMNS = [
   ['leads', 'has_ssl', 'INTEGER'],
   ['leads', 'tags_json', "TEXT NOT NULL DEFAULT '{}'"],
   ['leads', 'pitch_angle', 'TEXT'],
+  ['leads', 'is_chain', 'INTEGER NOT NULL DEFAULT 0'],
+  ['leads', 'chain_reason', 'TEXT'],
 ];
 
 for (const [table, column, type] of LATER_COLUMNS) {
@@ -324,6 +326,7 @@ for (const [table, column, type] of LATER_COLUMNS) {
 
 db.exec('CREATE INDEX IF NOT EXISTS idx_leads_runs_ads ON leads(runs_ads)');
 db.exec('CREATE INDEX IF NOT EXISTS idx_leads_site_status ON leads(site_status)');
+db.exec('CREATE INDEX IF NOT EXISTS idx_leads_is_chain ON leads(is_chain)');
 
 /** Run a SELECT and return all rows. */
 export function all(sql, params = []) {
