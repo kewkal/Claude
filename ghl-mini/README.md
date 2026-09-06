@@ -75,6 +75,32 @@ as you type.
 **Leads** — the database. Scrape from Google Maps, import CSV, filter, bulk-edit,
 export. Every lead carries a 0-100 score based on how badly they need what you sell.
 
+### Getting past 60
+
+Google returns **60 results per search and no more**, whatever page count you
+ask for. Volume comes from more searches, not deeper ones.
+
+**Bulk search** runs a trade x place grid, each combination its own search:
+
+```
+Trades            Places
+roofers           Tampa FL
+plumbers          Brandon FL
+HVAC contractors  Clearwater FL
+                  St Petersburg FL
+```
+
+That is 3 x 4 = 12 searches, up to 720 businesses, 36 API calls, about 10
+seconds. A live run of exactly that shape returned 605 businesses and added 398
+new leads after duplicates and chains were dropped.
+
+The modal does the arithmetic as you type and refuses more than 60 searches at
+once, so a slip cannot burn your quota.
+
+To go wider, work outward: suburbs before the next metro (people search
+"roofer near me", not "roofer in the nearest big city"), then adjacent trades —
+roofer, gutters, siding, windows.
+
 **Check websites** opens each lead's site and reads what is running on it:
 
 | Signal | What it tells you |

@@ -1,6 +1,6 @@
 import { Router, json, bad, notFound } from '../lib/http.js';
 import { all, get, run, tx } from '../lib/db.js';
-import { searchPlaces, scoreLead } from '../lib/maps.js';
+import { searchPlaces, searchMany, scoreLead } from '../lib/maps.js';
 import { scanSite, runsAds, pitchAngle } from '../lib/sitescan.js';
 import { looksLikeChain, findMultiLocation, matchesKnownBrand } from '../lib/chains.js';
 import { queueRun } from '../lib/agents.js';
@@ -296,6 +296,76 @@ router.post('/api/leads/scrape', async ({ res, body }) => {
   inserted -= swept.removed;
 
   json(res, { found: found.length, inserted, duplicates: skipped, chains_skipped: chains, query });
+});
+
+/**
+ * POST /api/leads/bulk-scrape — a trade x location grid.
+ * Every combination is its own query, which is the only way past Google's
+ * 60-per-search ceiling.
+ */
+router.post('/api/leads/bulk-scrape', async ({ res, body }) => {
+  const lines = (v) => String(v || '').split(/[\n,;]+/).map((t) => t.trim()).filter(Boolean);
+  const trades = lines(body.trades);
+  const locations = lines(body.locations);
+  if (!trades.length) throw bad('Give it at least one trade, like "roofers"');
+  if (!locations.length) throw bad('Give it at least one place, like "Tampa FL"');
+
+  const total = trades.length * locations.length;
+  if (total > 60) {
+    throw bad(`That is ${total} searches. Keep it under 60 at a time so a mistake cannot burn your quota.`);
+  }
+
+  const excludeChains = body.exclude_chains !== false;
+  const batches = await searchMany({
+    trades,
+    locations,
+    pages: Number(body.pages) || 3,
+    minRating: Number(body.min_rating) || 0,
+    maxReviews: body.max_reviews ? Number(body.max_reviews) : null,
+  });
+
+  const summary = { queries: total, found: 0, inserted: 0, duplicates: 0, chains_skipped: 0, per_query: [], errors: [] };
+  const insertedIds = [];
+
+  for (const batch of batches) {
+    if (batch.error) { summary.errors.push({ query: batch.query, error: batch.error }); continue; }
+    let inserted = 0;
+    let dupes = 0;
+    let chains = 0;
+
+    tx(() => {
+      for (const lead of batch.found) {
+        const exists = lead.place_id
+          ? get('SELECT id FROM leads WHERE place_id = ?', [lead.place_id])
+          : get('SELECT id FROM leads WHERE name = ? AND phone IS ?', [lead.name, lead.phone]);
+        if (exists) { dupes++; continue; }
+
+        const chainReason = looksLikeChain(lead);
+        if (chainReason && excludeChains) { chains++; continue; }
+        if (chainReason) { lead.is_chain = 1; lead.chain_reason = chainReason; chains++; }
+
+        const cols = Object.keys(lead);
+        const info = run(
+          `INSERT INTO leads (${cols.join(', ')}) VALUES (${cols.map(() => '?').join(', ')})`,
+          cols.map((c) => lead[c])
+        );
+        insertedIds.push(Number(info.lastInsertRowid));
+        inserted++;
+      }
+    });
+
+    summary.found += batch.found.length;
+    summary.inserted += inserted;
+    summary.duplicates += dupes;
+    summary.chains_skipped += chains;
+    summary.per_query.push({ query: batch.query, found: batch.found.length, inserted, duplicates: dupes, chains });
+  }
+
+  const swept = sweepChains({ excludeChains, onlyIds: insertedIds });
+  summary.chains_skipped += swept.flagged;
+  summary.inserted -= swept.removed;
+
+  json(res, summary);
 });
 
 /** POST /api/leads/import — paste CSV. */

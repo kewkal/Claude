@@ -16,11 +16,13 @@ export default {
       <button class="btn" id="scanBtn">Check websites</button>
       <button class="btn" id="importBtn">Import CSV</button>
       <a class="btn" href="/api/leads/export.csv" download>Export</a>
+      <button class="btn" id="bulkBtn">Bulk search</button>
       <button class="btn primary" id="scrapeBtn">Scrape leads</button>
     `);
     document.getElementById('scrapeBtn').onclick = () => scrapeModal(() => reload(root, ctx));
     document.getElementById('importBtn').onclick = () => importModal(() => reload(root, ctx));
     document.getElementById('scanBtn').onclick = () => scanModal(() => reload(root, ctx));
+    document.getElementById('bulkBtn').onclick = () => bulkScrapeModal(() => reload(root, ctx));
     await reload(root, ctx);
   },
 };
@@ -339,18 +341,18 @@ function scrapeModal(onDone) {
   modal((card, close) => {
     card.innerHTML = h`
       <div class="modal-head"><h2>Scrape leads from Google Maps</h2></div>
-      <p class="muted" style="margin-top:0">Search the way you'd search Maps. Each page is 20 businesses, with the phone number and website included. Run the same trade across a few cities to build real volume.</p>
+      <p class="muted" style="margin-top:0">Search the way you'd search Maps.
+      <b>Google caps every search at 60 results</b>, so one query is worth 60 and no more.
+      For real volume use <a href="#" id="switchBulk">bulk search</a> — it runs a trade across many places at once.</p>
       <form id="scrapeForm">
         <label class="field"><span>Search</span>
           <input name="query" placeholder="roofers in Tampa FL" required autofocus></label>
         <div class="inline">
-          <label class="field"><span>Pages</span>
+          <label class="field"><span>Depth</span>
             <select name="pages">
-              <option value="1">1 (20 leads)</option>
-              <option value="2">2 (40)</option>
-              <option value="3" selected>3 (60)</option>
-              <option value="5">5 (100)</option>
-              <option value="10">10 (200)</option>
+              <option value="1">20 leads</option>
+              <option value="2">40 leads</option>
+              <option value="3" selected>60 — everything Google gives</option>
             </select></label>
           <label class="field"><span>Minimum rating</span>
             <input type="number" name="min_rating" step="0.1" min="0" max="5" placeholder="4.0"></label>
@@ -371,6 +373,7 @@ function scrapeModal(onDone) {
       </form>`;
 
     card.querySelector('[data-cancel]').onclick = close;
+    card.querySelector('#switchBulk').onclick = (e) => { e.preventDefault(); close(); bulkScrapeModal(onDone); };
 
     card.querySelector('#agentBtn').onclick = guard(async () => {
       const v = formData(card.querySelector('#scrapeForm'));
@@ -397,6 +400,109 @@ function scrapeModal(onDone) {
       } finally {
         btn.disabled = false;
         btn.textContent = 'Scrape now';
+      }
+    });
+  });
+}
+
+function bulkScrapeModal(onDone) {
+  modal((card, close) => {
+    card.className = 'modal-card wide';
+    card.innerHTML = h`
+      <div class="modal-head"><h2>Bulk search</h2><button class="icon-btn" data-close>×</button></div>
+      <p class="muted" style="margin-top:0">Google gives 60 results per search and no more, however many pages you ask for.
+      So volume comes from <b>more searches</b>, not deeper ones. This runs every trade against every place —
+      each combination is its own search worth up to 60.</p>
+      <div class="grid cols-2">
+        <label class="field"><span>Trades — one per line</span>
+          <textarea id="bulkTrades" style="min-height:150px" placeholder="roofers
+plumbers
+HVAC contractors
+electricians
+landscapers"></textarea></label>
+        <label class="field"><span>Places — one per line</span>
+          <textarea id="bulkPlaces" style="min-height:150px" placeholder="Tampa FL
+Brandon FL
+Clearwater FL
+St Petersburg FL
+Lakeland FL"></textarea></label>
+      </div>
+      <div class="inline">
+        <label class="field"><span>Depth per search</span>
+          <select id="bulkPages"><option value="1">20</option><option value="2">40</option><option value="3" selected>60</option></select></label>
+        <label class="field"><span>Minimum rating</span><input type="number" id="bulkRating" step="0.1" min="0" max="5" placeholder="4.0"></label>
+        <label class="field" style="flex:0 0 auto;align-self:center">
+          <input type="checkbox" id="bulkChains" checked> Leave out chains</label>
+      </div>
+      <div class="card" style="background:var(--panel-2);margin:6px 0 0">
+        <div id="bulkMath" class="muted">Add some trades and places and it will tell you what that costs.</div>
+      </div>
+      <div id="bulkResult" hidden style="margin-top:12px"></div>
+      <div class="modal-foot">
+        <button type="button" class="btn" data-cancel>Cancel</button>
+        <button type="button" class="btn primary" id="bulkGo">Run the searches</button>
+      </div>`;
+
+    const trades = card.querySelector('#bulkTrades');
+    const places = card.querySelector('#bulkPlaces');
+    const math = card.querySelector('#bulkMath');
+    const lines = (el) => el.value.split(/[\n,;]+/).map((t) => t.trim()).filter(Boolean);
+
+    const recount = () => {
+      const t = lines(trades).length;
+      const p = lines(places).length;
+      const n = t * p;
+      if (!n) { math.textContent = 'Add some trades and places and it will tell you what that costs.'; return; }
+      const pages = Number(card.querySelector('#bulkPages').value);
+      math.innerHTML = `<b>${t} trades × ${p} places = ${n} searches</b><br>` +
+        `Up to ${(n * pages * 20).toLocaleString()} businesses, costing ${n * pages} API calls. ` +
+        `Roughly ${Math.ceil(n * pages * 1.2)} seconds.` +
+        (n > 60 ? '<br><b style="color:var(--err)">Over the 60-search limit. Trim the list.</b>' : '');
+    };
+    [trades, places].forEach((el) => el.addEventListener('input', recount));
+    card.querySelector('#bulkPages').addEventListener('change', recount);
+
+    card.querySelector('[data-close]').onclick = close;
+    card.querySelector('[data-cancel]').onclick = close;
+
+    card.querySelector('#bulkGo').onclick = guard(async (e) => {
+      const t = lines(trades);
+      const p = lines(places);
+      if (!t.length) return err('Add at least one trade');
+      if (!p.length) return err('Add at least one place');
+      if (t.length * p.length > 60) return err('Over 60 searches — trim the list');
+
+      e.target.disabled = true;
+      e.target.textContent = `Running ${t.length * p.length} searches…`;
+      const box = card.querySelector('#bulkResult');
+      box.hidden = false;
+      box.innerHTML = '<div class="loading">Working through them. This does not stop if you close the window.</div>';
+      try {
+        const r = await api.post('/api/leads/bulk-scrape', {
+          trades: trades.value, locations: places.value,
+          pages: Number(card.querySelector('#bulkPages').value),
+          min_rating: card.querySelector('#bulkRating').value || undefined,
+          exclude_chains: card.querySelector('#bulkChains').checked,
+        });
+        box.innerHTML = h`
+          <div class="grid cols-4" style="margin-bottom:10px">
+            ${raw(stat('Added', r.inserted.toLocaleString(), 'new leads', 'ok'))}
+            ${raw(stat('Found', r.found.toLocaleString(), `across ${r.queries} searches`))}
+            ${raw(stat('Already had', r.duplicates.toLocaleString(), 'skipped'))}
+            ${raw(stat('Chains', r.chains_skipped.toLocaleString(), 'left out'))}
+          </div>
+          <div class="table-wrap" style="max-height:220px;overflow-y:auto"><table>
+            <thead><tr><th>Search</th><th class="num">Found</th><th class="num">Added</th></tr></thead>
+            <tbody>${raw(r.per_query.map((q) => h`<tr><td>${q.query}</td>
+              <td class="num">${q.found}</td><td class="num">${q.inserted}</td></tr>`).join(''))}</tbody>
+          </table></div>
+          ${raw(r.errors.length ? h`<div class="hint" style="color:var(--err);margin-top:8px">
+            ${r.errors.length} search(es) failed: ${r.errors[0].error}</div>` : '')}`;
+        ok(`Added ${r.inserted} new leads from ${r.queries} searches`);
+        onDone();
+      } finally {
+        e.target.disabled = false;
+        e.target.textContent = 'Run the searches';
       }
     });
   });

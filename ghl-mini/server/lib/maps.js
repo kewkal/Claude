@@ -38,7 +38,10 @@ export async function searchPlaces({ query, pages = 3, minRating = 0, maxReviews
     throw new HttpError(400, 'No Google Maps API key. Add one in Settings > API keys.');
   }
 
-  const wanted = Math.max(1, Math.min(10, Number(pages) || 1));
+  // Google stops at 60 per query however many pages you ask for, so there
+  // is no point requesting more. Volume comes from more queries, not
+  // deeper ones — see searchMany below.
+  const wanted = Math.max(1, Math.min(3, Number(pages) || 3));
   const collected = [];
   let pageToken = null;
 
@@ -80,6 +83,35 @@ export async function searchPlaces({ query, pages = 3, minRating = 0, maxReviews
   return collected
     .filter((p) => keep({ rating: p.rating, review_count: p.userRatingCount }, minRating, maxReviews))
     .map((p) => normalizeNew(p, query));
+}
+
+/**
+ * Runs a trade x location grid as separate searches. This is the only way
+ * past 60: "plumbers in Tampa" and "plumbers in Brandon" are two queries
+ * worth 60 each, where asking for more pages of the first gets you nothing.
+ */
+export async function searchMany({ trades, locations, pages = 3, minRating = 0, maxReviews = null, onProgress }) {
+  const queries = [];
+  for (const trade of trades) {
+    for (const location of locations) {
+      queries.push(`${trade} in ${location}`.replace(/\s+/g, ' ').trim());
+    }
+  }
+
+  const results = [];
+  for (const query of queries) {
+    try {
+      const found = await searchPlaces({ query, pages, minRating, maxReviews });
+      results.push({ query, found });
+      onProgress?.({ query, count: found.length });
+    } catch (err) {
+      results.push({ query, found: [], error: err.message });
+      onProgress?.({ query, count: 0, error: err.message });
+      // A denied key or blown quota will fail every remaining query too.
+      if (/quota|denied|exceeded/i.test(err.message)) break;
+    }
+  }
+  return results;
 }
 
 function isNotEnabled(error) {
