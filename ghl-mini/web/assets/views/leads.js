@@ -45,6 +45,19 @@ function layout(data, stats) {
       ${raw(stat('Follow-ups due', stats.due.toLocaleString(), 'overdue right now', stats.due ? 'warn' : ''))}
     </div>
 
+    ${raw(!stats.tech.scanned && stats.tech.unscanned ? h`<div class="card" style="border-color:var(--accent);margin-bottom:14px">
+      <div class="bar" style="margin:0">
+        <div>
+          <h2 style="margin:0">See who is already spending money</h2>
+          <p class="sub" style="margin:4px 0 0">${stats.tech.unscanned.toLocaleString()} of your leads have a website
+          and nobody has looked at it yet. Checking them shows who runs Meta or Google ads (proven budget),
+          who tracks nothing, whose site is broken, and whose does not work on a phone.
+          It is free — ordinary page visits, not API calls.</p>
+        </div>
+        <button class="btn primary" id="scanPrompt">Check their websites</button>
+      </div>
+    </div>` : '')}
+
     ${raw(stats.tech.scanned ? h`<div class="grid cols-5" style="margin-bottom:14px">
       ${raw(stat('Running ads', stats.tech.runs_ads.toLocaleString(), 'proven budget', stats.tech.runs_ads ? 'ok' : ''))}
       ${raw(stat('Meta Pixel', stats.tech.meta_pixel.toLocaleString(), 'on their site'))}
@@ -89,7 +102,10 @@ function layout(data, stats) {
     </div>` : '')}
 
     <div class="chips" style="margin-bottom:14px">
-      <span class="dim" style="align-self:center;font-size:12.5px;margin-right:4px">Chains:</span>
+      <span class="dim" style="align-self:center;font-size:12.5px;margin-right:4px">Website:</span>
+      <button class="chip ${raw(filters.has_website === '0' ? 'active' : '')}" data-web="0">No website (${stats.no_website})</button>
+      <button class="chip ${raw(filters.has_website === '1' ? 'active' : '')}" data-web="1">Has a website (${stats.total - stats.no_website})</button>
+      <span class="dim" style="align-self:center;font-size:12.5px;margin:0 4px 0 10px">Chains:</span>
       <button class="chip ${raw(filters.is_chain === '1' ? 'active' : '')}" data-tech="is_chain">Show only chains (${stats.tech.chains})</button>
       <button class="chip" id="sweepChains">Find chains in my list</button>
     </div>
@@ -194,6 +210,15 @@ function wire(root, ctx, data, stats) {
       apply();
     };
   });
+  root.querySelector('#scanPrompt')?.addEventListener('click', () => scanModal(() => reload(root, ctx)));
+
+  root.querySelectorAll('[data-web]').forEach((b) => {
+    b.onclick = () => {
+      filters.has_website = filters.has_website === b.dataset.web ? '' : b.dataset.web;
+      apply();
+    };
+  });
+
   root.querySelector('#sweepChains')?.addEventListener('click', guard(async (e) => {
     e.target.disabled = true;
     e.target.textContent = 'Checking…';
