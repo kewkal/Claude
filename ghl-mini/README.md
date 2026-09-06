@@ -23,13 +23,43 @@ GoHighLevel starts at $97 and runs to $497.
 
 ```bash
 cd ghl-mini
-./start.sh            # writes .env on first run
-# set OWNER_EMAIL and OWNER_PASSWORD in .env
-./start.sh            # boots on http://localhost:4000
+./start.sh                 # Mac / Linux
+node server/index.js       # Windows
 ```
 
-That's it. First boot creates the database, your login, ten starter scripts,
-Mon-Fri business hours and a handful of demo leads.
+That's the whole thing. First boot writes a `.env`, creates the database, ten
+starter scripts, Mon-Fri business hours and a few demo leads — then prints your
+login in a box:
+
+```
+  ┌──────────────────────────────────────────────────────────┐
+  │ FIRST RUN — write these down.                            │
+  ├──────────────────────────────────────────────────────────┤
+  │ Open      http://localhost:4000                          │
+  │ Email     owner@localhost                                │
+  │ Password  anchor-pebble-lantern-693                      │
+  └──────────────────────────────────────────────────────────┘
+```
+
+Open that address, sign in, and change the password in Settings.
+
+### Locked out?
+
+The owner account is created once, on first boot. Editing `OWNER_EMAIL` or
+`OWNER_PASSWORD` in `.env` afterwards changes nothing, so it is easy to lock
+yourself out. To recover:
+
+```bash
+node server/account.js                          # which accounts exist
+node server/account.js you@example.com          # set a random password
+node server/account.js you@example.com hunter2  # set a specific one
+```
+
+### You don't need to edit .env
+
+Everything except the first login is settable in **Settings** inside the app —
+API keys included, and they are encrypted in the database rather than sitting in
+a plain text file.
 
 ## The nine screens
 

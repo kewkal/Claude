@@ -6,6 +6,11 @@ import { fileURLToPath } from 'node:url';
 // Load .env before anything reads process.env.
 const HERE = dirname(fileURLToPath(import.meta.url));
 const APP_ROOT = join(HERE, '..');
+
+// Create a working .env before anything reads process.env, so a first run
+// boots straight into a usable app instead of stopping at a hidden file.
+const { ensureEnvFile, firstRunBanner } = await import('./first-run.js');
+ensureEnvFile(APP_ROOT);
 loadEnv(join(APP_ROOT, '.env'));
 
 const { Router, json, html, text, redirect, readJson, serveStatic, HttpError, notFound, bad } =
@@ -34,7 +39,7 @@ const { allSettings } = await import('./lib/settings.js');
 const PORT = Number(process.env.PORT) || 4000;
 const WEB_DIR = join(APP_ROOT, 'web');
 
-ensureOwner();
+const owner = ensureOwner();
 ensureDefaultForm();
 seedIfEmpty();
 
@@ -210,13 +215,21 @@ function loadEnv(path) {
 server.listen(PORT, () => {
   const s = allSettings();
   if (s.scheduler_enabled === '1') scheduler.start();
+  // Only shout the password when this boot actually created the account.
+  // An existing database keeps its own login, whatever .env now says.
+  if (owner.created) {
+    console.log(firstRunBanner({ email: owner.email, password: owner.password, port: PORT }));
+  }
   console.log('');
   console.log(`  ghl-mini running`);
   console.log(`  ───────────────────────────────────────`);
   console.log(`  HQ            http://localhost:${PORT}`);
   console.log(`  Onboarding    http://localhost:${PORT}/f/new-client`);
   console.log(`  Booking page  http://localhost:${PORT}/book`);
-  console.log(`  Sign in as    ${get('SELECT email FROM users LIMIT 1')?.email || '—'}`);
+  console.log(`  Sign in as    ${owner.email || '—'}`);
+  if (!owner.created) {
+    console.log(`  Forgot it?    node server/account.js ${owner.email}`);
+  }
   console.log(`  Integrations  maps:${s.google_maps_api_key ? 'on' : 'off'} · twilio:${s.twilio_account_sid ? 'on' : 'off'} · email:${s.email_provider !== 'none' ? s.email_provider : 'off'}`);
   console.log(`  Automations   ${s.scheduler_enabled === '1' ? 'scheduler on' : 'scheduler OFF'} · quiet ${s.quiet_start}-${s.quiet_end} ${s.timezone}`);
   console.log('');

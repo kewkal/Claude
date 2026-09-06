@@ -7,17 +7,23 @@ const TTL_DAYS = 30;
 
 export const authDisabled = () => String(process.env.AUTH_DISABLED || '').toLowerCase() === 'true';
 
+/**
+ * Creates the owner account on first boot only. It is never updated
+ * afterwards, so editing OWNER_* in .env later changes nothing — which is
+ * why the caller needs to know whether an account was just created, and
+ * with which password, in order to show the right thing on screen.
+ */
 export function ensureOwner() {
-  const existing = get('SELECT id FROM users LIMIT 1');
-  if (existing) return existing;
-  const email = process.env.OWNER_EMAIL || 'owner@localhost';
+  const existing = get('SELECT id, email FROM users LIMIT 1');
+  if (existing) return { ...existing, created: false };
+
+  const email = (process.env.OWNER_EMAIL || 'owner@localhost').toLowerCase();
   const password = process.env.OWNER_PASSWORD || 'changeme';
   const { hash, salt } = hashPassword(password);
   const res = run('INSERT INTO users (email, pw_hash, pw_salt, name) VALUES (?, ?, ?, ?)', [
-    email.toLowerCase(), hash, salt, 'Owner',
+    email, hash, salt, 'Owner',
   ]);
-  console.log(`[auth] created owner account: ${email}`);
-  return { id: Number(res.lastInsertRowid) };
+  return { id: Number(res.lastInsertRowid), email, password, created: true };
 }
 
 export function login(email, password) {
