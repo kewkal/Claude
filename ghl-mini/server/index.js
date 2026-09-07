@@ -20,6 +20,8 @@ const { ensureOwner, login, logout, attachSession, currentUser, requireUser, aut
 const { ensureDefaultForm, submitResponse, getPublicForm } = await import('./api/onboarding.js');
 const { loginPage, formPage, bookingPage, notFoundPage } = await import('./public-pages.js');
 const { seedIfEmpty } = await import('./seed.js');
+const { recordBoot, versionState } = await import('./lib/version.js');
+recordBoot(HERE);
 
 const leadsRoutes = (await import('./api/leads.js')).default;
 const callsRoutes = (await import('./api/calls.js')).default;
@@ -110,7 +112,10 @@ publicRouter.post('/api/public/book', async ({ req, res, body }) => {
 
 publicRouter.merge(webhookRoutes);
 
-publicRouter.get('/health', ({ res }) => json(res, { ok: true, uptime: Math.round(process.uptime()) }));
+publicRouter.get('/health', ({ res }) =>
+  json(res, { ok: true, uptime: Math.round(process.uptime()), ...versionState() }));
+
+publicRouter.get('/api/version', ({ res }) => json(res, versionState()));
 
 // ---------------------------------------------------------------------------
 // Everything behind the session.
@@ -162,7 +167,16 @@ const server = createServer(async (req, res) => {
     if (pathname.startsWith('/api/')) {
       const user = requireUser(req);
       const hit = apiRouter.match(req.method, pathname);
-      if (!hit) throw notFound(`No API route for ${req.method} ${pathname}`);
+      if (!hit) {
+        const { stale } = versionState();
+        throw notFound(
+          stale
+            ? `This version of the app does not have ${req.method} ${pathname}. ` +
+              'Newer code has been pulled but the server is still running the old version — ' +
+              'stop it (Ctrl+C or close the window) and start it again.'
+            : `No API route for ${req.method} ${pathname}`
+        );
+      }
       return await hit.handler({ req, res, params: hit.params, query, body, user });
     }
 

@@ -27,6 +27,7 @@ npm run reset            # wipe the database and re-seed
 | `server/lib/sitescan.js` | Reads a lead's website: ad pixels, analytics, platform, mobile |
 | `server/lib/chains.js` | Franchise and chain detection: brands, multi-location, shared domains |
 | `server/lib/owner.js` | Works out who owns the business, from site, name, email, reviews |
+| `server/lib/version.js` | Notices when the code on disk is newer than the running process |
 | `server/lib/telephony.js` | Twilio calls and SMS |
 | `server/lib/email.js` | Resend / Mailgun / Postmark over HTTP |
 | `server/api/*.js` | One router per surface |

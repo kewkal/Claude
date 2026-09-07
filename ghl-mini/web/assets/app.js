@@ -122,6 +122,9 @@ async function boot() {
     return;
   }
 
+  checkVersion();
+  setInterval(checkVersion, 120000);
+
   // Badge the sidebar with anything waiting on you.
   refreshBadges();
   setInterval(refreshBadges, 60000);
@@ -129,6 +132,22 @@ async function boot() {
   window.addEventListener('hashchange', render);
   document.getElementById('menuBtn').onclick = () => sidebarEl.classList.toggle('open');
   render();
+}
+
+/** Warn when the files on disk are newer than the running server. */
+async function checkVersion() {
+  try {
+    const v = await api.get('/api/version');
+    const existing = document.getElementById('staleBanner');
+    if (!v.stale) { existing?.remove(); return; }
+    if (existing) return;
+    const bar = document.createElement('div');
+    bar.id = 'staleBanner';
+    bar.style.cssText = 'background:var(--warn);color:#000;padding:9px 16px;font-weight:650;' +
+      'font-size:13px;text-align:center';
+    bar.textContent = 'This app was updated on disk. Stop the server and start it again to load the new version.';
+    document.querySelector('.main').prepend(bar);
+  } catch { /* a version check is never worth breaking the page over */ }
 }
 
 async function refreshBadges() {

@@ -46,6 +46,16 @@ login in a box:
 
 Open that address, sign in, and change the password in Settings.
 
+### After a `git pull`, restart
+
+Node loads the server code once, at startup. Pulling updates the files and the
+browser picks up the new screens straight away, but the API keeps serving
+whatever was loaded at boot — so a new button calls a route the running process
+has never heard of, and you get `No API route for POST /api/...`.
+
+Stop it (Ctrl+C, or close the window) and start it again. The app now notices
+this itself and says so, both in a banner and in the error.
+
 ### Locked out?
 
 The owner account is created once, on first boot. Editing `OWNER_EMAIL` or
