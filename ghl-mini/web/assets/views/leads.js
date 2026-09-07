@@ -190,7 +190,12 @@ function techBadges(l) {
   if (!l.has_meta_pixel && !l.has_google_tag && !l.has_analytics && !l.has_google_ads) {
     out.push('<span class="pill new" title="Live site with no tracking at all">no tags</span>');
   }
-  if (l.mobile_ready === 0) out.push('<span class="pill callback" title="No mobile viewport">not mobile</span>');
+  if (l.mobile_ready === 0) {
+    out.push('<span class="pill callback" title="Their site does not fit a phone screen">not mobile</span>');
+  }
+  if (l.has_ssl === 0 && l.site_status === 'ok') {
+    out.push('<span class="pill lost" title="No security certificate — Chrome shows &quot;Not secure&quot;">not secure</span>');
+  }
   if (l.site_platform) out.push(`<span class="pill" title="Built on ${l.site_platform}">${l.site_platform}</span>`);
   return out.join(' ');
 }
@@ -689,8 +694,15 @@ export function leadModal(id, onDone) {
               ${[lead.has_meta_pixel && 'Meta Pixel', (lead.has_google_tag || lead.has_analytics) && 'Google tag',
                  lead.has_google_ads && 'Google Ads'].filter(Boolean).join(', ') || 'nothing at all'}
             </div></div></div>
-            <div class="list-item"><div class="grow"><div class="s">Basics</div><div class="t" style="font-size:13px">
-              ${lead.mobile_ready ? 'mobile ready' : 'NOT mobile ready'} · ${lead.has_ssl ? 'secure' : 'NO padlock'}
+            <div class="list-item"><div class="grow"><div class="s">On a phone</div><div class="t" style="font-size:13px">
+              ${raw(lead.mobile_ready
+                ? 'Works on phones'
+                : '<b style="color:var(--warn)">Does not fit a phone screen</b> — visitors have to pinch and zoom')}
+            </div></div></div>
+            <div class="list-item"><div class="grow"><div class="s">Security certificate</div><div class="t" style="font-size:13px">
+              ${raw(lead.has_ssl
+                ? 'Secure (https)'
+                : '<b style="color:var(--err)">No certificate</b> — Chrome shows "Not secure" next to their address')}
             </div></div></div>
             ${raw(lead.site_title ? h`<div class="list-item"><div class="grow"><div class="s">Their page title</div>
               <div class="t" style="font-size:13px">${lead.site_title}</div></div></div>` : '')}

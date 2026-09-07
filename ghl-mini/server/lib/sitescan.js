@@ -192,7 +192,9 @@ export function pitchAngle(lead, scan) {
   // phone while you are talking. "No tracking" is true but abstract.
   if (!scan?.mobile_ready) return 'Not built for phones, and that is most of their traffic. Show them live.';
   if (noTracking(scan)) return 'No pixel, no analytics. They cannot tell you what their site earns.';
-  if (!scan?.has_ssl) return 'No padlock in the address bar. Chrome warns visitors off.';
+  if (!scan?.has_ssl) {
+    return 'No security certificate, so Chrome shows "Not secure" next to their address. Ask if they knew.';
+  }
   return 'Has a site and tracks it — lead with speed and conversion, not existence.';
 }
 
