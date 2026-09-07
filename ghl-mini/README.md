@@ -286,9 +286,16 @@ in Claude Code.
 There are slash commands too: `/morning`, `/scrape roofers in Tampa FL`,
 `/build-client 7`, `/pipeline`.
 
-If a run comes back `Could not run "claude" (ENOENT)`, the app cannot find the
-CLI from where it is running. Get its real path and paste that into
-**Settings > Agents**:
+**The agents need the Claude Code CLI installed on the same machine as the app.**
+Press **Test** next to "Claude Code agents" in Settings and it will tell you
+exactly what is wrong. If it is not installed:
+
+```
+npm install -g @anthropic-ai/claude-code
+```
+
+If it is installed but the app cannot see it, get the real path and paste that
+into **Settings > Agents**:
 
 ```
 where claude     # Windows — expect something ending in claude.cmd
@@ -296,7 +303,8 @@ which claude     # Mac / Linux
 ```
 
 The task is never lost either way: it is written to `agent-queue/` as markdown,
-and opening that file in Claude Code runs it.
+and opening that file in Claude Code runs it. Everything else in ghl-mini — the
+scraping, the dialer, the automations, the site scanner — works without the CLI.
 
 ## The money loop
 

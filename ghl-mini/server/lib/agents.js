@@ -251,6 +251,52 @@ function execute(id, bin, prompt, queueRelPath) {
   });
 }
 
+/**
+ * Works out whether the Claude Code CLI can actually be launched from
+ * here, and says why not in terms of what to do about it. Guessing at a
+ * PATH problem from an ENOENT is not much help on its own.
+ */
+export async function diagnoseBin(bin) {
+  const resolved = resolveBin(bin);
+  const found = resolved !== bin || bin.includes('/') || bin.includes('\\');
+  const win = process.platform === 'win32';
+
+  if (!found) {
+    return {
+      ok: false,
+      resolved: null,
+      message:
+        `Cannot find "${bin}" from where the app is running.\n\n` +
+        `1. Open a terminal and run: ${win ? 'where claude' : 'which claude'}\n` +
+        '2. If it prints a path, paste that whole path into the box above and save.\n' +
+        '3. If it prints nothing, Claude Code is not installed on this machine. ' +
+        'Install it with:  npm install -g @anthropic-ai/claude-code\n\n' +
+        'The agents need the CLI on the same machine as this app. Everything else ' +
+        'in ghl-mini works without it.',
+    };
+  }
+
+  const needsShell = win && /\.(cmd|bat)$/i.test(resolved);
+  return new Promise((resolve) => {
+    let out = '';
+    const child = spawn(needsShell ? `"${resolved}"` : resolved, ['--version'], {
+      cwd: ROOT, env: process.env, stdio: ['ignore', 'pipe', 'pipe'], shell: needsShell,
+    });
+    child.stdout.on('data', (d) => { out += d.toString(); });
+    child.stderr.on('data', (d) => { out += d.toString(); });
+    child.on('error', (e) => resolve({
+      ok: false, resolved,
+      message: `Found it at ${resolved} but could not start it (${e.code || e.message}).`,
+    }));
+    child.on('close', (code) => resolve(
+      code === 0
+        ? { ok: true, resolved, version: out.trim().split('\n')[0], message: `Claude Code is ready: ${out.trim().split('\n')[0]}` }
+        : { ok: false, resolved, message: `Found it at ${resolved} but it exited with code ${code}. ${out.trim().slice(0, 200)}` }
+    ));
+    setTimeout(() => { child.kill(); }, 15000).unref?.();
+  });
+}
+
 export function getRun(id) {
   const row = get('SELECT * FROM agent_runs WHERE id = ?', [id]);
   if (!row) return null;

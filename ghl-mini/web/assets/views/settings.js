@@ -1,4 +1,4 @@
-import { api, h, raw, guard, ok, err, formData, fmtDateTime, titleCase, pill, emptyState } from '../ui.js';
+import { api, h, raw, guard, ok, err, modal, formData, fmtDateTime, titleCase, pill, emptyState } from '../ui.js';
 
 export default {
   async render(root, ctx) {
@@ -29,7 +29,7 @@ function layout(s, conn, outbox) {
             <div class="w">${c.why}</div>
             <div class="h">${c.help}</div>
           </div>
-          ${raw(['email', 'google_maps', 'twilio'].includes(c.id)
+          ${raw(['email', 'google_maps', 'twilio', 'agents'].includes(c.id)
             ? h`<button class="btn sm" data-test="${c.id}">Test</button>` : '')}
         </div>`).join(''))}
       </div>
@@ -164,8 +164,17 @@ function wire(root, ctx, settings) {
       btn.textContent = 'Testing…';
       try {
         const r = await api.post(`/api/settings/test/${btn.dataset.test}`, {});
-        if (r.ok) ok(`${titleCase(btn.dataset.test.replace('_', ' '))} works`);
+        if (r.ok) ok(r.message || `${titleCase(btn.dataset.test.replace('_', ' '))} works`);
         else err(r.message || 'Test came back not-ok');
+      } catch (e) {
+        // A multi-line diagnosis does not fit in a toast.
+        modal((card, close) => {
+          card.innerHTML = h`
+            <div class="modal-head"><h2>${titleCase(btn.dataset.test.replace('_', ' '))} is not working</h2></div>
+            <pre class="out" style="white-space:pre-wrap">${e.message}</pre>
+            <div class="modal-foot"><button class="btn" data-close>Close</button></div>`;
+          card.querySelector('[data-close]').onclick = close;
+        });
       } finally {
         btn.disabled = false;
         btn.textContent = label;

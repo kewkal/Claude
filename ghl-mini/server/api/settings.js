@@ -144,6 +144,13 @@ router.post('/api/settings/test/:integration', async ({ res, params, body }) => 
     return json(res, { ok: true, account: data.friendly_name, status: data.status });
   }
 
+  if (which === 'agents') {
+    const { diagnoseBin } = await import('../lib/agents.js');
+    const result = await diagnoseBin(s.claude_bin || 'claude');
+    if (!result.ok) throw new HttpError(400, result.message);
+    return json(res, result);
+  }
+
   throw bad(`Nothing to test for "${which}"`);
 });
 
