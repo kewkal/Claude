@@ -354,7 +354,31 @@ function wire(root, ctx, data, stats) {
 // ---------------------------------------------------------------------------
 
 function scrapeModal(onDone) {
-  modal((card, close) => {
+  modal(async (card, close) => {
+    // Failing after someone has typed a search is a waste of their time.
+    const { settings } = await api.get('/api/settings');
+    if (!settings._configured.google_maps) {
+      card.innerHTML = h`
+        <div class="modal-head"><h2>Connect Google Maps first</h2></div>
+        <p class="muted" style="margin-top:0">Scraping leads needs a Google Maps API key. It is free for
+        thousands of lookups a month, and it is the only thing this needs to start working.</p>
+        <div class="list" style="margin-bottom:16px">
+          <div class="list-item"><span class="pill">1</span><div class="grow"><div class="t">Get a key</div>
+            <div class="s">Google Cloud Console, enable "Places API (New)", create an API key.</div></div></div>
+          <div class="list-item"><span class="pill">2</span><div class="grow"><div class="t">Paste it into Settings</div>
+            <div class="s">Under "Google Maps API", then press Save settings.</div></div></div>
+          <div class="list-item"><span class="pill">3</span><div class="grow"><div class="t">Press Test</div>
+            <div class="s">You want "Search and details both working".</div></div></div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn" data-cancel>Not now</button>
+          <a class="btn primary" href="#/settings" id="toSettings">Open Settings</a>
+        </div>`;
+      card.querySelector('[data-cancel]').onclick = close;
+      card.querySelector('#toSettings').onclick = close;
+      return;
+    }
+
     card.innerHTML = h`
       <div class="modal-head"><h2>Scrape leads from Google Maps</h2></div>
       <p class="muted" style="margin-top:0">Search the way you'd search Maps.
@@ -422,7 +446,21 @@ function scrapeModal(onDone) {
 }
 
 function bulkScrapeModal(onDone) {
-  modal((card, close) => {
+  modal(async (card, close) => {
+    const { settings } = await api.get('/api/settings');
+    if (!settings._configured.google_maps) {
+      card.innerHTML = h`
+        <div class="modal-head"><h2>Connect Google Maps first</h2></div>
+        <p class="muted" style="margin-top:0">Bulk search needs a Google Maps API key. Paste one into
+        Settings under "Google Maps API", press Save settings, then Test.</p>
+        <div class="modal-foot">
+          <button class="btn" data-cancel>Not now</button>
+          <a class="btn primary" href="#/settings" id="toSettings">Open Settings</a>
+        </div>`;
+      card.querySelector('[data-cancel]').onclick = close;
+      card.querySelector('#toSettings').onclick = close;
+      return;
+    }
     card.className = 'modal-card wide';
     card.innerHTML = h`
       <div class="modal-head"><h2>Bulk search</h2><button class="icon-btn" data-close>×</button></div>

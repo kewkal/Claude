@@ -100,7 +100,9 @@ router.post('/api/settings/test/:integration', async ({ res, params, body }) => 
   }
 
   if (which === 'google_maps') {
-    if (!s.google_maps_api_key) throw bad('No Google Maps API key saved');
+    if (!s.google_maps_api_key) {
+      throw bad('Nothing saved yet — paste your key into the Google Maps API box above, then Save settings.');
+    }
     const url = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json');
     url.searchParams.set('query', 'coffee shop in Austin TX');
     url.searchParams.set('key', s.google_maps_api_key);

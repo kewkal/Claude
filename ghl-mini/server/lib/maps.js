@@ -35,7 +35,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 export async function searchPlaces({ query, pages = 3, minRating = 0, maxReviews = null }) {
   const apiKey = allSettings().google_maps_api_key;
   if (!apiKey) {
-    throw new HttpError(400, 'No Google Maps API key. Add one in Settings > API keys.');
+    throw new HttpError(400,
+      'No Google Maps API key yet. Open Settings, scroll to "Google Maps API", ' +
+      'paste your key, press Save settings, then hit Test.');
   }
 
   // Google stops at 60 per query however many pages you ask for, so there
