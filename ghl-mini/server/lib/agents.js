@@ -238,8 +238,10 @@ function execute(id, bin, prompt, queueRelPath) {
     });
 
     child.on('close', (code) => {
+      const combined = out + (err ? `\n\n[stderr]\n${err}` : '');
+      if (NOT_LOGGED_IN.test(combined)) return finish('needs_manual_run', LOGIN_HELP);
       if (code === 0) return finish('done', out || 'Finished with no output.');
-      finish('failed', (out + (err ? `\n\n[stderr]\n${err}` : '')) || `Exited with code ${code}.`);
+      finish('failed', combined || `Exited with code ${code}.`);
     });
 
     // Don't let a stuck agent hold a slot forever.
@@ -256,6 +258,16 @@ function execute(id, bin, prompt, queueRelPath) {
  * here, and says why not in terms of what to do about it. Guessing at a
  * PATH problem from an ENOENT is not much help on its own.
  */
+/** The CLI says this when it runs fine but has no credentials. */
+const NOT_LOGGED_IN = /not logged in|please run \/login|\/login\b|invalid api key|authentication.{0,20}(failed|required)|unauthorized/i;
+
+const LOGIN_HELP =
+  'Claude Code is installed and starts fine, but it is not signed in.\n\n' +
+  'Open a terminal, run:  claude\n' +
+  'Then type /login and follow the browser prompt.\n\n' +
+  'Sign in once and it stays signed in — the app picks up the same credentials. ' +
+  'Come back here and press Test again.';
+
 export async function diagnoseBin(bin) {
   const resolved = resolveBin(bin);
   const found = resolved !== bin || bin.includes('/') || bin.includes('\\');
@@ -288,12 +300,51 @@ export async function diagnoseBin(bin) {
       ok: false, resolved,
       message: `Found it at ${resolved} but could not start it (${e.code || e.message}).`,
     }));
-    child.on('close', (code) => resolve(
-      code === 0
-        ? { ok: true, resolved, version: out.trim().split('\n')[0], message: `Claude Code is ready: ${out.trim().split('\n')[0]}` }
-        : { ok: false, resolved, message: `Found it at ${resolved} but it exited with code ${code}. ${out.trim().slice(0, 200)}` }
-    ));
+    child.on('close', async (code) => {
+      if (code !== 0) {
+        return resolve({
+          ok: false, resolved,
+          message: NOT_LOGGED_IN.test(out)
+            ? LOGIN_HELP
+            : `Found it at ${resolved} but it exited with code ${code}. ${out.trim().slice(0, 200)}`,
+        });
+      }
+      // --version works without credentials, so it proves nothing about
+      // whether a real run would succeed. Ask it something trivial.
+      const version = out.trim().split('\n')[0];
+      const auth = await probeAuth(resolved, needsShell);
+      resolve(auth.ok
+        ? { ok: true, resolved, version, message: `Claude Code is ready and signed in: ${version}` }
+        : { ok: false, resolved, version, message: auth.message });
+    });
     setTimeout(() => { child.kill(); }, 15000).unref?.();
+  });
+}
+
+/** Smallest possible real run, to prove the CLI is actually usable. */
+function probeAuth(resolved, needsShell) {
+  return new Promise((resolve) => {
+    let out = '';
+    const child = spawn(
+      needsShell ? `"${resolved}"` : resolved,
+      ['-p', needsShell ? '"Reply with the single word OK"' : 'Reply with the single word OK'],
+      { cwd: ROOT, env: process.env, stdio: ['ignore', 'pipe', 'pipe'], shell: needsShell }
+    );
+    child.stdout.on('data', (d) => { out += d.toString(); });
+    child.stderr.on('data', (d) => { out += d.toString(); });
+    child.on('error', (e) => resolve({ ok: false, message: `Could not run it: ${e.code || e.message}` }));
+    child.on('close', (code) => {
+      if (NOT_LOGGED_IN.test(out)) return resolve({ ok: false, message: LOGIN_HELP });
+      if (code !== 0) {
+        return resolve({ ok: false, message: `It started but the test run failed (code ${code}). ${out.trim().slice(0, 250)}` });
+      }
+      resolve({ ok: true });
+    });
+    const timer = setTimeout(() => {
+      child.kill();
+      resolve({ ok: false, message: 'It started but did not answer within 60 seconds. Try `claude -p hello` in a terminal.' });
+    }, 60000);
+    child.on('close', () => clearTimeout(timer));
   });
 }
 

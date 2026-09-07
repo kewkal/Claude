@@ -286,13 +286,19 @@ in Claude Code.
 There are slash commands too: `/morning`, `/scrape roofers in Tampa FL`,
 `/build-client 7`, `/pipeline`.
 
-**The agents need the Claude Code CLI installed on the same machine as the app.**
-Press **Test** next to "Claude Code agents" in Settings and it will tell you
-exactly what is wrong. If it is not installed:
+**The agents need the Claude Code CLI installed and signed in on the same
+machine as the app.** Press **Test** next to "Claude Code agents" in Settings —
+it launches the CLI and asks it a trivial question, so a pass means a real run
+will work, not just that the file exists.
+
+Not installed:
 
 ```
 npm install -g @anthropic-ai/claude-code
 ```
+
+Installed but not signed in — run `claude` in a terminal, type `/login`, follow
+the browser prompt. Once is enough; the app uses the same credentials.
 
 If it is installed but the app cannot see it, get the real path and paste that
 into **Settings > Agents**:
