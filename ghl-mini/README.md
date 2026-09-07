@@ -286,6 +286,18 @@ in Claude Code.
 There are slash commands too: `/morning`, `/scrape roofers in Tampa FL`,
 `/build-client 7`, `/pipeline`.
 
+If a run comes back `Could not run "claude" (ENOENT)`, the app cannot find the
+CLI from where it is running. Get its real path and paste that into
+**Settings > Agents**:
+
+```
+where claude     # Windows — expect something ending in claude.cmd
+which claude     # Mac / Linux
+```
+
+The task is never lost either way: it is written to `agent-queue/` as markdown,
+and opening that file in Claude Code runs it.
+
 ## The money loop
 
 1. **Lead Scout** scrapes a trade in a city. Businesses with reviews and no website

@@ -1,4 +1,4 @@
-import { spawn } from 'node:child_process';
+import { spawn, execFileSync } from 'node:child_process';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { all, get, run } from './db.js';
@@ -115,7 +115,7 @@ export function queueRun({ agent, task, input = {} }) {
 
   const settings = allSettings();
   if (settings.agents_enabled === '1') {
-    execute(id, settings.claude_bin || 'claude', prompt).catch((err) => {
+    execute(id, settings.claude_bin || 'claude', prompt, `agent-queue/${filename}`).catch((err) => {
       run("UPDATE agent_runs SET status = 'failed', output = ?, finished_at = datetime('now') WHERE id = ?", [
         String(err.message), id,
       ]);
@@ -155,17 +155,49 @@ function buildPrompt(def, task, input) {
   return lines.join('\n');
 }
 
-function execute(id, bin, prompt) {
+/**
+ * Finds the real path of a command. On Windows the Claude Code CLI is a
+ * .cmd shim, and `claude` alone is not a file Node can spawn — hence
+ * ENOENT even when it works perfectly in a terminal.
+ */
+function resolveBin(bin) {
+  if (bin.includes('/') || bin.includes('\\')) return bin;
+  const finder = process.platform === 'win32' ? 'where' : 'which';
+  try {
+    const out = execFileSync(finder, [bin], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    const first = out.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)[0];
+    return first || bin;
+  } catch {
+    return bin;
+  }
+}
+
+function execute(id, bin, prompt, queueRelPath) {
   return new Promise((resolve, reject) => {
     run("UPDATE agent_runs SET status = 'running', started_at = datetime('now') WHERE id = ?", [id]);
 
+    const resolved = resolveBin(bin);
+    // A .cmd or .bat can only be launched through a shell, and Node 22
+    // refuses to do it any other way. Everything on that command line is
+    // therefore generated here — the task text lives in the queue file,
+    // never in an argument — so there is nothing to quote wrongly.
+    const needsShell = process.platform === 'win32' && /\.(cmd|bat)$/i.test(resolved);
+    const instruction = queueRelPath
+      ? `Read ${queueRelPath} and carry out the task described in it.`
+      : prompt;
+
     let child;
     try {
-      child = spawn(bin, ['-p', prompt, '--permission-mode', 'acceptEdits'], {
-        cwd: ROOT,
-        env: process.env,
-        stdio: ['ignore', 'pipe', 'pipe'],
-      });
+      child = spawn(
+        needsShell ? `"${resolved}"` : resolved,
+        ['-p', needsShell ? `"${instruction}"` : instruction, '--permission-mode', 'acceptEdits'],
+        {
+          cwd: ROOT,
+          env: process.env,
+          stdio: ['ignore', 'pipe', 'pipe'],
+          shell: needsShell,
+        }
+      );
     } catch (err) {
       run("UPDATE agent_runs SET status = 'needs_manual_run', output = ?, finished_at = datetime('now') WHERE id = ?", [
         `Could not launch "${bin}". The task file is queued in agent-queue/ — open it in Claude Code to run it.`, id,
@@ -195,8 +227,13 @@ function execute(id, bin, prompt) {
       finish(
         'needs_manual_run',
         `Could not run "${bin}" (${e.code || e.message}).\n\n` +
-        `The task is queued in agent-queue/ — open it in Claude Code to run it by hand, ` +
-        `or set the right path in Settings > Agents.`
+        (process.platform === 'win32'
+          ? 'On Windows, open a terminal and run `where claude`. Paste the full path it prints ' +
+            '(something ending in claude.cmd) into Settings > Agents > Claude Code binary.\n\n'
+          : 'Run `which claude` in a terminal and paste the full path into ' +
+            'Settings > Agents > Claude Code binary.\n\n') +
+        `Either way the task is saved in ${queueRelPath || 'agent-queue/'} — ` +
+        'open that file in Claude Code and it will run.'
       );
     });
 
