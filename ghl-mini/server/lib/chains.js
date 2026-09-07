@@ -123,7 +123,7 @@ export function hasFranchiseCopy(html) {
  * are different businesses that happen to describe themselves the same
  * way, and must never be treated as branches of one chain.
  */
-const GENERIC_TOKENS = new Set([
+export const GENERIC_TOKENS = new Set([
   // trades
   'roofing', 'roofer', 'roofers', 'roof', 'plumbing', 'plumber', 'plumbers',
   'hvac', 'air', 'conditioning', 'heating', 'cooling', 'electric', 'electrical',

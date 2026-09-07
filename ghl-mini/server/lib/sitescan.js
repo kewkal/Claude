@@ -11,6 +11,8 @@
  *   Dead or unreachable           -> they believe they have a site. They don't.
  */
 
+import { findOwner } from './owner.js';
+
 const UA = 'Mozilla/5.0 (compatible; ghl-mini site checker; +https://github.com/)';
 
 /** The disclosure a franchise is legally obliged to publish. */
@@ -78,7 +80,8 @@ const PLATFORMS = [
  * Look at one website. Never throws — an unreachable site is a result,
  * not an error, and often a better lead than a working one.
  */
-export async function scanSite(url, { timeoutMs = 12000 } = {}) {
+export async function scanSite(url, opts = {}) {
+  const { timeoutMs = 12000 } = opts;
   const result = {
     site_status: 'no_site',
     site_checked_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
@@ -90,6 +93,7 @@ export async function scanSite(url, { timeoutMs = 12000 } = {}) {
     title: null,
     http_status: null,
     franchise_copy: false,
+    owner: null,
   };
   if (!url || !/^https?:\/\//i.test(String(url).trim())) return result;
 
@@ -136,6 +140,8 @@ export async function scanSite(url, { timeoutMs = 12000 } = {}) {
   if (platform) result.platform = platform.key;
 
   result.franchise_copy = FRANCHISE_COPY.some((re) => re.test(html));
+  // The page is already fetched, so working out who runs the place is free.
+  result.owner = findOwner({ html, businessName: opts.businessName, email: opts.email }).best;
   result.mobile_ready = /<meta[^>]+name=["']viewport["'][^>]*>/i.test(html) ? 1 : 0;
   const title = html.match(/<title[^>]*>([\s\S]{0,200}?)<\/title>/i);
   if (title) result.title = decodeEntities(title[1]).replace(/\s+/g, ' ').trim().slice(0, 160);

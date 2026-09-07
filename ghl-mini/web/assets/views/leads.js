@@ -6,7 +6,7 @@ import {
 const filters = {
   q: '', status: 'all', city: '', has_website: '', min_score: '', sort: 'score',
   runs_ads: '', no_tracking: '', site_broken: '', not_mobile: '', unscanned: '', platform: '',
-  is_chain: '', page: 1, limit: 50,
+  is_chain: '', has_owner: '', page: 1, limit: 50,
 };
 let selected = new Set();
 
@@ -110,6 +110,9 @@ function layout(data, stats) {
       <span class="dim" style="align-self:center;font-size:12.5px;margin:0 4px 0 10px">Chains:</span>
       <button class="chip ${raw(filters.is_chain === '1' ? 'active' : '')}" data-tech="is_chain">Show only chains (${stats.tech.chains})</button>
       <button class="chip" id="sweepChains">Find chains in my list</button>
+      <span class="dim" style="align-self:center;font-size:12.5px;margin:0 4px 0 10px">Owners:</span>
+      <button class="chip ${raw(filters.has_owner === '1' ? 'active' : '')}" data-tech="has_owner">Have a name (${stats.tech.owners})</button>
+      <button class="chip" id="findOwners">Find owner names</button>
     </div>
 
     <div class="bar" id="bulkBar" ${raw(selected.size ? '' : 'hidden')}>
@@ -143,7 +146,7 @@ function table(data) {
     <thead><tr>
       <th style="width:32px"><input type="checkbox" id="selAll"></th>
       <th>Business</th><th>Phone</th><th>Website</th><th>City</th>
-      <th class="num">Reviews</th><th>Tech</th><th class="num">Score</th><th>Status</th><th></th>
+      <th>Ask for</th><th class="num">Reviews</th><th>Tech</th><th class="num">Score</th><th>Status</th><th></th>
     </tr></thead>
     <tbody>${raw(data.leads.map(row).join(''))}</tbody>
   </table></div>`;
@@ -161,6 +164,10 @@ function row(l) {
       ? h`<a href="${l.website}" target="_blank" rel="noopener" class="truncate" style="display:inline-block">${l.website.replace(/^https?:\/\//, '').slice(0, 30)}</a>`
       : '<span class="pill" style="color:var(--accent);border-color:var(--accent)">none</span>')}</td>
     <td class="nowrap">${l.city || '—'}</td>
+    <td class="nowrap">${raw(l.owner_name
+      ? h`<span style="font-weight:620">${l.owner_name.split(' ')[0]}</span>
+          <div class="sub" title="${l.owner_source || ''}">${l.owner_role || ''}</div>`
+      : '<span class="dim">—</span>')}</td>
     <td class="num">${l.review_count ?? '—'}</td>
     <td class="nowrap">${raw(techBadges(l))}</td>
     <td class="num">${raw(scorePill(l.score))}</td>
@@ -220,6 +227,15 @@ function wire(root, ctx, data, stats) {
       apply();
     };
   });
+
+  root.querySelector('#findOwners')?.addEventListener('click', guard(async (e) => {
+    e.target.disabled = true;
+    e.target.textContent = 'Looking…';
+    const r = await api.post('/api/leads/find-owners', {});
+    ok(`Found ${r.found} names from business names and emails. ${r.total_with_owner} leads now have one. ` +
+       `Check websites finds many more.`);
+    reload(root, ctx);
+  }));
 
   root.querySelector('#sweepChains')?.addEventListener('click', guard(async (e) => {
     e.target.disabled = true;
@@ -614,6 +630,13 @@ export function leadModal(id, onDone) {
             <div class="s" style="color:var(--err);font-weight:650;margin-bottom:4px">LOOKS LIKE A CHAIN</div>
             <div style="font-size:13.5px;margin-bottom:8px">${lead.chain_reason || 'Matched a known brand.'}</div>
             <button type="button" class="btn sm" id="notChainBtn">This one is independent</button>
+          </div>` : '')}
+          ${raw(lead.owner_name ? h`<div class="card" style="border-color:var(--ok);margin-bottom:14px">
+            <div class="s" style="color:var(--ok);font-weight:650;margin-bottom:4px">WHO TO ASK FOR</div>
+            <div style="font-size:16px;font-weight:700">${lead.owner_name}</div>
+            <div class="dim" style="font-size:12.5px;margin-top:2px">
+              ${lead.owner_role || 'contact'} · found via ${lead.owner_source} · ${lead.owner_confidence}% confident
+            </div>
           </div>` : '')}
           ${raw(lead.pitch_angle ? h`<div class="card" style="background:var(--accent-soft);border-color:var(--accent);margin-bottom:14px">
             <div class="s" style="color:var(--accent);font-weight:650;margin-bottom:4px">HOW TO OPEN THE CALL</div>

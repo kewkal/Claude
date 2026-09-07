@@ -62,7 +62,13 @@ router.post('/api/scripts/:id/render', ({ res, params, body }) => {
   const script = get('SELECT * FROM scripts WHERE id = ?', [params.id]);
   if (!script) throw notFound('Script not found');
   const lead = body.lead_id ? get('SELECT * FROM leads WHERE id = ?', [body.lead_id]) : {};
-  const vars = { ...(lead || {}), ...(body.vars || {}) };
+  const owner = lead?.owner_name || '';
+  const vars = {
+    ...(lead || {}),
+    owner,
+    owner_first: owner.split(' ')[0] || '',
+    ...(body.vars || {}),
+  };
   json(res, {
     subject: render(script.subject || '', vars),
     body: render(script.body || '', vars),

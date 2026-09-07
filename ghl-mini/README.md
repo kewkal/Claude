@@ -121,6 +121,33 @@ carries every column.
 These are ordinary page visits, not API calls, so scanning costs nothing. It runs
 five at a time to stay polite.
 
+### Who actually owns it
+
+"Is Dave in?" gets past a gatekeeper. "Can I speak to the owner?" does not.
+Five sources, best first:
+
+| Source | Confidence |
+|---|---|
+| Schema.org `founder` markup on their site | 95% |
+| Plain English: "Owner: Dave Miller", "Founded by..." | 80% |
+| The business name: "Dave's Plumbing", "Miller & Sons" | 45-55% |
+| The email local part: `dave@` (generic inboxes ignored) | 50% |
+| A name customers repeat across Google reviews | 30-60% |
+
+Two sources agreeing raises the score, and a first name from one merges with a
+full name from another, so "Dave" from an email and "Dave Miller" from the About
+page become one person rather than two.
+
+**Find owner names** works from business names and emails alone — instant, free,
+no fetching. **Check websites** finds far more, because it reads the About page
+while it is already there. The name shows in the Leads table, at the top of the
+dialer, and fills `{{owner}}` and `{{owner_first}}` in any script.
+
+**There is deliberately no LinkedIn or Facebook.** Both block automated reading
+behind a login; pointing a scraper at them gets your IP banned rather than
+getting you names. Everything above is public information the business chose to
+publish on its own site and listing.
+
 ### Franchises are left out
 
 A chain is a dead call: corporate owns the website, the marketing budget is set

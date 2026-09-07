@@ -314,6 +314,10 @@ const LATER_COLUMNS = [
   ['leads', 'pitch_angle', 'TEXT'],
   ['leads', 'is_chain', 'INTEGER NOT NULL DEFAULT 0'],
   ['leads', 'chain_reason', 'TEXT'],
+  ['leads', 'owner_name', 'TEXT'],
+  ['leads', 'owner_role', 'TEXT'],
+  ['leads', 'owner_source', 'TEXT'],
+  ['leads', 'owner_confidence', 'INTEGER'],
 ];
 
 for (const [table, column, type] of LATER_COLUMNS) {

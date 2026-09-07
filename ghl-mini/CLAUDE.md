@@ -26,6 +26,7 @@ npm run reset            # wipe the database and re-seed
 | `server/lib/maps.js` | Google Places scraping and lead scoring |
 | `server/lib/sitescan.js` | Reads a lead's website: ad pixels, analytics, platform, mobile |
 | `server/lib/chains.js` | Franchise and chain detection: brands, multi-location, shared domains |
+| `server/lib/owner.js` | Works out who owns the business, from site, name, email, reviews |
 | `server/lib/telephony.js` | Twilio calls and SMS |
 | `server/lib/email.js` | Resend / Mailgun / Postmark over HTTP |
 | `server/api/*.js` | One router per surface |
@@ -81,6 +82,10 @@ Rules that must not be weakened:
 - Build regexes with more than a couple of alternatives from an array and
   `new RegExp(list.join('|'))`. A regex literal cannot span lines, and writing
   one that does fails at import time, not where you are looking.
+- Never put the `/i` flag on a pattern that uses `[A-Z]` to find a proper noun.
+  It makes `[A-Z]` match lowercase too, so "Owner: Dave Thompson has served"
+  captures "Dave Thompson has". Use `anyCase()` in `owner.js` to make the
+  surrounding keywords case-flexible while the name stays case-sensitive.
 
 ## Agents
 

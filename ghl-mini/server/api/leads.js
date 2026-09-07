@@ -3,6 +3,7 @@ import { all, get, run, tx } from '../lib/db.js';
 import { searchPlaces, searchMany, scoreLead } from '../lib/maps.js';
 import { scanSite, runsAds, pitchAngle } from '../lib/sitescan.js';
 import { looksLikeChain, findMultiLocation, matchesKnownBrand } from '../lib/chains.js';
+import { findOwner } from '../lib/owner.js';
 import { queueRun } from '../lib/agents.js';
 
 export const LEAD_STATUSES = [
@@ -52,6 +53,7 @@ router.get('/api/leads', ({ res, query }) => {
   if (query.not_mobile === '1') where.push("(site_status = 'ok' AND mobile_ready = 0)");
   if (query.platform) { where.push('site_platform = ?'); params.push(query.platform); }
   if (query.unscanned === '1') where.push("site_status IS NULL AND website IS NOT NULL AND website != ''");
+  if (query.has_owner === '1') where.push('owner_name IS NOT NULL');
   if (query.is_chain === '1') where.push('is_chain = 1');
   if (query.is_chain === '0') where.push('is_chain = 0');
   if (query.has_phone === '1') where.push("(phone IS NOT NULL AND phone != '')");
@@ -125,7 +127,8 @@ router.get('/api/leads/stats', ({ res }) => {
                         AND has_analytics = 0 AND has_google_ads = 0 THEN 1 ELSE 0 END), 0) AS no_tracking,
       COALESCE(SUM(CASE WHEN site_status IN ('unreachable','timeout','server_error','not_found') THEN 1 ELSE 0 END), 0) AS broken,
       COALESCE(SUM(CASE WHEN site_status = 'ok' AND mobile_ready = 0 THEN 1 ELSE 0 END), 0) AS not_mobile,
-      COALESCE(SUM(is_chain), 0) AS chains
+      COALESCE(SUM(is_chain), 0) AS chains,
+      COALESCE(SUM(CASE WHEN owner_name IS NOT NULL THEN 1 ELSE 0 END), 0) AS owners
     FROM leads`);
   const platforms = all(
     "SELECT site_platform AS platform, COUNT(*) AS n FROM leads WHERE site_platform IS NOT NULL GROUP BY site_platform ORDER BY n DESC"
@@ -141,7 +144,8 @@ router.get('/api/leads/export.csv', ({ res, query }) => {
   const cols = ['id', 'name', 'category', 'phone', 'email', 'website', 'address', 'city', 'state',
     'rating', 'review_count', 'status', 'score', 'tags', 'site_status', 'site_platform',
     'runs_ads', 'has_meta_pixel', 'has_google_tag', 'has_analytics', 'mobile_ready', 'has_ssl',
-    'is_chain', 'chain_reason', 'pitch_angle', 'created_at'];
+    'is_chain', 'chain_reason', 'owner_name', 'owner_role', 'owner_source',
+    'pitch_angle', 'created_at'];
   const lines = [cols.join(',')];
   for (const r of rows) lines.push(cols.map((c) => csvCell(r[c])).join(','));
   const body = lines.join('\n');
@@ -430,6 +434,31 @@ function sweepChains({ excludeChains = false, onlyIds = null } = {}) {
   return { flagged, removed };
 }
 
+/**
+ * POST /api/leads/find-owners — names from the business name and email
+ * address alone. No fetching, no API calls, instant across the whole list.
+ */
+router.post('/api/leads/find-owners', ({ res }) => {
+  let found = 0;
+  const leads = all("SELECT * FROM leads WHERE owner_name IS NULL");
+  tx(() => {
+    for (const lead of leads) {
+      const { best } = findOwner({ businessName: lead.name, email: lead.email });
+      if (!best) continue;
+      run(
+        'UPDATE leads SET owner_name = ?, owner_role = ?, owner_source = ?, owner_confidence = ? WHERE id = ?',
+        [best.name, best.role, best.sources.join(' + '), best.confidence, lead.id]
+      );
+      found++;
+    }
+  });
+  json(res, {
+    checked: leads.length,
+    found,
+    total_with_owner: get('SELECT COUNT(*) AS n FROM leads WHERE owner_name IS NOT NULL').n,
+  });
+});
+
 /** POST /api/leads/sweep-chains — check everything already stored. */
 router.post('/api/leads/sweep-chains', ({ res, body }) => {
   // Catch known brands that were imported or scraped before this existed.
@@ -489,6 +518,12 @@ function applyScan(lead, scan) {
     has_ssl: scan.has_ssl,
     tags_json: JSON.stringify({ tags: scan.tags, ids: scan.tag_ids }),
   };
+  if (scan.owner && (!lead.owner_confidence || scan.owner.confidence > lead.owner_confidence)) {
+    patch.owner_name = scan.owner.name;
+    patch.owner_role = scan.owner.role;
+    patch.owner_source = scan.owner.sources.join(' + ');
+    patch.owner_confidence = scan.owner.confidence;
+  }
   if (scan.franchise_copy && !lead.is_chain) {
     patch.is_chain = 1;
     patch.chain_reason = 'their own site says independently owned and operated';
@@ -509,7 +544,7 @@ router.post('/api/leads/:id/scan', async ({ res, params }) => {
   const lead = get('SELECT * FROM leads WHERE id = ?', [params.id]);
   if (!lead) throw notFound('Lead not found');
   if (!lead.website) throw bad('That lead has no website to check.');
-  const scan = await scanSite(lead.website);
+  const scan = await scanSite(lead.website, { businessName: lead.name, email: lead.email });
   applyScan(lead, scan);
   json(res, { lead: get('SELECT * FROM leads WHERE id = ?', [params.id]), scan });
 });
@@ -543,7 +578,8 @@ router.post('/api/leads/scan', async ({ res, body }) => {
   const CONCURRENCY = 5;
   for (let i = 0; i < targets.length; i += CONCURRENCY) {
     const batch = targets.slice(i, i + CONCURRENCY);
-    const scans = await Promise.all(batch.map((l) => scanSite(l.website).catch(() => null)));
+    const scans = await Promise.all(batch.map((l) =>
+      scanSite(l.website, { businessName: l.name, email: l.email }).catch(() => null)));
     batch.forEach((lead, j) => {
       const scan = scans[j];
       if (!scan) return;

@@ -59,7 +59,7 @@ function layout(queue, scripts, stats) {
         ${raw(queue.map((l) => h`<div class="list-item ${raw(current && current.id === l.id ? 'active' : '')}" data-lead="${l.id}">
           <div class="grow">
             <div class="t">${l.name}</div>
-            <div class="s">${l.city || ''}${l.attempts ? ` · ${l.attempts} attempt${l.attempts === 1 ? '' : 's'}` : ''}</div>
+            <div class="s">${l.owner_name ? `ask for ${l.owner_name.split(' ')[0]} · ` : ''}${l.city || ''}${l.attempts ? ` · ${l.attempts} attempt${l.attempts === 1 ? '' : 's'}` : ''}</div>
           </div>
           ${raw(scorePill(l.score))}
         </div>`).join(''))}
@@ -85,6 +85,12 @@ function layout(queue, scripts, stats) {
 function cardBody(lead) {
   return h`
     <div class="biz">${lead.name}</div>
+    ${raw(lead.owner_name ? h`<div style="font-size:15px;font-weight:650;color:var(--ok);margin-top:2px">
+      Ask for ${lead.owner_name.split(' ')[0]}
+      <span class="dim" style="font-weight:500;font-size:12.5px">
+        · ${lead.owner_name}${lead.owner_role ? `, ${lead.owner_role}` : ''} (${lead.owner_source})
+      </span>
+    </div>` : '')}
     <div class="muted">${lead.category || ''}${lead.rating ? ` · ${lead.rating}★ (${lead.review_count})` : ''}</div>
     <div class="phone">${lead.phone || 'no number'}</div>
     <div class="muted" style="margin-bottom:6px">${lead.address || ''}</div>
