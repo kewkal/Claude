@@ -221,8 +221,8 @@ export function looksLikeChain(lead) {
   const brand = matchesKnownBrand(lead.name);
   if (brand) return `known brand: ${brand}`;
   // "Something of Tampa" is how franchises name their territories.
-  if (/\bof\s+[A-Z][a-z]+(\s+[A-Z][a-z]+)?$/.test(String(lead.name || '').trim())
-      && /\b(plumbing|heating|air|electric|roofing|cleaning|pest|lawn|restoration|handyman|painting)\b/i.test(lead.name)) {
+  const TRADE_WORDS = /\b(plumbing|plumber|rooter|drain|sewer|septic|heating|cooling|air|hvac|electric|electrical|roofing|roofer|siding|gutter|window|door|garage|fencing|fence|pool|spa|cleaning|restoration|pest|exterminat|lawn|landscap|handyman|painting|painters|remodel|flooring|solar|dental|dentistry|auto|towing|moving|movers|storage|junk)\b/i;
+  if (/\bof\s+[A-Z][a-z]+(\s+[A-Z][a-z]+)?$/.test(String(lead.name || '').trim()) && TRADE_WORDS.test(lead.name)) {
     return 'named like a franchise territory';
   }
   return null;

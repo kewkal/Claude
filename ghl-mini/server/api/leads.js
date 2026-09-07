@@ -27,11 +27,12 @@ export function logActivity(leadId, kind, summary, meta = {}) {
 const router = new Router();
 
 /** GET /api/leads — paged, filtered, searchable. */
-router.get('/api/leads', ({ res, query }) => {
-  const limit = Math.min(500, Math.max(1, Number(query.limit) || 50));
-  const page = Math.max(1, Number(query.page) || 1);
-  const offset = (page - 1) * limit;
-
+/**
+ * Every filter the Leads screen offers, in one place. The list route and
+ * the CSV export both use it, so an export always matches what is on
+ * screen rather than quietly returning everything.
+ */
+export function buildLeadFilter(query = {}) {
   const where = [];
   const params = [];
 
@@ -78,7 +79,15 @@ router.get('/api/leads', ({ res, query }) => {
     where.push("next_action_at IS NOT NULL AND next_action_at <= datetime('now')");
   }
 
-  const clause = where.length ? `WHERE ${where.join(' AND ')}` : '';
+  return { clause: where.length ? `WHERE ${where.join(' AND ')}` : '', params };
+}
+
+router.get('/api/leads', ({ res, query }) => {
+  const limit = Math.min(500, Math.max(1, Number(query.limit) || 50));
+  const page = Math.max(1, Number(query.page) || 1);
+  const offset = (page - 1) * limit;
+
+  const { clause, params } = buildLeadFilter(query);
   const sortMap = {
     score: 'score DESC, review_count DESC',
     newest: 'created_at DESC',
@@ -136,25 +145,80 @@ router.get('/api/leads/stats', ({ res }) => {
   json(res, { byStatus, ...totals, due, topCities, tech, platforms, statuses: LEAD_STATUSES });
 });
 
-/** GET /api/leads/export.csv */
+/** Column sets, so an export can be the right shape for its job. */
+export const EXPORT_SHAPES = {
+  calling: {
+    label: 'Calling list',
+    hint: 'What you need on the phone and nothing else.',
+    cols: ['name', 'phone', 'owner_name', 'city', 'rating', 'review_count', 'website', 'pitch_angle', 'status'],
+  },
+  full: {
+    label: 'Everything',
+    hint: 'Every column, for a spreadsheet or another tool.',
+    cols: ['id', 'name', 'category', 'phone', 'email', 'website', 'address', 'city', 'state',
+      'postal_code', 'rating', 'review_count', 'status', 'score', 'tags', 'notes',
+      'owner_name', 'owner_role', 'owner_source', 'owner_confidence',
+      'site_status', 'site_platform', 'runs_ads', 'has_meta_pixel', 'has_google_tag',
+      'has_analytics', 'has_google_ads', 'mobile_ready', 'has_ssl',
+      'is_chain', 'chain_reason', 'pitch_angle', 'attempts', 'last_contacted_at',
+      'next_action_at', 'source', 'search_query', 'created_at'],
+  },
+  mailmerge: {
+    label: 'Mail merge',
+    hint: 'Named columns for an email tool or a mail-merge template.',
+    cols: ['owner_name', 'name', 'email', 'phone', 'city', 'category', 'website', 'pitch_angle'],
+  },
+  crm: {
+    label: 'Import into another CRM',
+    hint: 'The plain contact fields most systems expect.',
+    cols: ['name', 'owner_name', 'phone', 'email', 'website', 'address', 'city', 'state',
+      'postal_code', 'category', 'status', 'notes'],
+  },
+};
+
+/**
+ * GET /api/leads/export.csv — honours every filter the Leads screen has,
+ * so what you are looking at is what you get.
+ */
 router.get('/api/leads/export.csv', ({ res, query }) => {
-  const where = query.status && query.status !== 'all' ? 'WHERE status = ?' : '';
-  const params = where ? [query.status] : [];
-  const rows = all(`SELECT * FROM leads ${where} ORDER BY score DESC`, params);
-  const cols = ['id', 'name', 'category', 'phone', 'email', 'website', 'address', 'city', 'state',
-    'rating', 'review_count', 'status', 'score', 'tags', 'site_status', 'site_platform',
-    'runs_ads', 'has_meta_pixel', 'has_google_tag', 'has_analytics', 'mobile_ready', 'has_ssl',
-    'is_chain', 'chain_reason', 'owner_name', 'owner_role', 'owner_source',
-    'pitch_angle', 'created_at'];
-  const lines = [cols.join(',')];
-  for (const r of rows) lines.push(cols.map((c) => csvCell(r[c])).join(','));
+  const shape = EXPORT_SHAPES[query.shape] || EXPORT_SHAPES.full;
+  const { clause, params } = buildLeadFilter(query);
+  const sortMap = {
+    score: 'score DESC, review_count DESC', newest: 'created_at DESC',
+    name: 'name COLLATE NOCASE ASC', reviews: 'review_count DESC',
+  };
+  const rows = all(
+    `SELECT * FROM leads ${clause} ORDER BY ${sortMap[query.sort] || sortMap.score}`, params
+  );
+
+  const header = shape.cols.map((c) => ({
+    name: 'business', owner_name: 'owner', pitch_angle: 'why_to_call',
+    review_count: 'reviews', runs_ads: 'runs_ads', site_status: 'website_status',
+  }[c] || c));
+
+  const lines = [header.join(',')];
+  for (const r of rows) lines.push(shape.cols.map((c) => csvCell(r[c])).join(','));
   const body = lines.join('\n');
+
+  const stamp = new Date().toISOString().slice(0, 10);
   res.writeHead(200, {
     'content-type': 'text/csv; charset=utf-8',
-    'content-disposition': 'attachment; filename="leads.csv"',
+    'content-disposition': `attachment; filename="leads-${query.shape || 'full'}-${stamp}.csv"`,
     'content-length': Buffer.byteLength(body),
   });
   res.end(body);
+});
+
+/** GET /api/leads/export/shapes — what the export box offers. */
+router.get('/api/leads/export/shapes', ({ res, query }) => {
+  const { clause, params } = buildLeadFilter(query);
+  json(res, {
+    shapes: Object.entries(EXPORT_SHAPES).map(([id, s]) => ({
+      id, label: s.label, hint: s.hint, columns: s.cols.length,
+    })),
+    matching: get(`SELECT COUNT(*) AS n FROM leads ${clause}`, params).n,
+    total: get('SELECT COUNT(*) AS n FROM leads').n,
+  });
 });
 
 /** GET /api/leads/:id — lead plus its history. */
@@ -459,7 +523,29 @@ router.post('/api/leads/find-owners', ({ res }) => {
   });
 });
 
-/** POST /api/leads/sweep-chains — check everything already stored. */
+/**
+ * A lead you have already worked is never deleted, however chain-like it
+ * looks. Call history, a booking, a sequence or any status past the top of
+ * the funnel all mean a human has spent time on it, and a wrong guess by
+ * the detector must not throw that away.
+ */
+function untouched(leadId) {
+  if (get('SELECT id FROM calls WHERE lead_id = ? LIMIT 1', [leadId])) return false;
+  if (get('SELECT id FROM bookings WHERE lead_id = ? LIMIT 1', [leadId])) return false;
+  if (get('SELECT id FROM enrollments WHERE lead_id = ? LIMIT 1', [leadId])) return false;
+  if (get('SELECT id FROM onboarding_responses WHERE lead_id = ? LIMIT 1', [leadId])) return false;
+  const lead = get('SELECT status, notes FROM leads WHERE id = ?', [leadId]);
+  if (!lead) return false;
+  if (!['new', 'queued'].includes(lead.status)) return false;
+  if (String(lead.notes || '').trim()) return false;
+  return true;
+}
+
+/**
+ * POST /api/leads/sweep-chains — find chains across everything stored.
+ * With `remove`, deletes every chain it is safe to delete, not just the
+ * multi-location ones the comparison pass happened to flag.
+ */
 router.post('/api/leads/sweep-chains', ({ res, body }) => {
   // Catch known brands that were imported or scraped before this existed.
   let brands = 0;
@@ -472,15 +558,49 @@ router.post('/api/leads/sweep-chains', ({ res, body }) => {
     }
   });
 
-  const swept = sweepChains({ excludeChains: body.remove === true });
+  // Flag only — deleting is handled below so every chain is covered.
+  const swept = sweepChains({ excludeChains: false });
+
   for (const lead of all('SELECT * FROM leads WHERE is_chain = 1')) {
     run('UPDATE leads SET score = ? WHERE id = ?', [scoreLead(lead), lead.id]);
   }
+
+  const flagged = get('SELECT COUNT(*) AS n FROM leads WHERE is_chain = 1').n;
+  let removed = 0;
+  let kept = 0;
+
+  if (body.remove === true) {
+    tx(() => {
+      for (const lead of all('SELECT id FROM leads WHERE is_chain = 1')) {
+        if (!untouched(lead.id)) { kept++; continue; }
+        run('DELETE FROM leads WHERE id = ?', [lead.id]);
+        removed++;
+      }
+    });
+  }
+
   json(res, {
     known_brands: brands,
     multi_location: swept.flagged,
-    removed: swept.removed,
+    flagged,
+    removed,
+    kept_because_worked: kept,
     total_chains: get('SELECT COUNT(*) AS n FROM leads WHERE is_chain = 1').n,
+  });
+});
+
+/** GET /api/leads/chains/preview — what a remove would actually do. */
+router.get('/api/leads/chains/preview', ({ res }) => {
+  const chains = all('SELECT id, name, chain_reason, status FROM leads WHERE is_chain = 1');
+  const removable = [];
+  const keeping = [];
+  for (const lead of chains) (untouched(lead.id) ? removable : keeping).push(lead);
+  json(res, {
+    total: chains.length,
+    removable: removable.length,
+    keeping: keeping.length,
+    sample: removable.slice(0, 8).map((l) => ({ name: l.name, reason: l.chain_reason })),
+    kept_sample: keeping.slice(0, 5).map((l) => ({ name: l.name, status: l.status })),
   });
 });
 

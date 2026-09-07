@@ -183,6 +183,23 @@ two vans, and the owner still answers the phone.
 
 **Find chains in my list** applies all of it to leads you already have, and any
 lead wrongly flagged has a *This one is independent* button that rescores it.
+**Remove them** deletes them, after showing you exactly which ones and why.
+
+A lead you have already worked is never deleted, whatever the detector thinks:
+call history, a booking, a sequence, notes, or any status past `queued` all keep
+it. A wrong guess must not throw away work you have done.
+
+### Exporting
+
+The **Export** button always exports what you are looking at. Filter to "no
+website + running ads" and that is what lands in the file. Four shapes:
+
+| Shape | For |
+|---|---|
+| **Calling list** | 9 columns: who, their number, the owner's name, why to call |
+| **Everything** | All 38 columns, for a spreadsheet |
+| **Mail merge** | Named columns an email tool expects |
+| **Import into another CRM** | The plain contact fields most systems want |
 
 **Dialer** — a call queue sorted by who's most likely to close, the lead's history,
 a live-rendered script with their details filled in, one-click outcome logging and a

@@ -15,7 +15,7 @@ export default {
     ctx.setActions(h`
       <button class="btn" id="scanBtn">Check websites</button>
       <button class="btn" id="importBtn">Import CSV</button>
-      <a class="btn" href="/api/leads/export.csv" download>Export</a>
+      <button class="btn" id="exportBtn">Export</button>
       <button class="btn" id="bulkBtn">Bulk search</button>
       <button class="btn primary" id="scrapeBtn">Scrape leads</button>
     `);
@@ -23,6 +23,7 @@ export default {
     document.getElementById('importBtn').onclick = () => importModal(() => reload(root, ctx));
     document.getElementById('scanBtn').onclick = () => scanModal(() => reload(root, ctx));
     document.getElementById('bulkBtn').onclick = () => bulkScrapeModal(() => reload(root, ctx));
+    document.getElementById('exportBtn').onclick = () => exportModal();
     await reload(root, ctx);
   },
 };
@@ -110,6 +111,7 @@ function layout(data, stats) {
       <span class="dim" style="align-self:center;font-size:12.5px;margin:0 4px 0 10px">Chains:</span>
       <button class="chip ${raw(filters.is_chain === '1' ? 'active' : '')}" data-tech="is_chain">Show only chains (${stats.tech.chains})</button>
       <button class="chip" id="sweepChains">Find chains in my list</button>
+      ${raw(stats.tech.chains ? h`<button class="chip" id="removeChains" style="color:var(--err);border-color:var(--err)">Remove them</button>` : '')}
       <span class="dim" style="align-self:center;font-size:12.5px;margin:0 4px 0 10px">Owners:</span>
       <button class="chip ${raw(filters.has_owner === '1' ? 'active' : '')}" data-tech="has_owner">Have a name (${stats.tech.owners})</button>
       <button class="chip" id="findOwners">Find owner names</button>
@@ -240,6 +242,47 @@ function wire(root, ctx, data, stats) {
     ok(`Found ${r.found} names from business names and emails. ${r.total_with_owner} leads now have one. ` +
        `Check websites finds many more.`);
     reload(root, ctx);
+  }));
+
+  root.querySelector('#removeChains')?.addEventListener('click', guard(async () => {
+    const p = await api.get('/api/leads/chains/preview');
+    if (!p.removable) {
+      return err(p.keeping
+        ? `All ${p.keeping} chains have call history or a booking, so none can be removed safely.`
+        : 'No chains to remove.');
+    }
+    modal((card, close) => {
+      card.className = 'modal-card wide';
+      card.innerHTML = h`
+        <div class="modal-head"><h2>Remove ${p.removable} chains?</h2></div>
+        <p class="muted" style="margin-top:0">These are franchises and multi-location chains. Corporate owns the
+        website and whoever answers cannot buy anything, so they are dead calls.</p>
+        <div class="table-wrap" style="max-height:210px;overflow-y:auto;margin-bottom:12px"><table>
+          <thead><tr><th>Business</th><th>Why</th></tr></thead>
+          <tbody>${raw(p.sample.map((l) => h`<tr><td>${l.name}</td><td class="dim">${l.reason}</td></tr>`).join(''))}
+          ${raw(p.removable > p.sample.length
+            ? h`<tr><td colspan="2" class="dim">…and ${p.removable - p.sample.length} more</td></tr>` : '')}</tbody>
+        </table></div>
+        ${raw(p.keeping ? h`<div class="card" style="border-color:var(--ok);margin-bottom:12px">
+          <div class="s" style="color:var(--ok);font-weight:650;margin-bottom:4px">KEEPING ${p.keeping}</div>
+          <div class="muted" style="font-size:13px">You have already called, booked or written notes on these,
+          so they stay whatever the detector thinks: ${p.kept_sample.map((l) => l.name).join(', ')}</div>
+        </div>` : '')}
+        <div class="hint">This cannot be undone. Scraping them again is one search if you change your mind.</div>
+        <div class="modal-foot">
+          <button class="btn" data-cancel>Cancel</button>
+          <button class="btn danger" data-go>Remove ${p.removable}</button>
+        </div>`;
+      card.querySelector('[data-cancel]').onclick = close;
+      card.querySelector('[data-go]').onclick = guard(async (e) => {
+        e.target.disabled = true;
+        e.target.textContent = 'Removing…';
+        const r = await api.post('/api/leads/sweep-chains', { remove: true });
+        ok(`Removed ${r.removed} chains${r.kept_because_worked ? `, kept ${r.kept_because_worked} you had worked` : ''}.`);
+        close();
+        reload(root, ctx);
+      });
+    });
   }));
 
   root.querySelector('#sweepChains')?.addEventListener('click', guard(async (e) => {
@@ -446,6 +489,66 @@ function scrapeModal(onDone) {
         btn.disabled = false;
         btn.textContent = 'Scrape now';
       }
+    });
+  });
+}
+
+/** Query string for whatever is currently filtered on screen. */
+function currentFilterQuery() {
+  const p = new URLSearchParams();
+  for (const [k, v] of Object.entries(filters)) {
+    if (k === 'page' || k === 'limit') continue;
+    if (v === '' || v == null || v === 'all') continue;
+    p.set(k, v);
+  }
+  return p;
+}
+
+function exportModal() {
+  modal(async (card, close) => {
+    const params = currentFilterQuery();
+    const info = await api.get('/api/leads/export/shapes', Object.fromEntries(params));
+    const filtered = info.matching !== info.total;
+
+    card.innerHTML = h`
+      <div class="modal-head"><h2>Export leads</h2><button class="icon-btn" data-close>×</button></div>
+      <p class="muted" style="margin-top:0">
+        ${raw(filtered
+          ? h`Exports the <b>${info.matching.toLocaleString()}</b> leads matching your current filters,
+             not all ${info.total.toLocaleString()}.`
+          : h`Exports all <b>${info.total.toLocaleString()}</b> leads. Filter the list first if you want a subset.`)}
+      </p>
+      ${raw(filtered ? h`<div class="hint" style="margin:-8px 0 14px">
+        Filtered by: ${[...params.entries()].map(([k, v]) => `${k.replace(/_/g, ' ')}=${v}`).join(', ')}
+      </div>` : '')}
+      <div class="list">
+        ${raw(info.shapes.map((s) => h`<div class="list-item" data-shape="${s.id}" style="cursor:pointer">
+          <div class="grow">
+            <div class="t">${s.label}</div>
+            <div class="s">${s.hint} · ${s.columns} columns</div>
+          </div>
+          <span class="btn sm">Download</span>
+        </div>`).join(''))}
+      </div>
+      <div class="hint" style="margin-top:12px">Opens in Excel, Google Sheets and Numbers.</div>
+      <div class="modal-foot"><button class="btn" data-cancel>Close</button></div>`;
+
+    card.querySelector('[data-close]').onclick = close;
+    card.querySelector('[data-cancel]').onclick = close;
+    card.querySelectorAll('[data-shape]').forEach((row) => {
+      row.onclick = () => {
+        const q = currentFilterQuery();
+        q.set('shape', row.dataset.shape);
+        // A plain link download, so the browser handles the file itself.
+        const a = document.createElement('a');
+        a.href = `/api/leads/export.csv?${q}`;
+        a.download = '';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        ok(`Downloading ${info.matching.toLocaleString()} leads`);
+        close();
+      };
     });
   });
 }
