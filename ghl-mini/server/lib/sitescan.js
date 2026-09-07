@@ -12,6 +12,7 @@
  */
 
 import { findOwner } from './owner.js';
+import { findEmails, pickOwnerEmail, CONTACT_PATHS } from './enrich.js';
 
 const UA = 'Mozilla/5.0 (compatible; ghl-mini site checker; +https://github.com/)';
 
@@ -94,6 +95,9 @@ export async function scanSite(url, opts = {}) {
     http_status: null,
     franchise_copy: false,
     owner: null,
+    owner_email: null,
+    emails: [],
+    pages_read: 0,
   };
   if (!url || !/^https?:\/\//i.test(String(url).trim())) return result;
 
@@ -140,13 +144,65 @@ export async function scanSite(url, opts = {}) {
   if (platform) result.platform = platform.key;
 
   result.franchise_copy = FRANCHISE_COPY.some((re) => re.test(html));
+  result.pages_read = 1;
+
   // The page is already fetched, so working out who runs the place is free.
   result.owner = findOwner({ html, businessName: opts.businessName, email: opts.email }).best;
+
+  let domain = null;
+  try { domain = new URL(res.url).hostname.replace(/^www\./, ''); } catch { /* ignore */ }
+  const ownerName = result.owner?.name || null;
+
+  let emails = findEmails(html, { ownerName, domain });
+  let picked = pickOwnerEmail(emails);
+
+  // A named person's address is almost never on the home page — it is on
+  // Contact, About or the team page. Only go looking when the home page
+  // did not already produce one.
+  if (!picked.owner && opts.deep !== false) {
+    for (const path of CONTACT_PATHS.slice(0, opts.maxPages ?? 4)) {
+      const extra = await fetchPage(new URL(path, res.url).href, timeoutMs);
+      if (!extra) continue;
+      result.pages_read++;
+
+      // A person named here beats one guessed from the business name.
+      const deeperOwner = findOwner({ html: extra, businessName: opts.businessName, email: opts.email }).best;
+      if (deeperOwner && (!result.owner || deeperOwner.confidence > result.owner.confidence)) {
+        result.owner = deeperOwner;
+      }
+
+      const more = findEmails(extra, { ownerName: result.owner?.name || ownerName, domain });
+      const merged = new Map([...emails, ...more].map((e) => [e.email, e]));
+      emails = [...merged.values()].sort((a, b) => b.score - a.score);
+      picked = pickOwnerEmail(emails);
+      if (picked.owner) break;
+    }
+  }
+
+  result.emails = emails;
+  result.owner_email = picked.owner;
   result.mobile_ready = /<meta[^>]+name=["']viewport["'][^>]*>/i.test(html) ? 1 : 0;
   const title = html.match(/<title[^>]*>([\s\S]{0,200}?)<\/title>/i);
   if (title) result.title = decodeEntities(title[1]).replace(/\s+/g, ' ').trim().slice(0, 160);
 
   return result;
+}
+
+/** One extra page, quietly. A 404 on /about is not worth reporting. */
+async function fetchPage(url, timeoutMs) {
+  try {
+    const res = await fetch(url, {
+      redirect: 'follow',
+      headers: { 'user-agent': UA, accept: 'text/html,application/xhtml+xml' },
+      signal: AbortSignal.timeout(Math.min(timeoutMs, 9000)),
+    });
+    if (!res.ok) return null;
+    const type = res.headers.get('content-type') || '';
+    if (type && !/html/i.test(type)) return null;
+    return await readCapped(res);
+  } catch {
+    return null;
+  }
 }
 
 async function readCapped(res) {

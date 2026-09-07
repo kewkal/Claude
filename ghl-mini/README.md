@@ -158,6 +158,35 @@ behind a login; pointing a scraper at them gets your IP banned rather than
 getting you names. Everything above is public information the business chose to
 publish on its own site and listing.
 
+### Their actual email, not info@
+
+`info@`, `contact@` and `hello@` go to a shared queue where your pitch sits
+beside everyone else's. `dave@` goes to Dave.
+
+**Check websites** now looks for a named person's address. If the home page only
+offers a catch-all it reads Contact, About and the team pages until it finds one,
+then checks it against the owner's name — `dave@`, `dmiller@`, `dave.miller@`
+and `davemiller@` all resolve to Dave Miller.
+
+Every address is classified, and only a person is ever offered as the owner's:
+
+| Kind | Example | Used as the owner email? |
+|---|---|---|
+| `owner` | `dave@`, matched to the known owner; also `owner@`, `founder@` | Yes |
+| `personal` | `sarah@` — a human, just not one that can be confirmed | Yes |
+| `role` | a named function | No |
+| `generic` | `info@`, `contact@`, `sales@`, `support@`, `billing@` | Never |
+
+When only catch-alls exist the owner email stays **empty** rather than being
+filled with `info@` dressed up as a person. They are still listed on the lead,
+clearly marked as shared inboxes.
+
+Obfuscated addresses (`dave [at] acme [dot] com`) are read. Tracking and
+boilerplate addresses — `no-reply@`, `postmaster@`, `sentry@wixpress.com` — are
+dropped. Filter with **Have their email**; `{{owner_email}}` works in any script.
+
+Free: these are ordinary page reads, not API calls.
+
 ### Franchises are left out
 
 A chain is a dead call: corporate owns the website, the marketing budget is set

@@ -6,7 +6,7 @@ import {
 const filters = {
   q: '', status: 'all', city: '', has_website: '', min_score: '', sort: 'score',
   runs_ads: '', no_tracking: '', site_broken: '', not_mobile: '', unscanned: '', platform: '',
-  is_chain: '', has_owner: '', page: 1, limit: 50,
+  is_chain: '', has_owner: '', has_owner_email: '', page: 1, limit: 50,
 };
 let selected = new Set();
 
@@ -114,6 +114,7 @@ function layout(data, stats) {
       ${raw(stats.tech.chains ? h`<button class="chip" id="removeChains" style="color:var(--err);border-color:var(--err)">Remove them</button>` : '')}
       <span class="dim" style="align-self:center;font-size:12.5px;margin:0 4px 0 10px">Owners:</span>
       <button class="chip ${raw(filters.has_owner === '1' ? 'active' : '')}" data-tech="has_owner">Have a name (${stats.tech.owners})</button>
+      <button class="chip ${raw(filters.has_owner_email === '1' ? 'active' : '')}" data-tech="has_owner_email">Have their email (${stats.tech.owner_emails})</button>
       <button class="chip" id="findOwners">Find owner names</button>
     </div>
 
@@ -166,9 +167,11 @@ function row(l) {
       ? h`<a href="${l.website}" target="_blank" rel="noopener" class="truncate" style="display:inline-block">${l.website.replace(/^https?:\/\//, '').slice(0, 30)}</a>`
       : '<span class="pill" style="color:var(--accent);border-color:var(--accent)">none</span>')}</td>
     <td class="nowrap">${l.city || '—'}</td>
-    <td class="nowrap">${raw(l.owner_name
-      ? h`<span style="font-weight:620">${l.owner_name.split(' ')[0]}</span>
-          <div class="sub" title="${l.owner_source || ''}">${l.owner_role || ''}</div>`
+    <td class="nowrap">${raw(l.owner_name || l.owner_email
+      ? h`<span style="font-weight:620">${l.owner_name ? l.owner_name.split(' ')[0] : '—'}</span>
+          ${raw(l.owner_email
+            ? h`<div class="sub" style="color:var(--ok)" title="${l.owner_email_kind} · ${l.owner_email_confidence}% confident">${l.owner_email}</div>`
+            : h`<div class="sub" title="${l.owner_source || ''}">${l.owner_role || ''}</div>`)}`
       : '<span class="dim">—</span>')}</td>
     <td class="num">${l.review_count ?? '—'}</td>
     <td class="nowrap">${raw(techBadges(l))}</td>
@@ -176,6 +179,19 @@ function row(l) {
     <td>${raw(pill(l.status))}</td>
     <td class="right nowrap"><button class="btn sm" data-open>Open</button></td>
   </tr>`;
+}
+
+/** Catch-alls, listed but clearly marked as not the owner. */
+function otherEmails(lead) {
+  let all = [];
+  try { all = JSON.parse(lead.emails_json || '[]'); } catch { return ''; }
+  const rest = all.filter((e) => e.email !== lead.owner_email);
+  if (!rest.length) return '';
+  return h`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)">
+    <div class="s dim" style="margin-bottom:5px">Also on the site — shared inboxes, not a person:</div>
+    ${raw(rest.slice(0, 6).map((e) => h`<div class="s" style="font-family:ui-monospace,monospace">
+      ${e.email} <span class="dim">· ${e.kind}</span></div>`).join(''))}
+  </div>`;
 }
 
 function techBadges(l) {
@@ -783,6 +799,15 @@ export function leadModal(id, onDone) {
             <div class="dim" style="font-size:12.5px;margin-top:2px">
               ${lead.owner_role || 'contact'} · found via ${lead.owner_source} · ${lead.owner_confidence}% confident
             </div>
+          </div>` : '')}
+          ${raw(lead.owner_email ? h`<div class="card" style="border-color:var(--ok);margin-bottom:14px">
+            <div class="s" style="color:var(--ok);font-weight:650;margin-bottom:4px">THEIR DIRECT EMAIL</div>
+            <div style="font-size:15px;font-weight:700"><a href="mailto:${lead.owner_email}">${lead.owner_email}</a></div>
+            <div class="dim" style="font-size:12.5px;margin-top:2px">
+              ${lead.owner_email_kind === 'owner' ? 'confirmed against their name' : 'looks like a person'}
+              · ${lead.owner_email_confidence}% confident
+            </div>
+            ${raw(otherEmails(lead))}
           </div>` : '')}
           ${raw(lead.pitch_angle ? h`<div class="card" style="background:var(--accent-soft);border-color:var(--accent);margin-bottom:14px">
             <div class="s" style="color:var(--accent);font-weight:650;margin-bottom:4px">HOW TO OPEN THE CALL</div>

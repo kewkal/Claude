@@ -55,6 +55,8 @@ export function buildLeadFilter(query = {}) {
   if (query.platform) { where.push('site_platform = ?'); params.push(query.platform); }
   if (query.unscanned === '1') where.push("site_status IS NULL AND website IS NOT NULL AND website != ''");
   if (query.has_owner === '1') where.push('owner_name IS NOT NULL');
+  if (query.has_owner_email === '1') where.push("owner_email IS NOT NULL AND owner_email != ''");
+  if (query.has_email === '1') where.push("email IS NOT NULL AND email != ''");
   if (query.is_chain === '1') where.push('is_chain = 1');
   if (query.is_chain === '0') where.push('is_chain = 0');
   if (query.has_phone === '1') where.push("(phone IS NOT NULL AND phone != '')");
@@ -137,7 +139,9 @@ router.get('/api/leads/stats', ({ res }) => {
       COALESCE(SUM(CASE WHEN site_status IN ('unreachable','timeout','server_error','not_found') THEN 1 ELSE 0 END), 0) AS broken,
       COALESCE(SUM(CASE WHEN site_status = 'ok' AND mobile_ready = 0 THEN 1 ELSE 0 END), 0) AS not_mobile,
       COALESCE(SUM(is_chain), 0) AS chains,
-      COALESCE(SUM(CASE WHEN owner_name IS NOT NULL THEN 1 ELSE 0 END), 0) AS owners
+      COALESCE(SUM(CASE WHEN owner_name IS NOT NULL THEN 1 ELSE 0 END), 0) AS owners,
+      COALESCE(SUM(CASE WHEN owner_email IS NOT NULL AND owner_email != '' THEN 1 ELSE 0 END), 0) AS owner_emails,
+      COALESCE(SUM(CASE WHEN email IS NOT NULL AND email != '' THEN 1 ELSE 0 END), 0) AS any_email
     FROM leads`);
   const platforms = all(
     "SELECT site_platform AS platform, COUNT(*) AS n FROM leads WHERE site_platform IS NOT NULL GROUP BY site_platform ORDER BY n DESC"
@@ -150,7 +154,7 @@ export const EXPORT_SHAPES = {
   calling: {
     label: 'Calling list',
     hint: 'What you need on the phone and nothing else.',
-    cols: ['name', 'phone', 'owner_name', 'city', 'rating', 'review_count', 'website', 'pitch_angle', 'status'],
+    cols: ['name', 'phone', 'owner_name', 'owner_email', 'city', 'rating', 'review_count', 'website', 'pitch_angle', 'status'],
   },
   full: {
     label: 'Everything',
@@ -158,6 +162,7 @@ export const EXPORT_SHAPES = {
     cols: ['id', 'name', 'category', 'phone', 'email', 'website', 'address', 'city', 'state',
       'postal_code', 'rating', 'review_count', 'status', 'score', 'tags', 'notes',
       'owner_name', 'owner_role', 'owner_source', 'owner_confidence',
+      'owner_email', 'owner_email_kind', 'owner_email_confidence',
       'site_status', 'site_platform', 'runs_ads', 'has_meta_pixel', 'has_google_tag',
       'has_analytics', 'has_google_ads', 'mobile_ready', 'has_ssl',
       'is_chain', 'chain_reason', 'pitch_angle', 'attempts', 'last_contacted_at',
@@ -166,7 +171,7 @@ export const EXPORT_SHAPES = {
   mailmerge: {
     label: 'Mail merge',
     hint: 'Named columns for an email tool or a mail-merge template.',
-    cols: ['owner_name', 'name', 'email', 'phone', 'city', 'category', 'website', 'pitch_angle'],
+    cols: ['owner_name', 'owner_email', 'name', 'phone', 'city', 'category', 'website', 'pitch_angle'],
   },
   crm: {
     label: 'Import into another CRM',
@@ -638,6 +643,15 @@ function applyScan(lead, scan) {
     has_ssl: scan.has_ssl,
     tags_json: JSON.stringify({ tags: scan.tags, ids: scan.tag_ids }),
   };
+  if (scan.owner_email) {
+    patch.owner_email = scan.owner_email.email;
+    patch.owner_email_kind = scan.owner_email.kind;
+    patch.owner_email_confidence = scan.owner_email.score;
+    // Only fill the main email field if it is empty — never overwrite one
+    // you typed in yourself.
+    if (!lead.email) patch.email = scan.owner_email.email;
+  }
+  if (scan.emails?.length) patch.emails_json = JSON.stringify(scan.emails);
   if (scan.owner && (!lead.owner_confidence || scan.owner.confidence > lead.owner_confidence)) {
     patch.owner_name = scan.owner.name;
     patch.owner_role = scan.owner.role;

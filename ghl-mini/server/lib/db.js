@@ -318,6 +318,10 @@ const LATER_COLUMNS = [
   ['leads', 'owner_role', 'TEXT'],
   ['leads', 'owner_source', 'TEXT'],
   ['leads', 'owner_confidence', 'INTEGER'],
+  ['leads', 'owner_email', 'TEXT'],
+  ['leads', 'owner_email_kind', 'TEXT'],
+  ['leads', 'owner_email_confidence', 'INTEGER'],
+  ['leads', 'emails_json', "TEXT NOT NULL DEFAULT '[]'"],
 ];
 
 for (const [table, column, type] of LATER_COLUMNS) {

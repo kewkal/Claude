@@ -67,6 +67,7 @@ router.post('/api/scripts/:id/render', ({ res, params, body }) => {
     ...(lead || {}),
     owner,
     owner_first: owner.split(' ')[0] || '',
+    owner_email: lead?.owner_email || lead?.email || '',
     ...(body.vars || {}),
   };
   json(res, {
