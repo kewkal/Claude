@@ -6,7 +6,9 @@ import {
 const filters = {
   q: '', status: 'all', city: '', has_website: '', min_score: '', sort: 'score',
   runs_ads: '', no_tracking: '', site_broken: '', not_mobile: '', unscanned: '', platform: '',
-  is_chain: '', has_owner: '', has_owner_email: '', page: 1, limit: 50,
+  is_chain: '', has_owner: '', has_owner_email: '',
+  no_chat: '', no_email_tool: '', no_booking: '', busy: '', leaking: '',
+  page: 1, limit: 50,
 };
 let selected = new Set();
 
@@ -92,6 +94,15 @@ function layout(data, stats) {
         <option value="next" ${raw(filters.sort === 'next' ? 'selected' : '')}>Next action</option>
       </select>
       <button class="btn ghost" id="clearBtn">Clear</button>
+    </div>
+
+    <div class="chips" style="margin-bottom:14px">
+      <span class="dim" style="align-self:center;font-size:12.5px;margin-right:4px">Leaking money:</span>
+      <button class="chip ${raw(filters.leaking === '1' ? 'active' : '')}" data-tech="leaking">Worst leaks (${stats.tech.leaking})</button>
+      <button class="chip ${raw(filters.busy === '1' ? 'active' : '')}" data-tech="busy">Busy enough to matter (${stats.tech.busy})</button>
+      <button class="chip ${raw(filters.no_chat === '1' ? 'active' : '')}" data-tech="no_chat">Nothing catches a missed call (${stats.tech.no_chat})</button>
+      <button class="chip ${raw(filters.no_email_tool === '1' ? 'active' : '')}" data-tech="no_email_tool">Dead database (${stats.tech.no_email_tool})</button>
+      <button class="chip ${raw(filters.no_booking === '1' ? 'active' : '')}" data-tech="no_booking">No online booking (${stats.tech.no_booking})</button>
     </div>
 
     ${raw(stats.tech.scanned ? h`<div class="chips" style="margin-bottom:14px">
@@ -194,6 +205,25 @@ function otherEmails(lead) {
   </div>`;
 }
 
+/** What is leaking, in the order the scorer ranked it. */
+function recoveryPanel(lead) {
+  let reasons = [];
+  try { reasons = JSON.parse(lead.recovery_reasons || '[]'); } catch { return ''; }
+  if (!reasons.length) return '';
+  return h`<div class="card" style="border-color:var(--warn);margin-bottom:14px">
+    <div class="bar" style="margin:0 0 8px">
+      <div class="s" style="color:var(--warn);font-weight:650">WHAT THEY ARE LEAKING</div>
+      <span class="pill score ${raw((lead.recovery_score || 0) >= 70 ? 'hot' : 'warm')}">${lead.recovery_score || 0}</span>
+    </div>
+    ${raw(reasons.map((r) => h`<div style="font-size:13px;margin-bottom:5px">· ${r}</div>`).join(''))}
+    ${raw(lead.recovery_chat || lead.recovery_booking || lead.recovery_email_tool ? h`
+      <div class="s dim" style="margin-top:9px;padding-top:9px;border-top:1px solid var(--line)">
+        Already using: ${[lead.recovery_chat, lead.recovery_booking, lead.recovery_email_tool,
+                          lead.recovery_review_tool].filter(Boolean).join(', ')}
+      </div>` : '')}
+  </div>`;
+}
+
 function techBadges(l) {
   const out = [];
   if (l.is_chain) out.push(`<span class="pill lost" title="${esc(l.chain_reason || 'chain')}">chain</span>`);
@@ -207,6 +237,15 @@ function techBadges(l) {
   if (l.has_google_tag || l.has_analytics) out.push('<span class="pill" style="color:#EA4335;border-color:#EA4335" title="Google Tag Manager or GA4">google</span>');
   if (!l.has_meta_pixel && !l.has_google_tag && !l.has_analytics && !l.has_google_ads) {
     out.push('<span class="pill new" title="Live site with no tracking at all">no tags</span>');
+  }
+  if (!l.recovery_chat && (l.site_status === 'ok' || !l.website)) {
+    out.push('<span class="pill new" title="Nothing catches a missed call">no call catch</span>');
+  }
+  if (!l.recovery_email_tool && l.site_status === 'ok') {
+    out.push('<span class="pill callback" title="No email marketing — the customer list is dead">dead list</span>');
+  }
+  if (l.recovery_chat) {
+    out.push(`<span class="pill" title="Already running ${esc(l.recovery_chat)}">${esc(l.recovery_chat)}</span>`);
   }
   if (l.mobile_ready === 0) {
     out.push('<span class="pill callback" title="Their site does not fit a phone screen">not mobile</span>');
@@ -813,6 +852,7 @@ export function leadModal(id, onDone) {
             <div class="s" style="color:var(--accent);font-weight:650;margin-bottom:4px">HOW TO OPEN THE CALL</div>
             <div style="font-size:13.5px">${lead.pitch_angle}</div>
           </div>` : '')}
+          ${raw(recoveryPanel(lead))}
           ${raw(lead.site_status ? h`<h3>What is on their site</h3>
           <div class="list" style="margin-bottom:16px">
             <div class="list-item"><div class="grow"><div class="s">Site</div><div class="t" style="font-size:13px">

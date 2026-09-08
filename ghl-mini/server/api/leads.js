@@ -4,6 +4,8 @@ import { searchPlaces, searchMany, scoreLead } from '../lib/maps.js';
 import { scanSite, runsAds, pitchAngle } from '../lib/sitescan.js';
 import { looksLikeChain, findMultiLocation, matchesKnownBrand } from '../lib/chains.js';
 import { findOwner } from '../lib/owner.js';
+import { scoreRecovery, recoveryPitch } from '../lib/recovery.js';
+import { allSettings } from '../lib/settings.js';
 import { queueRun } from '../lib/agents.js';
 
 export const LEAD_STATUSES = [
@@ -56,6 +58,11 @@ export function buildLeadFilter(query = {}) {
   if (query.unscanned === '1') where.push("site_status IS NULL AND website IS NOT NULL AND website != ''");
   if (query.has_owner === '1') where.push('owner_name IS NOT NULL');
   if (query.has_owner_email === '1') where.push("owner_email IS NOT NULL AND owner_email != ''");
+  if (query.no_chat === '1') where.push("(recovery_chat IS NULL AND (site_status = 'ok' OR website IS NULL OR website = ''))");
+  if (query.no_email_tool === '1') where.push("recovery_email_tool IS NULL AND site_status = 'ok'");
+  if (query.no_booking === '1') where.push("recovery_booking IS NULL AND site_status = 'ok'");
+  if (query.busy === '1') where.push('review_count >= 75');
+  if (query.leaking === '1') where.push('recovery_score >= 60');
   if (query.has_email === '1') where.push("email IS NOT NULL AND email != ''");
   if (query.is_chain === '1') where.push('is_chain = 1');
   if (query.is_chain === '0') where.push('is_chain = 0');
@@ -141,7 +148,12 @@ router.get('/api/leads/stats', ({ res }) => {
       COALESCE(SUM(is_chain), 0) AS chains,
       COALESCE(SUM(CASE WHEN owner_name IS NOT NULL THEN 1 ELSE 0 END), 0) AS owners,
       COALESCE(SUM(CASE WHEN owner_email IS NOT NULL AND owner_email != '' THEN 1 ELSE 0 END), 0) AS owner_emails,
-      COALESCE(SUM(CASE WHEN email IS NOT NULL AND email != '' THEN 1 ELSE 0 END), 0) AS any_email
+      COALESCE(SUM(CASE WHEN email IS NOT NULL AND email != '' THEN 1 ELSE 0 END), 0) AS any_email,
+      COALESCE(SUM(CASE WHEN review_count >= 75 THEN 1 ELSE 0 END), 0) AS busy,
+      COALESCE(SUM(CASE WHEN recovery_score >= 60 THEN 1 ELSE 0 END), 0) AS leaking,
+      COALESCE(SUM(CASE WHEN recovery_chat IS NULL AND (site_status = 'ok' OR website IS NULL OR website = '') THEN 1 ELSE 0 END), 0) AS no_chat,
+      COALESCE(SUM(CASE WHEN recovery_email_tool IS NULL AND site_status = 'ok' THEN 1 ELSE 0 END), 0) AS no_email_tool,
+      COALESCE(SUM(CASE WHEN recovery_booking IS NULL AND site_status = 'ok' THEN 1 ELSE 0 END), 0) AS no_booking
     FROM leads`);
   const platforms = all(
     "SELECT site_platform AS platform, COUNT(*) AS n FROM leads WHERE site_platform IS NOT NULL GROUP BY site_platform ORDER BY n DESC"
@@ -154,7 +166,8 @@ export const EXPORT_SHAPES = {
   calling: {
     label: 'Calling list',
     hint: 'What you need on the phone and nothing else.',
-    cols: ['name', 'phone', 'owner_name', 'owner_email', 'city', 'rating', 'review_count', 'website', 'pitch_angle', 'status'],
+    cols: ['name', 'phone', 'owner_name', 'owner_email', 'city', 'review_count',
+      'recovery_score', 'recovery_chat', 'recovery_email_tool', 'pitch_angle', 'status'],
   },
   full: {
     label: 'Everything',
@@ -627,6 +640,47 @@ router.post('/api/leads/:id/rescore', ({ res, params }) => {
   json(res, { score });
 });
 
+/**
+ * The score reflects whichever offer you are selling. Recovery is the
+ * default: missed calls, a dead database, no-shows. The website profile
+ * is the older "they need a site built" ranking.
+ */
+export function rescore(lead) {
+  const profile = allSettings().scoring_profile || 'recovery';
+  if (profile !== 'recovery') return { score: scoreLead(lead), recovery: null };
+  const r = scoreRecovery(lead);
+  return { score: r.score, recovery: r };
+}
+
+/** Recompute and persist a lead's score under the active profile. */
+export function applyScore(lead) {
+  const { score, recovery } = rescore(lead);
+  if (recovery) {
+    run(
+      `UPDATE leads SET score = ?, recovery_score = ?, recovery_reasons = ?, recovery_gaps = ?,
+       pitch_angle = ?, updated_at = datetime('now') WHERE id = ?`,
+      [score, recovery.score, JSON.stringify(recovery.reasons), JSON.stringify(recovery.gaps),
+       recoveryPitch(lead), lead.id]
+    );
+  } else {
+    run("UPDATE leads SET score = ?, updated_at = datetime('now') WHERE id = ?", [score, lead.id]);
+  }
+  return score;
+}
+
+/** POST /api/leads/rescore-all — after changing the profile. */
+router.post('/api/leads/rescore-all', ({ res }) => {
+  const leads = all('SELECT * FROM leads');
+  tx(() => { for (const lead of leads) applyScore(lead); });
+  const profile = allSettings().scoring_profile || 'recovery';
+  json(res, {
+    rescored: leads.length,
+    profile,
+    top: all('SELECT name, score, recovery_reasons FROM leads ORDER BY score DESC LIMIT 5')
+      .map((l) => ({ name: l.name, score: l.score })),
+  });
+});
+
 /** Write one scan result onto a lead and re-score it. */
 function applyScan(lead, scan) {
   const patch = {
@@ -662,8 +716,28 @@ function applyScan(lead, scan) {
     patch.is_chain = 1;
     patch.chain_reason = 'their own site says independently owned and operated';
   }
-  patch.pitch_angle = pitchAngle(lead, scan);
-  patch.score = scoreLead({ ...lead, ...patch });
+  if (scan.tools) {
+    patch.recovery_chat = scan.tools.chat;
+    patch.recovery_booking = scan.tools.booking;
+    patch.recovery_email_tool = scan.tools.email;
+    patch.recovery_review_tool = scan.tools.review;
+    patch.recovery_form = scan.tools.form ? 1 : 0;
+    patch.recovery_click_to_call = scan.tools.click_to_call ? 1 : 0;
+  }
+
+  const merged = { ...lead, ...patch };
+  const profile = allSettings().scoring_profile || 'recovery';
+  if (profile === 'recovery') {
+    const r = scoreRecovery(merged, scan);
+    patch.recovery_score = r.score;
+    patch.recovery_reasons = JSON.stringify(r.reasons);
+    patch.recovery_gaps = JSON.stringify(r.gaps);
+    patch.score = r.score;
+    patch.pitch_angle = recoveryPitch(merged);
+  } else {
+    patch.pitch_angle = pitchAngle(lead, scan);
+    patch.score = scoreLead(merged);
+  }
 
   const cols = Object.keys(patch);
   run(

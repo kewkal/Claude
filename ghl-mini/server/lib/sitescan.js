@@ -13,6 +13,7 @@
 
 import { findOwner } from './owner.js';
 import { findEmails, pickOwnerEmail, CONTACT_PATHS } from './enrich.js';
+import { detectTools } from './recovery.js';
 
 const UA = 'Mozilla/5.0 (compatible; ghl-mini site checker; +https://github.com/)';
 
@@ -97,6 +98,7 @@ export async function scanSite(url, opts = {}) {
     owner: null,
     owner_email: null,
     emails: [],
+    tools: null,
     pages_read: 0,
   };
   if (!url || !/^https?:\/\//i.test(String(url).trim())) return result;
@@ -144,6 +146,7 @@ export async function scanSite(url, opts = {}) {
   if (platform) result.platform = platform.key;
 
   result.franchise_copy = FRANCHISE_COPY.some((re) => re.test(html));
+  result.tools = detectTools(haystack);
   result.pages_read = 1;
 
   // The page is already fetched, so working out who runs the place is free.
@@ -170,6 +173,13 @@ export async function scanSite(url, opts = {}) {
       if (deeperOwner && (!result.owner || deeperOwner.confidence > result.owner.confidence)) {
         result.owner = deeperOwner;
       }
+
+      const extraTools = detectTools(extra);
+      for (const key of ['chat', 'booking', 'email', 'review']) {
+        if (!result.tools[key] && extraTools[key]) result.tools[key] = extraTools[key];
+      }
+      result.tools.form = result.tools.form || extraTools.form;
+      result.tools.click_to_call = result.tools.click_to_call || extraTools.click_to_call;
 
       const more = findEmails(extra, { ownerName: result.owner?.name || ownerName, domain });
       const merged = new Map([...emails, ...more].map((e) => [e.email, e]));

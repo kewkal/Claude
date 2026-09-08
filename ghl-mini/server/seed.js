@@ -4,9 +4,9 @@ import { scoreLead } from './lib/maps.js';
 /** Starter call and email scripts. Written to be used, not admired. */
 const SCRIPTS = [
   {
-    name: 'Cold call — no website',
+    name: 'Cold call — missed calls',
     kind: 'call',
-    segment: 'no-website',
+    segment: 'recovery',
     is_default: 1,
     body: `OPEN (say it fast, sound busy)
 "Hey, is this {{name}}? — Great. My name's [YOU], I'll be quick. I build websites for {{category}} companies around {{city}}. I looked you up and you've got {{review_count}} reviews at {{rating}} stars, which is better than most, but I couldn't find a website anywhere. Is that on purpose or just never got to it?"

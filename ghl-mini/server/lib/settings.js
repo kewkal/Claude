@@ -61,6 +61,11 @@ export const DEFAULTS = {
 
   automation_sequences: '1',
 
+  // Which idea of a good lead the score reflects.
+  //   recovery = missed calls, dead database, no-shows (the default)
+  //   website  = they need a website built
+  scoring_profile: 'recovery',
+
   booking_title: 'Discovery call',
   booking_duration_min: '30',
   daily_target_hours: '6',

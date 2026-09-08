@@ -322,6 +322,15 @@ const LATER_COLUMNS = [
   ['leads', 'owner_email_kind', 'TEXT'],
   ['leads', 'owner_email_confidence', 'INTEGER'],
   ['leads', 'emails_json', "TEXT NOT NULL DEFAULT '[]'"],
+  ['leads', 'recovery_score', 'INTEGER'],
+  ['leads', 'recovery_reasons', 'TEXT'],
+  ['leads', 'recovery_gaps', "TEXT NOT NULL DEFAULT '{}'"],
+  ['leads', 'recovery_chat', 'TEXT'],
+  ['leads', 'recovery_booking', 'TEXT'],
+  ['leads', 'recovery_email_tool', 'TEXT'],
+  ['leads', 'recovery_review_tool', 'TEXT'],
+  ['leads', 'recovery_form', 'INTEGER'],
+  ['leads', 'recovery_click_to_call', 'INTEGER'],
 ];
 
 for (const [table, column, type] of LATER_COLUMNS) {
@@ -335,6 +344,7 @@ for (const [table, column, type] of LATER_COLUMNS) {
 db.exec('CREATE INDEX IF NOT EXISTS idx_leads_runs_ads ON leads(runs_ads)');
 db.exec('CREATE INDEX IF NOT EXISTS idx_leads_site_status ON leads(site_status)');
 db.exec('CREATE INDEX IF NOT EXISTS idx_leads_is_chain ON leads(is_chain)');
+db.exec('CREATE INDEX IF NOT EXISTS idx_leads_recovery ON leads(recovery_score DESC)');
 
 /** Run a SELECT and return all rows. */
 export function all(sql, params = []) {

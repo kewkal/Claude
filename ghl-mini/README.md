@@ -111,6 +111,33 @@ To go wider, work outward: suburbs before the next metro (people search
 "roofer near me", not "roofer in the nearest big city"), then adjacent trades —
 roofer, gutters, siding, windows.
 
+### Scoring for a revenue recovery offer
+
+The score answers one question: **how much money is leaking out of this
+business that you could plug?** Not "do they need a website".
+
+| Signal | Why it matters |
+|---|---|
+| **No website at all** | Every enquiry depends on someone picking up. Also the easiest conversation — nothing to defend. |
+| **Their site is down** | Every click on it is lost outright, and they almost certainly do not know. |
+| **No chat or text widget** | A missed call is simply a lost job. Nothing catches the overflow. |
+| **No email marketing** | Every past customer is a dead contact. A big review count means a big wasted list. |
+| **No online booking** | Every appointment is arranged by hand and forgotten by hand. |
+| **Running ads** | The leads being dropped are ones they paid for. |
+| **Review count** | The multiplier. A business doing four jobs a month has nothing worth recovering. |
+
+Two things push a lead **down**: already running Podium, Jobber, Mailchimp and
+the like (someone has sold them this before), and being enormous — past ~2,000
+reviews there is a marketing department and a gatekeeper, and a cold call does
+not reach the owner.
+
+Each lead carries the specific list of what it is leaking, which is the opening
+of the call. Filter chips: **Worst leaks**, **Busy enough to matter**, **Nothing
+catches a missed call**, **Dead database**, **No online booking**.
+
+Set `scoring_profile` to `website` in Settings for the older "they need a site
+built" ranking, then run `POST /api/leads/rescore-all`.
+
 **Check websites** opens each lead's site and reads what is running on it:
 
 | Signal | What it tells you |
