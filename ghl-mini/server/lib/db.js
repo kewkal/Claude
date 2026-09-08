@@ -331,6 +331,17 @@ const LATER_COLUMNS = [
   ['leads', 'recovery_review_tool', 'TEXT'],
   ['leads', 'recovery_form', 'INTEGER'],
   ['leads', 'recovery_click_to_call', 'INTEGER'],
+  ['leads', 'inbound_call_tracking', 'TEXT'],
+  ['leads', 'inbound_conversion_tracking', 'INTEGER'],
+  ['leads', 'inbound_enhanced_conversions', 'INTEGER'],
+  ['leads', 'inbound_service_pages', 'INTEGER'],
+  ['leads', 'inbound_financing', 'TEXT'],
+  ['leads', 'inbound_review_widget', 'INTEGER'],
+  ['leads', 'inbound_trust', "TEXT NOT NULL DEFAULT '[]'"],
+  ['leads', 'inbound_form_fields', 'INTEGER'],
+  ['leads', 'capture_score', 'INTEGER'],
+  ['leads', 'convert_score', 'INTEGER'],
+  ['leads', 'expansion_score', 'INTEGER'],
 ];
 
 for (const [table, column, type] of LATER_COLUMNS) {

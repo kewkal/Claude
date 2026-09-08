@@ -8,6 +8,7 @@ const filters = {
   runs_ads: '', no_tracking: '', site_broken: '', not_mobile: '', unscanned: '', platform: '',
   is_chain: '', has_owner: '', has_owner_email: '',
   no_chat: '', no_email_tool: '', no_booking: '', busy: '', leaking: '',
+  no_call_tracking: '', ads_no_tracking: '', no_financing: '', big_expansion: '',
   page: 1, limit: 50,
 };
 let selected = new Set();
@@ -96,8 +97,16 @@ function layout(data, stats) {
       <button class="btn ghost" id="clearBtn">Clear</button>
     </div>
 
+    <div class="chips" style="margin-bottom:10px">
+      <span class="dim" style="align-self:center;font-size:12.5px;margin-right:4px">Capture &amp; convert (the expansion):</span>
+      <button class="chip ${raw(filters.ads_no_tracking === '1' ? 'active' : '')}" data-tech="ads_no_tracking">Ads, no conversion tracking (${stats.tech.ads_no_tracking})</button>
+      <button class="chip ${raw(filters.no_call_tracking === '1' ? 'active' : '')}" data-tech="no_call_tracking">No call tracking (${stats.tech.no_call_tracking})</button>
+      <button class="chip ${raw(filters.no_financing === '1' ? 'active' : '')}" data-tech="no_financing">No financing (${stats.tech.no_financing})</button>
+      <button class="chip ${raw(filters.big_expansion === '1' ? 'active' : '')}" data-tech="big_expansion">Big expansion after the first sale (${stats.tech.big_expansion})</button>
+    </div>
+
     <div class="chips" style="margin-bottom:14px">
-      <span class="dim" style="align-self:center;font-size:12.5px;margin-right:4px">Leaking money:</span>
+      <span class="dim" style="align-self:center;font-size:12.5px;margin-right:4px">Component 3 — what you open on:</span>
       <button class="chip ${raw(filters.leaking === '1' ? 'active' : '')}" data-tech="leaking">Worst leaks (${stats.tech.leaking})</button>
       <button class="chip ${raw(filters.busy === '1' ? 'active' : '')}" data-tech="busy">Busy enough to matter (${stats.tech.busy})</button>
       <button class="chip ${raw(filters.no_chat === '1' ? 'active' : '')}" data-tech="no_chat">Nothing catches a missed call (${stats.tech.no_chat})</button>
@@ -210,11 +219,22 @@ function recoveryPanel(lead) {
   let reasons = [];
   try { reasons = JSON.parse(lead.recovery_reasons || '[]'); } catch { return ''; }
   if (!reasons.length) return '';
-  return h`<div class="card" style="border-color:var(--warn);margin-bottom:14px">
-    <div class="bar" style="margin:0 0 8px">
-      <div class="s" style="color:var(--warn);font-weight:650">WHAT THEY ARE LEAKING</div>
-      <span class="pill score ${raw((lead.recovery_score || 0) >= 70 ? 'hot' : 'warm')}">${lead.recovery_score || 0}</span>
+  const bar = (label, score, note) => h`<div style="margin-bottom:7px">
+    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px">
+      <span>${label}</span><span class="dim">${score || 0}${note ? ` · ${note}` : ''}</span>
     </div>
+    <div class="progress"><i style="width:${score || 0}%"></i></div>
+  </div>`;
+  return h`<div class="card" style="border-color:var(--warn);margin-bottom:14px">
+    <div class="bar" style="margin:0 0 10px">
+      <div class="s" style="color:var(--warn);font-weight:650">THE GAP, BY COMPONENT</div>
+      <span class="pill score ${raw((lead.score || 0) >= 70 ? 'hot' : 'warm')}">${lead.score || 0}</span>
+    </div>
+    ${raw(bar('3 · Recover paid opportunities', lead.recovery_score, 'what you open on'))}
+    ${raw(bar('1 · Capture demand', lead.capture_score, ''))}
+    ${raw(bar('2 · Convert demand', lead.convert_score, ''))}
+    ${raw(lead.expansion_score != null ? h`<div class="hint" style="margin:8px 0 12px">
+      Expansion after the first engagement: <b>${lead.expansion_score}</b>/100</div>` : '')}
     ${raw(reasons.map((r) => h`<div style="font-size:13px;margin-bottom:5px">· ${r}</div>`).join(''))}
     ${raw(lead.recovery_chat || lead.recovery_booking || lead.recovery_email_tool ? h`
       <div class="s dim" style="margin-top:9px;padding-top:9px;border-top:1px solid var(--line)">

@@ -64,7 +64,15 @@ export const DEFAULTS = {
   // Which idea of a good lead the score reflects.
   //   recovery = missed calls, dead database, no-shows (the default)
   //   website  = they need a website built
-  scoring_profile: 'recovery',
+  scoring_profile: 'inbound',
+  // Which component of the Inbound Revenue System you open on. The score
+  // ranks leads by how good THAT conversation is; the other two become
+  // the expansion once the first engagement lands.
+  //   recover = Component 3, recovering paid opportunities (the default)
+  //   capture = Component 1, Google Search and tracking
+  //   convert = Component 2, landing pages and CRO
+  //   system  = all three weighted evenly
+  lead_with: 'recover',
 
   booking_title: 'Discovery call',
   booking_duration_min: '30',

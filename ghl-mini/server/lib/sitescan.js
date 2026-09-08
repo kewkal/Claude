@@ -14,6 +14,7 @@
 import { findOwner } from './owner.js';
 import { findEmails, pickOwnerEmail, CONTACT_PATHS } from './enrich.js';
 import { detectTools } from './recovery.js';
+import { detectInbound } from './inbound.js';
 
 const UA = 'Mozilla/5.0 (compatible; ghl-mini site checker; +https://github.com/)';
 
@@ -99,6 +100,7 @@ export async function scanSite(url, opts = {}) {
     owner_email: null,
     emails: [],
     tools: null,
+    inbound: null,
     pages_read: 0,
   };
   if (!url || !/^https?:\/\//i.test(String(url).trim())) return result;
@@ -147,6 +149,7 @@ export async function scanSite(url, opts = {}) {
 
   result.franchise_copy = FRANCHISE_COPY.some((re) => re.test(html));
   result.tools = detectTools(haystack);
+  result.inbound = detectInbound(haystack, res.url);
   result.pages_read = 1;
 
   // The page is already fetched, so working out who runs the place is free.
@@ -178,6 +181,17 @@ export async function scanSite(url, opts = {}) {
       for (const key of ['chat', 'booking', 'email', 'review']) {
         if (!result.tools[key] && extraTools[key]) result.tools[key] = extraTools[key];
       }
+      const extraInbound = detectInbound(extra, res.url);
+      for (const key of ['call_tracking', 'financing']) {
+        if (!result.inbound[key] && extraInbound[key]) result.inbound[key] = extraInbound[key];
+      }
+      result.inbound.google_ads = result.inbound.google_ads || extraInbound.google_ads;
+      result.inbound.conversion_tracking = result.inbound.conversion_tracking || extraInbound.conversion_tracking;
+      result.inbound.review_widget = result.inbound.review_widget || extraInbound.review_widget;
+      result.inbound.service_pages = Math.max(result.inbound.service_pages, extraInbound.service_pages);
+      result.inbound.form_fields = Math.max(result.inbound.form_fields, extraInbound.form_fields);
+      result.inbound.trust = [...new Set([...result.inbound.trust, ...extraInbound.trust])];
+
       result.tools.form = result.tools.form || extraTools.form;
       result.tools.click_to_call = result.tools.click_to_call || extraTools.click_to_call;
 

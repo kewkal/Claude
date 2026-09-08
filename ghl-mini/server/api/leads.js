@@ -5,6 +5,7 @@ import { scanSite, runsAds, pitchAngle } from '../lib/sitescan.js';
 import { looksLikeChain, findMultiLocation, matchesKnownBrand } from '../lib/chains.js';
 import { findOwner } from '../lib/owner.js';
 import { scoreRecovery, recoveryPitch } from '../lib/recovery.js';
+import { scoreInbound, inboundPitch } from '../lib/inbound.js';
 import { allSettings } from '../lib/settings.js';
 import { queueRun } from '../lib/agents.js';
 
@@ -63,6 +64,10 @@ export function buildLeadFilter(query = {}) {
   if (query.no_booking === '1') where.push("recovery_booking IS NULL AND site_status = 'ok'");
   if (query.busy === '1') where.push('review_count >= 75');
   if (query.leaking === '1') where.push('recovery_score >= 60');
+  if (query.no_call_tracking === '1') where.push("inbound_call_tracking IS NULL AND site_status = 'ok'");
+  if (query.ads_no_tracking === '1') where.push("has_google_ads = 1 AND inbound_conversion_tracking = 0");
+  if (query.no_financing === '1') where.push("inbound_financing IS NULL AND site_status = 'ok'");
+  if (query.big_expansion === '1') where.push('expansion_score >= 60');
   if (query.has_email === '1') where.push("email IS NOT NULL AND email != ''");
   if (query.is_chain === '1') where.push('is_chain = 1');
   if (query.is_chain === '0') where.push('is_chain = 0');
@@ -153,7 +158,11 @@ router.get('/api/leads/stats', ({ res }) => {
       COALESCE(SUM(CASE WHEN recovery_score >= 60 THEN 1 ELSE 0 END), 0) AS leaking,
       COALESCE(SUM(CASE WHEN recovery_chat IS NULL AND (site_status = 'ok' OR website IS NULL OR website = '') THEN 1 ELSE 0 END), 0) AS no_chat,
       COALESCE(SUM(CASE WHEN recovery_email_tool IS NULL AND site_status = 'ok' THEN 1 ELSE 0 END), 0) AS no_email_tool,
-      COALESCE(SUM(CASE WHEN recovery_booking IS NULL AND site_status = 'ok' THEN 1 ELSE 0 END), 0) AS no_booking
+      COALESCE(SUM(CASE WHEN recovery_booking IS NULL AND site_status = 'ok' THEN 1 ELSE 0 END), 0) AS no_booking,
+      COALESCE(SUM(CASE WHEN inbound_call_tracking IS NULL AND site_status = 'ok' THEN 1 ELSE 0 END), 0) AS no_call_tracking,
+      COALESCE(SUM(CASE WHEN has_google_ads = 1 AND inbound_conversion_tracking = 0 THEN 1 ELSE 0 END), 0) AS ads_no_tracking,
+      COALESCE(SUM(CASE WHEN inbound_financing IS NULL AND site_status = 'ok' THEN 1 ELSE 0 END), 0) AS no_financing,
+      COALESCE(SUM(CASE WHEN expansion_score >= 60 THEN 1 ELSE 0 END), 0) AS big_expansion
     FROM leads`);
   const platforms = all(
     "SELECT site_platform AS platform, COUNT(*) AS n FROM leads WHERE site_platform IS NOT NULL GROUP BY site_platform ORDER BY n DESC"
@@ -646,15 +655,32 @@ router.post('/api/leads/:id/rescore', ({ res, params }) => {
  * is the older "they need a site built" ranking.
  */
 export function rescore(lead) {
-  const profile = allSettings().scoring_profile || 'recovery';
-  if (profile !== 'recovery') return { score: scoreLead(lead), recovery: null };
-  const r = scoreRecovery(lead);
-  return { score: r.score, recovery: r };
+  const s = allSettings();
+  const profile = s.scoring_profile || 'inbound';
+  if (profile === 'website') return { score: scoreLead(lead), inbound: null };
+  if (profile === 'recovery') {
+    const r = scoreRecovery(lead);
+    return { score: r.score, recovery: r, inbound: null };
+  }
+  const r = scoreInbound(lead, null, s.lead_with || 'recover');
+  return { score: r.score, inbound: r };
 }
 
 /** Recompute and persist a lead's score under the active profile. */
 export function applyScore(lead) {
-  const { score, recovery } = rescore(lead);
+  const { score, recovery, inbound } = rescore(lead);
+  if (inbound) {
+    run(
+      `UPDATE leads SET score = ?, recovery_score = ?, capture_score = ?, convert_score = ?,
+       expansion_score = ?, recovery_reasons = ?, recovery_gaps = ?, pitch_angle = ?,
+       updated_at = datetime('now') WHERE id = ?`,
+      [score, inbound.recover.score, inbound.capture.score, inbound.convert.score,
+       inbound.expansion, JSON.stringify(inbound.reasons),
+       JSON.stringify({ weakest: inbound.weakest, strengths: inbound.strengths }),
+       inboundPitch(lead, inbound), lead.id]
+    );
+    return score;
+  }
   if (recovery) {
     run(
       `UPDATE leads SET score = ?, recovery_score = ?, recovery_reasons = ?, recovery_gaps = ?,
@@ -725,9 +751,32 @@ function applyScan(lead, scan) {
     patch.recovery_click_to_call = scan.tools.click_to_call ? 1 : 0;
   }
 
+  if (scan.inbound) {
+    patch.inbound_call_tracking = scan.inbound.call_tracking;
+    patch.inbound_conversion_tracking = scan.inbound.conversion_tracking ? 1 : 0;
+    patch.inbound_enhanced_conversions = scan.inbound.enhanced_conversions ? 1 : 0;
+    patch.inbound_service_pages = scan.inbound.service_pages;
+    patch.inbound_financing = scan.inbound.financing;
+    patch.inbound_review_widget = scan.inbound.review_widget ? 1 : 0;
+    patch.inbound_trust = JSON.stringify(scan.inbound.trust);
+    patch.inbound_form_fields = scan.inbound.form_fields;
+    if (scan.inbound.google_ads) patch.has_google_ads = 1;
+  }
+
   const merged = { ...lead, ...patch };
-  const profile = allSettings().scoring_profile || 'recovery';
-  if (profile === 'recovery') {
+  const settings = allSettings();
+  const profile = settings.scoring_profile || 'inbound';
+  if (profile === 'inbound') {
+    const r = scoreInbound(merged, scan.inbound, settings.lead_with || 'recover');
+    patch.score = r.score;
+    patch.recovery_score = r.recover.score;
+    patch.capture_score = r.capture.score;
+    patch.convert_score = r.convert.score;
+    patch.expansion_score = r.expansion;
+    patch.recovery_reasons = JSON.stringify(r.reasons);
+    patch.recovery_gaps = JSON.stringify({ weakest: r.weakest, strengths: r.strengths });
+    patch.pitch_angle = inboundPitch(merged, r);
+  } else if (profile === 'recovery') {
     const r = scoreRecovery(merged, scan);
     patch.recovery_score = r.score;
     patch.recovery_reasons = JSON.stringify(r.reasons);

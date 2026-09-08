@@ -111,7 +111,45 @@ To go wider, work outward: suburbs before the next metro (people search
 "roofer near me", not "roofer in the nearest big city"), then adjacent trades —
 roofer, gutters, siding, windows.
 
-### Scoring for a revenue recovery offer
+### Scoring for the Inbound Revenue System
+
+The score answers: **how good is the conversation you actually open with?**
+
+You lead with **Component 3 — recover paid opportunities** — so that is what the
+ranking is built on. Components 1 and 2 are scored too, as the expansion once
+the first engagement lands.
+
+**Component 3 · Recover** (55% of the score — what you open on)
+
+| Missing | The pitch |
+|---|---|
+| Chat or text widget | Missed-call text-back |
+| Email marketing | Unsold estimates, deferred repairs, lapsed customers |
+| Online booking | Appointment reminders and no-show recovery |
+
+**Component 1 · Capture** (30% — and the reason the opportunities are *paid*)
+
+| Signal | Why it matters |
+|---|---|
+| **Google Ads with no conversion tracking** | The sharpest gap there is. They optimise on nothing. |
+| No call tracking | Calls are how this trade converts, and half the spend is invisible |
+| No service-specific pages | Nothing for a specific search to land on |
+| No enhanced conversions | No path to feeding sold jobs back to Google |
+
+**Component 2 · Convert** (15%) — mobile, SSL, tappable phone number, consumer
+financing (Wisetack, GreenSky, Acorn, Hearth), reviews on the page, trust
+language, and form length.
+
+Every lead carries three component scores plus an **expansion** figure. A
+business whose recovery gap is small but whose capture gap is wide is a modest
+first sale and a large second one — worth knowing before you dial.
+
+Volume still governs, giants are still buried, chains are still worthless.
+
+Change what you open on with `lead_with` in Settings (`recover`, `capture`,
+`convert`, `system`) and run `POST /api/leads/rescore-all`.
+
+### The older recovery-only profile
 
 The score answers one question: **how much money is leaking out of this
 business that you could plug?** Not "do they need a website".
