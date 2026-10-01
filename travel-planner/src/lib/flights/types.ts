@@ -86,7 +86,10 @@ export interface FlightOption {
   pricePerPerson: number | null;
   carbon?: { thisFlightKg: number; typicalKg: number | null; differencePct: number | null };
   airlines: string[];
+  /** Every carrier on the itinerary is a budget carrier. */
   isBudgetCarrier: boolean;
+  /** At least one carrier on the itinerary is a budget carrier. */
+  hasBudgetCarrier: boolean;
   flags: FlightFlag[];
   departureToken?: string;
   bookingToken?: string;

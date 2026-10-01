@@ -49,8 +49,8 @@ export function filterFlights(options: FlightOption[], f: FlightFilters): Flight
     if (o.stops === 0 && !f.stops.nonstop) return false;
     if (o.stops === 1 && !f.stops.one) return false;
     if (o.stops >= 2 && !f.stops.twoPlus) return false;
-    if (f.carrier === "budget" && !o.isBudgetCarrier) return false;
-    if (f.carrier === "full_service" && o.isBudgetCarrier) return false;
+    if (f.carrier === "budget" && !o.hasBudgetCarrier) return false;
+    if (f.carrier === "full_service" && o.hasBudgetCarrier) return false;
     if (f.maxPriceTotal !== null && (o.priceTotal === null || o.priceTotal > f.maxPriceTotal)) return false;
     const dep = hourDecimal(o.segments[0]?.from.time ?? "");
     if (dep !== null && (dep < f.departWindow[0] || dep > f.departWindow[1])) return false;

@@ -1,0 +1,62 @@
+{
+ "search_metadata": {
+  "id": "fixture-events",
+  "status": "Success"
+ },
+ "events_results": [
+  {
+   "title": "Sample Jazz Night",
+   "date": {
+    "start_date": "Nov 14",
+    "when": "Sat, Nov 14, 9 \u2013 11:30 PM"
+   },
+   "address": [
+    "Sample Hall",
+    "Lisbon, Portugal"
+   ],
+   "link": "https://example.com/fixture-event-1",
+   "ticket_info": [
+    {
+     "source": "Ticketline",
+     "link": "https://example.com/fixture-tickets-1",
+     "link_type": "tickets"
+    }
+   ],
+   "venue": {
+    "name": "Sample Hall",
+    "rating": 4.6,
+    "reviews": 1500,
+    "link": "https://example.com/venue"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpev1/400/300",
+   "description": "Fixture event."
+  },
+  {
+   "title": "Sample Food Festival",
+   "date": {
+    "start_date": "Nov 15",
+    "when": "Sun, Nov 15, 12 \u2013 8 PM"
+   },
+   "address": [
+    "Sample Riverfront",
+    "Lisbon"
+   ],
+   "link": "https://example.com/fixture-event-2",
+   "ticket_info": [],
+   "venue": {
+    "name": "Sample Riverfront"
+   }
+  },
+  {
+   "title": "Sample December Concert",
+   "date": {
+    "start_date": "Dec 20",
+    "when": "Sun, Dec 20, 8 PM"
+   },
+   "address": [
+    "Sample Arena"
+   ],
+   "link": "https://example.com/fixture-event-3"
+  }
+ ]
+}

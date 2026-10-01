@@ -117,6 +117,7 @@ export function normalizeOption(o: Raw, paying: number, best: boolean): FlightOp
     carbon,
     airlines,
     isBudgetCarrier: airlines.length > 0 && airlines.every(isBudgetCarrier),
+    hasBudgetCarrier: airlines.some(isBudgetCarrier),
     flags: computeFlags(segments, layovers, JSON.stringify(o)),
     departureToken: str(o.departure_token) || undefined,
     bookingToken: str(o.booking_token) || undefined,

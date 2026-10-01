@@ -44,8 +44,9 @@ describe("normalizeFlights", () => {
     expect(byNum("AA 46").stops).toBe(2);
   });
 
-  it("marks all-budget itineraries only", () => {
+  it("distinguishes all-budget from part-budget itineraries", () => {
     expect(byNum("NK 1432").isBudgetCarrier).toBe(false); // Spirit + TAP
+    expect(byNum("NK 1432").hasBudgetCarrier).toBe(true);
     expect(byNum("UA 64").isBudgetCarrier).toBe(false);
   });
 
@@ -71,7 +72,8 @@ describe("sorting and filtering", () => {
     expect(filterFlights(options, { ...f, maxPriceTotal: 1300 }).map((o) => o.priceTotal).sort()).toEqual([1298, 998]);
     expect(filterFlights(options, { ...f, maxLayoverMin: 240 }).every((o) => o.layovers.every((l) => l.durationMin <= 240))).toBe(true);
     expect(filterFlights(options, { ...f, departWindow: [12, 18] }).every((o) => /1[2-8]:/.test(o.segments[0].from.time))).toBe(true);
-    expect(filterFlights(options, { ...f, carrier: "budget" })).toHaveLength(0);
+    expect(filterFlights(options, { ...f, carrier: "budget" })).toHaveLength(1);
+    expect(filterFlights(options, { ...f, carrier: "full_service" })).toHaveLength(5);
   });
 
   it("explains empty results", () => {

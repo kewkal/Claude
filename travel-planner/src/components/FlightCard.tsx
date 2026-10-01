@@ -53,9 +53,9 @@ export function FlightCard({
           <div className="flex flex-wrap items-center gap-1.5">
             {o.best && <Badge tone="accent">Google &quot;best&quot;</Badge>}
             <span className="truncate text-sm font-semibold">{o.airlines.join(" + ")}</span>
-            <Badge tone={o.isBudgetCarrier ? "warn" : "neutral"}>{o.isBudgetCarrier ? "Budget" : "Full-service"}</Badge>
+            <Badge tone={o.hasBudgetCarrier ? "warn" : "neutral"}>{o.isBudgetCarrier ? "Budget" : o.hasBudgetCarrier ? "Part budget" : "Full-service"}</Badge>
           </div>
-          <p className="mt-1 text-xl font-bold tabular-nums">
+          <p className="mt-1 text-lg font-bold tabular-nums">
             {fmtTime(first.from.time)} – {fmtTime(last.to.time)}
             {plusDays > 0 && <sup className="ml-0.5 text-xs text-danger">+{plusDays}</sup>}
           </p>
