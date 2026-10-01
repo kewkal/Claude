@@ -1,0 +1,93 @@
+{
+ "search_metadata": {
+  "id": "fixture-maps-outdoors",
+  "status": "Success"
+ },
+ "local_results": [
+  {
+   "position": 1,
+   "title": "Sample Hilltop Park",
+   "place_id": "FIXTURE_PLACE_SAMPLE_HILLTOP_PARK",
+   "data_id": "0xFIX8fc8e3:0x0",
+   "gps_coordinates": {
+    "latitude": 38.7286,
+    "longitude": -9.154
+   },
+   "rating": 4.6,
+   "reviews": 9000,
+   "type": "Park",
+   "types": [
+    "Park"
+   ],
+   "address": "100 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace75/400/300"
+  },
+  {
+   "position": 2,
+   "title": "Sample Coastal Cliff Walk",
+   "place_id": "FIXTURE_PLACE_SAMPLE_COASTAL_CLIFF_WALK",
+   "data_id": "0xFIX447cf0e:0x1",
+   "gps_coordinates": {
+    "latitude": 38.78,
+    "longitude": -9.499
+   },
+   "rating": 4.8,
+   "reviews": 4200,
+   "type": "Hiking area",
+   "types": [
+    "Hiking area"
+   ],
+   "address": "101 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace926/400/300"
+  },
+  {
+   "position": 3,
+   "title": "Sample Surf School",
+   "place_id": "FIXTURE_PLACE_SAMPLE_SURF_SCHOOL",
+   "data_id": "0xFIX5d61e5e:0x2",
+   "gps_coordinates": {
+    "latitude": 38.678,
+    "longitude": -9.329
+   },
+   "rating": 4.9,
+   "reviews": 610,
+   "type": "Surf school",
+   "types": [
+    "Surf school"
+   ],
+   "address": "102 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace558/400/300",
+   "price": "$45"
+  }
+ ]
+}

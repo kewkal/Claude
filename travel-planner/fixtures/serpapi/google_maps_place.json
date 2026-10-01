@@ -1,0 +1,389 @@
+{
+ "search_metadata": {
+  "id": "fixture-place",
+  "status": "Success"
+ },
+ "place_results": {
+  "position": 1,
+  "title": "Sample Castle Viewpoint",
+  "place_id": "FIXTURE_PLACE_SAMPLE_CASTLE_VIEWPOINT",
+  "data_id": "0xFIX2f8f2f2:0x0",
+  "gps_coordinates": {
+   "latitude": 38.7139,
+   "longitude": -9.1335
+  },
+  "rating": 4.6,
+  "reviews": 98000,
+  "type": "Castle",
+  "types": [
+   "Castle"
+  ],
+  "address": "100 Sample Street, Lisbon, Portugal",
+  "open_state": "Open \u00b7 Closes 6 PM",
+  "operating_hours": {
+   "monday": "10 AM\u20136 PM",
+   "tuesday": "10 AM\u20136 PM",
+   "wednesday": "10 AM\u20136 PM",
+   "thursday": "10 AM\u20136 PM",
+   "friday": "10 AM\u20138 PM",
+   "saturday": "9 AM\u20138 PM",
+   "sunday": "9 AM\u20136 PM"
+  },
+  "thumbnail": "https://picsum.photos/seed/tpplace554/400/300",
+  "price": "\u20ac15",
+  "popular_times": {
+   "graph_results": {
+    "monday": [
+     {
+      "time": "9 AM",
+      "busyness_score": 10
+     },
+     {
+      "time": "10 AM",
+      "busyness_score": 25
+     },
+     {
+      "time": "11 AM",
+      "busyness_score": 45
+     },
+     {
+      "time": "12 PM",
+      "busyness_score": 70
+     },
+     {
+      "time": "1 PM",
+      "busyness_score": 85
+     },
+     {
+      "time": "2 PM",
+      "busyness_score": 90
+     },
+     {
+      "time": "3 PM",
+      "busyness_score": 88
+     },
+     {
+      "time": "4 PM",
+      "busyness_score": 80
+     },
+     {
+      "time": "5 PM",
+      "busyness_score": 70
+     },
+     {
+      "time": "6 PM",
+      "busyness_score": 60
+     },
+     {
+      "time": "7 PM",
+      "busyness_score": 50
+     },
+     {
+      "time": "8 PM",
+      "busyness_score": 30
+     }
+    ],
+    "tuesday": [
+     {
+      "time": "9 AM",
+      "busyness_score": 10
+     },
+     {
+      "time": "10 AM",
+      "busyness_score": 25
+     },
+     {
+      "time": "11 AM",
+      "busyness_score": 45
+     },
+     {
+      "time": "12 PM",
+      "busyness_score": 70
+     },
+     {
+      "time": "1 PM",
+      "busyness_score": 85
+     },
+     {
+      "time": "2 PM",
+      "busyness_score": 90
+     },
+     {
+      "time": "3 PM",
+      "busyness_score": 88
+     },
+     {
+      "time": "4 PM",
+      "busyness_score": 80
+     },
+     {
+      "time": "5 PM",
+      "busyness_score": 70
+     },
+     {
+      "time": "6 PM",
+      "busyness_score": 60
+     },
+     {
+      "time": "7 PM",
+      "busyness_score": 50
+     },
+     {
+      "time": "8 PM",
+      "busyness_score": 30
+     }
+    ],
+    "wednesday": [
+     {
+      "time": "9 AM",
+      "busyness_score": 10
+     },
+     {
+      "time": "10 AM",
+      "busyness_score": 25
+     },
+     {
+      "time": "11 AM",
+      "busyness_score": 45
+     },
+     {
+      "time": "12 PM",
+      "busyness_score": 70
+     },
+     {
+      "time": "1 PM",
+      "busyness_score": 85
+     },
+     {
+      "time": "2 PM",
+      "busyness_score": 90
+     },
+     {
+      "time": "3 PM",
+      "busyness_score": 88
+     },
+     {
+      "time": "4 PM",
+      "busyness_score": 80
+     },
+     {
+      "time": "5 PM",
+      "busyness_score": 70
+     },
+     {
+      "time": "6 PM",
+      "busyness_score": 60
+     },
+     {
+      "time": "7 PM",
+      "busyness_score": 50
+     },
+     {
+      "time": "8 PM",
+      "busyness_score": 30
+     }
+    ],
+    "thursday": [
+     {
+      "time": "9 AM",
+      "busyness_score": 10
+     },
+     {
+      "time": "10 AM",
+      "busyness_score": 25
+     },
+     {
+      "time": "11 AM",
+      "busyness_score": 45
+     },
+     {
+      "time": "12 PM",
+      "busyness_score": 70
+     },
+     {
+      "time": "1 PM",
+      "busyness_score": 85
+     },
+     {
+      "time": "2 PM",
+      "busyness_score": 90
+     },
+     {
+      "time": "3 PM",
+      "busyness_score": 88
+     },
+     {
+      "time": "4 PM",
+      "busyness_score": 80
+     },
+     {
+      "time": "5 PM",
+      "busyness_score": 70
+     },
+     {
+      "time": "6 PM",
+      "busyness_score": 60
+     },
+     {
+      "time": "7 PM",
+      "busyness_score": 50
+     },
+     {
+      "time": "8 PM",
+      "busyness_score": 30
+     }
+    ],
+    "friday": [
+     {
+      "time": "9 AM",
+      "busyness_score": 10
+     },
+     {
+      "time": "10 AM",
+      "busyness_score": 25
+     },
+     {
+      "time": "11 AM",
+      "busyness_score": 45
+     },
+     {
+      "time": "12 PM",
+      "busyness_score": 70
+     },
+     {
+      "time": "1 PM",
+      "busyness_score": 85
+     },
+     {
+      "time": "2 PM",
+      "busyness_score": 90
+     },
+     {
+      "time": "3 PM",
+      "busyness_score": 88
+     },
+     {
+      "time": "4 PM",
+      "busyness_score": 80
+     },
+     {
+      "time": "5 PM",
+      "busyness_score": 70
+     },
+     {
+      "time": "6 PM",
+      "busyness_score": 60
+     },
+     {
+      "time": "7 PM",
+      "busyness_score": 50
+     },
+     {
+      "time": "8 PM",
+      "busyness_score": 30
+     }
+    ],
+    "saturday": [
+     {
+      "time": "9 AM",
+      "busyness_score": 10
+     },
+     {
+      "time": "10 AM",
+      "busyness_score": 25
+     },
+     {
+      "time": "11 AM",
+      "busyness_score": 45
+     },
+     {
+      "time": "12 PM",
+      "busyness_score": 70
+     },
+     {
+      "time": "1 PM",
+      "busyness_score": 85
+     },
+     {
+      "time": "2 PM",
+      "busyness_score": 90
+     },
+     {
+      "time": "3 PM",
+      "busyness_score": 88
+     },
+     {
+      "time": "4 PM",
+      "busyness_score": 80
+     },
+     {
+      "time": "5 PM",
+      "busyness_score": 70
+     },
+     {
+      "time": "6 PM",
+      "busyness_score": 60
+     },
+     {
+      "time": "7 PM",
+      "busyness_score": 50
+     },
+     {
+      "time": "8 PM",
+      "busyness_score": 30
+     }
+    ],
+    "sunday": [
+     {
+      "time": "9 AM",
+      "busyness_score": 10
+     },
+     {
+      "time": "10 AM",
+      "busyness_score": 25
+     },
+     {
+      "time": "11 AM",
+      "busyness_score": 45
+     },
+     {
+      "time": "12 PM",
+      "busyness_score": 70
+     },
+     {
+      "time": "1 PM",
+      "busyness_score": 85
+     },
+     {
+      "time": "2 PM",
+      "busyness_score": 90
+     },
+     {
+      "time": "3 PM",
+      "busyness_score": 88
+     },
+     {
+      "time": "4 PM",
+      "busyness_score": 80
+     },
+     {
+      "time": "5 PM",
+      "busyness_score": 70
+     },
+     {
+      "time": "6 PM",
+      "busyness_score": 60
+     },
+     {
+      "time": "7 PM",
+      "busyness_score": 50
+     },
+     {
+      "time": "8 PM",
+      "busyness_score": 30
+     }
+    ]
+   }
+  }
+ }
+}

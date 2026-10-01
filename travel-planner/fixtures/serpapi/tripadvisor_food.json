@@ -1,0 +1,28 @@
+{
+ "search_metadata": {
+  "id": "fixture-ta-food",
+  "status": "Success"
+ },
+ "locations": [
+  {
+   "position": 1,
+   "title": "Sample Tasca",
+   "place_id": "9200001",
+   "place_type": "EATERY",
+   "link": "https://www.tripadvisor.com/Restaurant_Review-fixture-1",
+   "rating": 4.5,
+   "reviews": 2400,
+   "location": "Lisbon, Portugal"
+  },
+  {
+   "position": 2,
+   "title": "Sample Bifana Stand",
+   "place_id": "9200002",
+   "place_type": "EATERY",
+   "link": "https://www.tripadvisor.com/Restaurant_Review-fixture-2",
+   "rating": 4.5,
+   "reviews": 150,
+   "location": "Lisbon, Portugal"
+  }
+ ]
+}

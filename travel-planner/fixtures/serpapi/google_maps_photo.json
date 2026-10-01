@@ -1,0 +1,93 @@
+{
+ "search_metadata": {
+  "id": "fixture-maps-photo",
+  "status": "Success"
+ },
+ "local_results": [
+  {
+   "position": 1,
+   "title": "Sample Miradouro North",
+   "place_id": "FIXTURE_PLACE_SAMPLE_MIRADOURO_NORTH",
+   "data_id": "0xFIX404fac1:0x0",
+   "gps_coordinates": {
+    "latitude": 38.7155,
+    "longitude": -9.131
+   },
+   "rating": 4.7,
+   "reviews": 30000,
+   "type": "Scenic spot",
+   "types": [
+    "Scenic spot"
+   ],
+   "address": "100 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace201/400/300",
+   "price": "Free"
+  },
+  {
+   "position": 2,
+   "title": "Sample Miradouro West",
+   "place_id": "FIXTURE_PLACE_SAMPLE_MIRADOURO_WEST",
+   "data_id": "0xFIX453e73c:0x1",
+   "gps_coordinates": {
+    "latitude": 38.715,
+    "longitude": -9.145
+   },
+   "rating": 4.6,
+   "reviews": 22000,
+   "type": "Scenic spot",
+   "types": [
+    "Scenic spot"
+   ],
+   "address": "101 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace548/400/300"
+  },
+  {
+   "position": 3,
+   "title": "Sample Riverfront Pier",
+   "place_id": "FIXTURE_PLACE_SAMPLE_RIVERFRONT_PIER",
+   "data_id": "0xFIX49c41ab:0x2",
+   "gps_coordinates": {
+    "latitude": 38.706,
+    "longitude": -9.133
+   },
+   "rating": 4.5,
+   "reviews": 8000,
+   "type": "Scenic spot",
+   "types": [
+    "Scenic spot"
+   ],
+   "address": "102 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace291/400/300"
+  }
+ ]
+}

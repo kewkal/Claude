@@ -1,0 +1,94 @@
+{
+ "search_metadata": {
+  "id": "fixture-maps-nightlife",
+  "status": "Success"
+ },
+ "local_results": [
+  {
+   "position": 1,
+   "title": "Sample Rooftop Bar",
+   "place_id": "FIXTURE_PLACE_SAMPLE_ROOFTOP_BAR",
+   "data_id": "0xFIX4855963:0x0",
+   "gps_coordinates": {
+    "latitude": 38.7108,
+    "longitude": -9.144
+   },
+   "rating": 4.4,
+   "reviews": 5400,
+   "type": "Bar",
+   "types": [
+    "Bar"
+   ],
+   "address": "100 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace35/400/300",
+   "price": "$$"
+  },
+  {
+   "position": 2,
+   "title": "Sample Fado House",
+   "place_id": "FIXTURE_PLACE_SAMPLE_FADO_HOUSE",
+   "data_id": "0xFIXccf1ba:0x1",
+   "gps_coordinates": {
+    "latitude": 38.7118,
+    "longitude": -9.1302
+   },
+   "rating": 4.6,
+   "reviews": 2100,
+   "type": "Live music venue",
+   "types": [
+    "Live music venue"
+   ],
+   "address": "101 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace226/400/300",
+   "price": "$$$"
+  },
+  {
+   "position": 3,
+   "title": "Sample Pink Street Club",
+   "place_id": "FIXTURE_PLACE_SAMPLE_PINK_STREET_CLUB",
+   "data_id": "0xFIX1502879:0x2",
+   "gps_coordinates": {
+    "latitude": 38.707,
+    "longitude": -9.144
+   },
+   "rating": 4.0,
+   "reviews": 3300,
+   "type": "Night club",
+   "types": [
+    "Night club"
+   ],
+   "address": "102 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace457/400/300"
+  }
+ ]
+}

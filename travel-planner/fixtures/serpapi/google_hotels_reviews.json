@@ -1,0 +1,38 @@
+{
+ "search_metadata": {
+  "id": "fixture-hotel-reviews",
+  "status": "Success"
+ },
+ "reviews": [
+  {
+   "user": {
+    "name": "Sample Reviewer A"
+   },
+   "source": "Google",
+   "rating": 5,
+   "best_rating": 5,
+   "date": "2 weeks ago",
+   "snippet": "Fixture review text: great location near the tram, quiet rooms."
+  },
+  {
+   "user": {
+    "name": "Sample Reviewer B"
+   },
+   "source": "Tripadvisor",
+   "rating": 4,
+   "best_rating": 5,
+   "date": "Sep 2026",
+   "snippet": "Fixture review text: breakfast was good, room a bit small."
+  },
+  {
+   "user": {
+    "name": "Sample Reviewer C"
+   },
+   "source": "Expedia",
+   "rating": 8,
+   "best_rating": 10,
+   "date": "Aug 2026",
+   "snippet": "Fixture review text: helpful staff, easy check-in."
+  }
+ ]
+}

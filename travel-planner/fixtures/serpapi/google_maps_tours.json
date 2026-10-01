@@ -1,0 +1,94 @@
+{
+ "search_metadata": {
+  "id": "fixture-maps-tours",
+  "status": "Success"
+ },
+ "local_results": [
+  {
+   "position": 1,
+   "title": "Sample Tram 28 Walking Tour",
+   "place_id": "FIXTURE_PLACE_SAMPLE_TRAM_28_WALKING_TOUR",
+   "data_id": "0xFIX4af06b3:0x0",
+   "gps_coordinates": {
+    "latitude": 38.711,
+    "longitude": -9.139
+   },
+   "rating": 4.9,
+   "reviews": 2300,
+   "type": "Tour operator",
+   "types": [
+    "Tour operator"
+   ],
+   "address": "100 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace379/400/300",
+   "price": "$25\u201335"
+  },
+  {
+   "position": 2,
+   "title": "Sample Sintra Day Trip",
+   "place_id": "FIXTURE_PLACE_SAMPLE_SINTRA_DAY_TRIP",
+   "data_id": "0xFIX130ed68:0x1",
+   "gps_coordinates": {
+    "latitude": 38.71,
+    "longitude": -9.14
+   },
+   "rating": 4.8,
+   "reviews": 880,
+   "type": "Tour agency",
+   "types": [
+    "Tour agency"
+   ],
+   "address": "101 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace720/400/300"
+  },
+  {
+   "position": 3,
+   "title": "Sample Sunset Sailing",
+   "place_id": "FIXTURE_PLACE_SAMPLE_SUNSET_SAILING",
+   "data_id": "0xFIX2fb7bfb:0x2",
+   "gps_coordinates": {
+    "latitude": 38.706,
+    "longitude": -9.145
+   },
+   "rating": 4.9,
+   "reviews": 99,
+   "type": "Boat tour agency",
+   "types": [
+    "Boat tour agency"
+   ],
+   "address": "102 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace707/400/300",
+   "price": "$$$"
+  }
+ ]
+}

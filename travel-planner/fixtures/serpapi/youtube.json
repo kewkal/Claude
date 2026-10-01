@@ -1,0 +1,42 @@
+{
+ "search_metadata": {
+  "id": "fixture-youtube",
+  "status": "Success"
+ },
+ "video_results": [
+  {
+   "title": "Fixture video 1",
+   "link": "https://www.youtube.com/watch?v=aaaaaaaaaaa",
+   "channel": {
+    "name": "Sample Channel"
+   },
+   "published_date": "1 year ago",
+   "views": 120000,
+   "length": "12:01",
+   "thumbnail": {
+    "static": "https://i.ytimg.com/vi/aaaaaaaaaaa/hqdefault.jpg"
+   }
+  },
+  {
+   "title": "Fixture short",
+   "link": "https://www.youtube.com/shorts/bbbbbbbbbbb",
+   "channel": {
+    "name": "Sample Channel"
+   }
+  },
+  {
+   "title": "Fixture video 3",
+   "link": "https://www.youtube.com/watch?v=ccccccccccc&t=5",
+   "channel": {
+    "name": "Other"
+   }
+  },
+  {
+   "title": "Fixture video 4",
+   "link": "https://www.youtube.com/watch?v=ddddddddddd",
+   "channel": {
+    "name": "Other"
+   }
+  }
+ ]
+}

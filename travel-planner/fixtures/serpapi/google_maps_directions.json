@@ -1,0 +1,16 @@
+{
+ "search_metadata": {
+  "id": "fixture-directions",
+  "status": "Success"
+ },
+ "directions": [
+  {
+   "travel_mode": "Walking",
+   "via": "Rua Augusta",
+   "distance": 1450,
+   "duration": 1140,
+   "formatted_distance": "0.9 mi",
+   "formatted_duration": "19 min"
+  }
+ ]
+}
