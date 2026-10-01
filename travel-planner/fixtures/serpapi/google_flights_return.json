@@ -1,0 +1,29 @@
+{
+  "search_metadata": { "id": "fixture-flights-return", "status": "Success", "google_flights_url": "https://www.google.com/travel/flights?hl=en&gl=us&curr=USD" },
+  "best_flights": [
+    {
+      "flights": [
+        { "departure_airport": { "name": "Humberto Delgado Airport", "id": "LIS", "time": "2026-11-17 11:30" }, "arrival_airport": { "name": "Newark Liberty International Airport", "id": "EWR", "time": "2026-11-17 14:40" }, "duration": 490, "airline": "United", "travel_class": "Economy", "flight_number": "UA 65", "extensions": ["Average legroom (31 in)"] },
+        { "departure_airport": { "name": "Newark Liberty International Airport", "id": "EWR", "time": "2026-11-17 17:10" }, "arrival_airport": { "name": "George Bush Intercontinental Airport", "id": "IAH", "time": "2026-11-17 20:15" }, "duration": 245, "airline": "United", "travel_class": "Economy", "flight_number": "UA 1590", "extensions": [] }
+      ],
+      "layovers": [ { "duration": 150, "name": "Newark Liberty International Airport", "id": "EWR" } ],
+      "total_duration": 885,
+      "price": 1684,
+      "type": "Round trip",
+      "booking_token": "FIXTURE_BOOK_UA"
+    }
+  ],
+  "other_flights": [
+    {
+      "flights": [
+        { "departure_airport": { "name": "Humberto Delgado Airport", "id": "LIS", "time": "2026-11-17 07:05" }, "arrival_airport": { "name": "Newark Liberty International Airport", "id": "EWR", "time": "2026-11-17 10:15" }, "duration": 490, "airline": "United", "travel_class": "Economy", "flight_number": "UA 63", "extensions": [] },
+        { "departure_airport": { "name": "Newark Liberty International Airport", "id": "EWR", "time": "2026-11-17 12:00" }, "arrival_airport": { "name": "George Bush Intercontinental Airport", "id": "IAH", "time": "2026-11-17 15:05" }, "duration": 245, "airline": "United", "travel_class": "Economy", "flight_number": "UA 1288", "extensions": [] }
+      ],
+      "layovers": [ { "duration": 105, "name": "Newark Liberty International Airport", "id": "EWR" } ],
+      "total_duration": 840,
+      "price": 1684,
+      "type": "Round trip",
+      "booking_token": "FIXTURE_BOOK_UA2"
+    }
+  ]
+}

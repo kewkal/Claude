@@ -1,0 +1,6 @@
+{
+  "search_metadata": { "id": "fixture-autocomplete", "status": "Success" },
+  "suggestions": [
+    { "position": 1, "name": "Lisbon, Portugal", "type": "city", "description": "Capital of Portugal", "id": "/m/04llb", "airports": [ { "name": "Humberto Delgado Airport", "id": "LIS", "city": "Lisbon", "distance": "4 mi" } ] }
+  ]
+}

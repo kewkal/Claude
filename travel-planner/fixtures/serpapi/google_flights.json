@@ -1,0 +1,88 @@
+{
+  "search_metadata": {
+    "id": "fixture-flights-1",
+    "status": "Success",
+    "google_flights_url": "https://www.google.com/travel/flights?hl=en&gl=us&curr=USD&q=Flights%20to%20LIS%20from%20IAH%20on%202026-11-12%20through%202026-11-17"
+  },
+  "search_parameters": { "engine": "google_flights", "departure_id": "IAH", "arrival_id": "LIS", "outbound_date": "2026-11-12", "return_date": "2026-11-17", "currency": "USD", "type": "1", "adults": 2 },
+  "best_flights": [
+    {
+      "flights": [
+        { "departure_airport": { "name": "George Bush Intercontinental Airport", "id": "IAH", "time": "2026-11-12 16:05" }, "arrival_airport": { "name": "Newark Liberty International Airport", "id": "EWR", "time": "2026-11-12 20:42" }, "duration": 217, "airplane": "Boeing 737MAX 9 Passenger", "airline": "United", "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png", "travel_class": "Economy", "flight_number": "UA 2034", "legroom": "30 in", "extensions": ["Average legroom (30 in)", "Wi-Fi for a fee", "In-seat USB outlet"] },
+        { "departure_airport": { "name": "Newark Liberty International Airport", "id": "EWR", "time": "2026-11-12 22:15" }, "arrival_airport": { "name": "Humberto Delgado Airport", "id": "LIS", "time": "2026-11-13 10:20" }, "duration": 425, "airplane": "Boeing 757", "airline": "United", "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png", "travel_class": "Economy", "flight_number": "UA 64", "legroom": "31 in", "extensions": ["Average legroom (31 in)", "Wi-Fi for a fee", "Stream media to your device"], "overnight": true }
+      ],
+      "layovers": [ { "duration": 93, "name": "Newark Liberty International Airport", "id": "EWR" } ],
+      "total_duration": 735,
+      "carbon_emissions": { "this_flight": 612000, "typical_for_this_route": 655000, "difference_percent": -7 },
+      "price": 1684,
+      "type": "Round trip",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+      "departure_token": "FIXTURE_DEP_UA"
+    },
+    {
+      "flights": [
+        { "departure_airport": { "name": "George Bush Intercontinental Airport", "id": "IAH", "time": "2026-11-12 14:30" }, "arrival_airport": { "name": "Newark Liberty International Airport", "id": "EWR", "time": "2026-11-12 19:05" }, "duration": 215, "airplane": "Airbus A321neo", "airline": "TAP Air Portugal", "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/TP.png", "travel_class": "Economy", "flight_number": "TP 8301", "legroom": "30 in", "extensions": ["Average legroom (30 in)", "Operated by United"] },
+        { "departure_airport": { "name": "Newark Liberty International Airport", "id": "EWR", "time": "2026-11-12 21:40" }, "arrival_airport": { "name": "Humberto Delgado Airport", "id": "LIS", "time": "2026-11-13 09:35" }, "duration": 415, "airplane": "Airbus A321neo", "airline": "TAP Air Portugal", "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/TP.png", "travel_class": "Economy", "flight_number": "TP 202", "legroom": "30 in", "extensions": ["Average legroom (30 in)", "Wi-Fi for a fee"], "overnight": true, "often_delayed_by_over_30_min": true }
+      ],
+      "layovers": [ { "duration": 155, "name": "Newark Liberty International Airport", "id": "EWR" } ],
+      "total_duration": 785,
+      "carbon_emissions": { "this_flight": 588000, "typical_for_this_route": 655000, "difference_percent": -10 },
+      "price": 1412,
+      "type": "Round trip",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/TP.png",
+      "departure_token": "FIXTURE_DEP_TP"
+    }
+  ],
+  "other_flights": [
+    {
+      "flights": [
+        { "departure_airport": { "name": "George Bush Intercontinental Airport", "id": "IAH", "time": "2026-11-12 17:50" }, "arrival_airport": { "name": "Toronto Pearson International Airport", "id": "YYZ", "time": "2026-11-12 22:10" }, "duration": 200, "airplane": "Airbus A220-300", "airline": "Air Canada", "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AC.png", "travel_class": "Economy", "flight_number": "AC 1188", "legroom": "30 in", "extensions": ["Average legroom (30 in)", "Basic Economy", "Carry-on bag not included"] },
+        { "departure_airport": { "name": "Toronto Pearson International Airport", "id": "YYZ", "time": "2026-11-12 22:55" }, "arrival_airport": { "name": "Humberto Delgado Airport", "id": "LIS", "time": "2026-11-13 10:40" }, "duration": 405, "airplane": "Boeing 787", "airline": "Air Canada", "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AC.png", "travel_class": "Economy", "flight_number": "AC 832", "legroom": "31 in", "extensions": ["Average legroom (31 in)"], "overnight": true }
+      ],
+      "layovers": [ { "duration": 45, "name": "Toronto Pearson International Airport", "id": "YYZ" } ],
+      "total_duration": 650,
+      "carbon_emissions": { "this_flight": 640000, "typical_for_this_route": 655000, "difference_percent": -2 },
+      "price": 1298,
+      "type": "Round trip",
+      "departure_token": "FIXTURE_DEP_AC"
+    },
+    {
+      "flights": [
+        { "departure_airport": { "name": "George Bush Intercontinental Airport", "id": "IAH", "time": "2026-11-12 07:00" }, "arrival_airport": { "name": "Fort Lauderdale-Hollywood International Airport", "id": "FLL", "time": "2026-11-12 10:40" }, "duration": 160, "airplane": "Airbus A321neo", "airline": "Spirit", "travel_class": "Economy", "flight_number": "NK 1432", "legroom": "28 in", "extensions": ["Below average legroom (28 in)", "Carry-on bag not included"] },
+        { "departure_airport": { "name": "Fort Lauderdale-Hollywood International Airport", "id": "FLL", "time": "2026-11-12 18:20" }, "arrival_airport": { "name": "Humberto Delgado Airport", "id": "LIS", "time": "2026-11-13 07:35" }, "duration": 495, "airplane": "Airbus A321neo", "airline": "TAP Air Portugal", "travel_class": "Economy", "flight_number": "TP 222", "legroom": "30 in", "extensions": ["Average legroom (30 in)"], "overnight": true }
+      ],
+      "layovers": [ { "duration": 460, "name": "Fort Lauderdale-Hollywood International Airport", "id": "FLL" } ],
+      "total_duration": 1115,
+      "price": 998,
+      "type": "Round trip",
+      "extensions": ["Self transfer", "Separate tickets booked together"],
+      "departure_token": "FIXTURE_DEP_NK"
+    },
+    {
+      "flights": [
+        { "departure_airport": { "name": "George Bush Intercontinental Airport", "id": "IAH", "time": "2026-11-12 21:35" }, "arrival_airport": { "name": "Frankfurt Airport", "id": "FRA", "time": "2026-11-13 13:55" }, "duration": 620, "airplane": "Boeing 747-8", "airline": "Lufthansa", "travel_class": "Economy", "flight_number": "LH 441", "legroom": "31 in", "extensions": ["Average legroom (31 in)"], "overnight": true },
+        { "departure_airport": { "name": "Frankfurt Airport", "id": "FRA", "time": "2026-11-13 17:05" }, "arrival_airport": { "name": "Humberto Delgado Airport", "id": "LIS", "time": "2026-11-13 19:15" }, "duration": 190, "airplane": "Airbus A320neo", "airline": "Lufthansa", "travel_class": "Economy", "flight_number": "LH 1166", "legroom": "29 in", "extensions": ["Below average legroom (29 in)"] }
+      ],
+      "layovers": [ { "duration": 190, "name": "Frankfurt Airport", "id": "FRA" } ],
+      "total_duration": 1000,
+      "carbon_emissions": { "this_flight": 790000, "typical_for_this_route": 655000, "difference_percent": 21 },
+      "price": 1530,
+      "type": "Round trip",
+      "departure_token": "FIXTURE_DEP_LH"
+    },
+    {
+      "flights": [
+        { "departure_airport": { "name": "George Bush Intercontinental Airport", "id": "IAH", "time": "2026-11-12 10:15" }, "arrival_airport": { "name": "Chicago O'Hare International Airport", "id": "ORD", "time": "2026-11-12 13:00" }, "duration": 165, "airline": "American", "travel_class": "Economy", "flight_number": "AA 2390", "extensions": [] },
+        { "departure_airport": { "name": "Chicago O'Hare International Airport", "id": "ORD", "time": "2026-11-12 18:10" }, "arrival_airport": { "name": "London Heathrow Airport", "id": "LHR", "time": "2026-11-13 07:25" }, "duration": 435, "airline": "American", "travel_class": "Economy", "flight_number": "AA 46", "extensions": [], "overnight": true },
+        { "departure_airport": { "name": "London Heathrow Airport", "id": "LHR", "time": "2026-11-13 09:40" }, "arrival_airport": { "name": "Humberto Delgado Airport", "id": "LIS", "time": "2026-11-13 12:20" }, "duration": 160, "airline": "British Airways", "travel_class": "Economy", "flight_number": "BA 500", "extensions": [] }
+      ],
+      "layovers": [ { "duration": 310, "name": "Chicago O'Hare International Airport", "id": "ORD" }, { "duration": 135, "name": "London Heathrow Airport", "id": "LHR" } ],
+      "total_duration": 1205,
+      "price": 1876,
+      "type": "Round trip",
+      "departure_token": "FIXTURE_DEP_AA"
+    }
+  ],
+  "price_insights": { "lowest_price": 998, "price_level": "typical", "typical_price_range": [1150, 1700], "price_history": [[1759276800, 1420], [1759363200, 1398]] },
+  "airports": []
+}
