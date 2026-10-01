@@ -2,6 +2,9 @@ import { afterEach, beforeEach, vi } from "vitest";
 import { createMemoryDb } from "@/lib/db/memory";
 import { setDbForTests } from "@/lib/db";
 
+// Fixture mode from module load, so beforeAll hooks also run against fixtures.
+process.env.DATA_MODE = "fixtures";
+
 // Tests must never touch live APIs. Any network call fails the test loudly.
 const blockedFetch = vi.fn(async (input: unknown) => {
   throw new Error(`Network access is blocked in tests (attempted: ${String(input).slice(0, 80)})`);

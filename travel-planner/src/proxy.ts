@@ -3,7 +3,7 @@ import { SESSION_COOKIE, verifySessionToken } from "@/lib/auth";
 
 // Everything is behind the password gate except the login page/endpoint,
 // read-only share links, and the cron keep-alive (which checks its own secret).
-const PUBLIC_PREFIXES = ["/login", "/api/auth/login", "/share/", "/api/share/", "/api/cron/"];
+const PUBLIC_PREFIXES = ["/login", "/api/auth/login", "/share/", "/api/cron/"];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

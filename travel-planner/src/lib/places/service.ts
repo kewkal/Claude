@@ -1,6 +1,7 @@
 import "server-only";
 import { badInput } from "@/lib/errors";
 import type { Photo, Review } from "@/lib/hotels/types";
+import type { SerpParams } from "@/lib/serpapi/cache-key";
 import { serpSearch } from "@/lib/serpapi/client";
 import {
   mergeTripadvisor,
@@ -38,6 +39,15 @@ const TA_SEARCH: Partial<Record<PlaceCategory, { ssrc: "A" | "r"; unmatched: (h:
   photo: { ssrc: "A", unmatched: () => false },
   food: { ssrc: "r", unmatched: () => true },
 };
+
+/** The SerpApi requests explore() makes for a category (events excluded: its query depends on the month). Used for cost previews. */
+export function exploreRequests(destination: string, category: PlaceCategory, tripadvisor = true): { engine: string; params: SerpParams }[] {
+  if (category === "events") return [];
+  const reqs: { engine: string; params: SerpParams }[] = [{ engine: "google_maps", params: { q: `${QUERY[category]} ${destination.trim()}`, type: "search", hl: "en", gl: "us" } }];
+  const ta = TA_SEARCH[category];
+  if (ta && tripadvisor) reqs.push({ engine: "tripadvisor", params: { q: destination.trim(), ssrc: ta.ssrc, hl: "en" } });
+  return reqs;
+}
 
 export interface ExploreResult {
   category: PlaceCategory;
