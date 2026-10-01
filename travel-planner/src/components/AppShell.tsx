@@ -18,7 +18,7 @@ function isActive(pathname: string, href: string) {
   return pathname.startsWith(href);
 }
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children, fixtureMode = false }: { children: ReactNode; fixtureMode?: boolean }) {
   const pathname = usePathname();
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
@@ -36,6 +36,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           </svg>
         </Link>
       </header>
+      {fixtureMode && (
+        <p className="no-print bg-warn px-4 py-1.5 text-center text-xs font-bold text-white">
+          FIXTURE MODE — sample test data, not real prices or places (DATA_MODE=fixtures)
+        </p>
+      )}
       <UsageBanner />
       <main className="flex-1 px-4 pb-28 pt-4">{children}</main>
       <nav
