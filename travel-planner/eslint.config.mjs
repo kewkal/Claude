@@ -5,6 +5,13 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    rules: {
+      // Images come from many third-party hosts (Google, Tripadvisor, YouTube); plain <img> with
+      // lazy loading avoids maintaining a remotePatterns allowlist and the image optimizer's quota.
+      "@next/next/no-img-element": "off",
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

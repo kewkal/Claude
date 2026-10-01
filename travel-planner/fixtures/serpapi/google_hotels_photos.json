@@ -1,0 +1,38 @@
+{
+ "search_metadata": {
+  "id": "fixture-hotel-photos",
+  "status": "Success"
+ },
+ "photos": [
+  {
+   "thumbnail": "https://picsum.photos/seed/tphp0/400/300",
+   "original": "https://picsum.photos/seed/tphp0/1200/900",
+   "title": "Fixture photo 1"
+  },
+  {
+   "thumbnail": "https://picsum.photos/seed/tphp1/400/300",
+   "original": "https://picsum.photos/seed/tphp1/1200/900",
+   "title": "Fixture photo 2"
+  },
+  {
+   "thumbnail": "https://picsum.photos/seed/tphp2/400/300",
+   "original": "https://picsum.photos/seed/tphp2/1200/900",
+   "title": "Fixture photo 3"
+  },
+  {
+   "thumbnail": "https://picsum.photos/seed/tphp3/400/300",
+   "original": "https://picsum.photos/seed/tphp3/1200/900",
+   "title": "Fixture photo 4"
+  },
+  {
+   "thumbnail": "https://picsum.photos/seed/tphp4/400/300",
+   "original": "https://picsum.photos/seed/tphp4/1200/900",
+   "title": "Fixture photo 5"
+  },
+  {
+   "thumbnail": "https://picsum.photos/seed/tphp5/400/300",
+   "original": "https://picsum.photos/seed/tphp5/1200/900",
+   "title": "Fixture photo 6"
+  }
+ ]
+}
