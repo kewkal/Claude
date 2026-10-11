@@ -1,0 +1,69 @@
+{
+  "id": "lx-beg-contactor-coil",
+  "title": "Blowing warm at the grocery",
+  "unitId": "lennox-lch240",
+  "difficulty": "beginner",
+  "domains": ["electrical", "components"],
+  "honeywell": false,
+  "dispatch": {
+    "complaint": "Store's getting hot. Unit's running but it's blowing warm air.",
+    "customer": "Store manager, neighborhood grocery",
+    "outdoorF": 95,
+    "outdoorRH": 45,
+    "timeOfDay": "2:10 PM",
+    "economizer": "Honeywell JADE W7220 retrofit"
+  },
+  "state": { "callForCooling": true, "blower": "running", "compressor1": "off", "condFan1": "off", "damperActualPct": 20, "damperFree": true, "economizerController": "jade-w7220" },
+  "faults": [
+    { "type": "contactor-coil-open", "componentId": "contactor", "designation": "K1", "role": "root", "description": "K1 compressor contactor coil open." }
+  ],
+  "baseline": "cooling-95F",
+  "readings": {
+    "ohm_cc1_coil": "OL",
+    "v_cc1_coil": 25.0,
+    "v_cc1_drop_p1": "Contactor not pulled in. Load side floating; reading meaningless.",
+    "v_cc1_drop_p2": "Contactor not pulled in.",
+    "v_cc1_drop_p3": "Contactor not pulled in.",
+    "a_comp1_l1": 0, "a_comp1_l2": 0, "a_comp1_l3": 0,
+    "a_cfm1": 0,
+    "t_comp1_shell": 96,
+    "p_suction1": 230, "t_suction1": 82, "p_liquid1": 238, "t_liquid1": 92,
+    "t_rat": 78, "t_mat": 81, "t_sat": 82,
+    "ohm_mat_sensor": 18136,
+    "rh_ra": 55,
+    "txt_tstat": "BAS: occupied, G on, Y1 and Y2 called. Space 78°F, setpoint 72°F.",
+    "txt_controller": "M2 status: blower on, compressor 1 output ON, compressor 2 output ON. No active alarms.",
+    "txt_look_unit": "Blower running. Condenser fans OFF. Compressors silent. Unit's just moving air.",
+    "txt_look_condenser": "Coil clean. Fans not turning. Gauges would show equalized pressures.",
+    "txt_look_electrical": "K1 not pulled in even though the M2 says compressor 1 is on. Faint burnt-varnish smell near K1."
+  },
+  "hints": [
+    "The controller says compressor 1 is ON. Is the contactor actually pulled in?",
+    "If 24V is at the coil and it's not pulling in, what's left?",
+    "You'll need power off to ohm the coil. Lock it out first."
+  ],
+  "diagnosis": [
+    { "id": "k1-coil", "label": "K1 contactor coil open", "correct": true, "feedback": "Right. 24V present, OL coil, contactor never pulls in." },
+    { "id": "comp-ol", "label": "Compressor 1 internal overload open", "feedback": "The contactor never pulled in, so the compressor never got power. Shell is ambient temp, not hot." },
+    { "id": "lps", "label": "LPS open", "feedback": "An open LPS would kill 24V to the coil. You measured 25 V at the coil." },
+    { "id": "m2", "label": "M2 compressor output failed", "feedback": "The M2 output is delivering 25 V to the coil. The board's doing its job." },
+    { "id": "low-charge", "label": "Low refrigerant charge", "feedback": "Compressor isn't even running. Pressures are just equalized." }
+  ],
+  "repair": [
+    { "id": "replace-k1", "label": "Replace K1 contactor (match coil voltage, poles, FLA)", "correct": true, "partsCost": 85, "feedback": "Fixed. Verify pull-in, amps balanced, delta-T normal before you leave." },
+    { "id": "replace-comp", "label": "Replace compressor 1", "partsCost": 4800, "feedback": "Very expensive callback. The compressor was never powered." },
+    { "id": "replace-m2", "label": "Replace M2 board", "partsCost": 650, "feedback": "Board output was fine. Callback." },
+    { "id": "jump-k1", "label": "Push in K1 armature with a stick and leave it", "symptomOnly": true, "partsCost": 0, "feedback": "Unsafe and not a repair. Compressor runs with no safety control." }
+  ],
+  "idealPath": [
+    { "action": "check-tstat", "why": "Prove there's a real Y call." },
+    { "action": "read-controller", "why": "M2 says compressor 1 output is ON. The problem is downstream of the board." },
+    { "action": "look-electrical", "why": "K1 isn't pulled in despite the call." },
+    { "action": "v-cc1-coil", "why": "25 V at the coil: control circuit's delivering." },
+    { "action": "loto", "why": "Power off before ohms." },
+    { "action": "verify-dead", "why": "Test before touch." },
+    { "action": "ohm-cc1-coil", "why": "OL = open coil. Done." }
+  ],
+  "debrief": "Classic split: the board says ON, the contactor says no. Voltage at the coil proves the whole 24V side (transformer, fuse, safeties, M2 output). The only thing left is the coil itself, and the ohmmeter confirms it. Five minutes of thinking saves an hour of chasing.",
+  "concepts": ["contactor-coil-test", "24v-present-no-pullin", "loto-before-ohms"]
+}

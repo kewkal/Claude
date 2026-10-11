@@ -1,0 +1,111 @@
+{
+  "id": "c7250a",
+  "name": "Honeywell C7250A 20k NTC dry-bulb sensor (mixed air / outdoor air)",
+  "kind": "ntc-sensor",
+  "domain": "components",
+  "function": "Wired analog thermistor into the JADE (MAT or OAT terminals). Resistance falls as temperature rises. JADE uses MAT to modulate the damper to MAT SET during free cooling and for freeze protection (MA LO SET).",
+  "perUnit": {
+    "lennox-lch240": {
+      "availability": { "value": "field-accessory", "verified": false, "basis": "generic", "note": "Ships with the Honeywell retrofit kit per project brief assumption." },
+      "designation": { "value": "MAT sensor (JADE MAT terminals)", "verified": false, "basis": "generic" },
+      "location": { "value": "Mixed air section, downstream of the OA/RA dampers and upstream of the filters/coil, where the airstreams have actually mixed.", "verified": false, "basis": "generic" },
+      "sequenceRole": "Free cooling modulates to hold MAT SET. MAT below MA LO SET drives the damper to FREEZE POS.",
+      "partNumber": { "value": "C7250A1001", "verified": false, "note": "Common C7250A part number. Confirm against the Honeywell datasheet in /docs." }
+    },
+    "trane-tsc072": {
+      "availability": { "value": "field-accessory", "verified": false, "basis": "generic" },
+      "designation": { "value": "MAT sensor (JADE MAT terminals)", "verified": false, "basis": "generic" },
+      "location": { "value": "Mixed air section after the dampers, before the filters.", "verified": false, "basis": "generic" },
+      "sequenceRole": "Same as Lennox: modulation and freeze protection.",
+      "partNumber": { "value": "C7250A1001", "verified": false }
+    }
+  },
+  "failureModes": [
+    { "id": "open", "name": "Open", "goodVsBad": "OL on the ohmmeter. JADE flags a MAT sensor error.", "symptoms": "Economizer won't free cool (or behaves per the JADE's fallback), compressors carry the load." },
+    { "id": "shorted", "name": "Shorted", "goodVsBad": "Near 0 Ω. JADE reads an impossibly hot MAT and flags an error.", "symptoms": "Same as open: free cooling lost." },
+    { "id": "drifted", "name": "Drifted out of calibration", "goodVsBad": "Resistance doesn't match the chart at the reference temperature. No alarm; the reading is plausible but wrong.", "symptoms": "Damper hunts, over-ventilates, or trips freeze protection early." }
+  ],
+  "test": {
+    "meter": "Ω with sensor leads lifted from the JADE; reference thermometer at the sensor.",
+    "procedure": [
+      "Read the MA TEMP on the JADE STATUS menu. Compare to your probe at the sensor.",
+      "Lift the sensor leads from the JADE (no line voltage involved, but don't short the terminals).",
+      "Ohm the sensor. Look up the expected resistance at your probe temperature on the C7250A chart.",
+      "Within ±2°F equivalent = good. Off more than that = drifted. OL/short = failed.",
+      "If it reads good on the bench but wrong in the unit: check mounting location and wiring."
+    ],
+    "safety": [
+      "Low voltage, but the mixed air section has moving dampers. Keep fingers clear of blades and linkage when the actuator may stroke."
+    ]
+  },
+  "thresholds": {
+    "goodTolF": { "value": 2, "verified": false, "basis": "rule-of-thumb" },
+    "marginalTolF": { "value": 5, "verified": false, "basis": "rule-of-thumb", "note": "2-5°F off = marginal (recalibrate offset or replace), >5°F = bad." }
+  },
+  "symptoms": {
+    "customer": "\"High electric bill in spring/fall,\" \"unit runs all day when it's 60 out.\"",
+    "tech": "JADE alarm, ECONOMIZING never goes YES on a perfect free-cooling day, or damper hunting."
+  },
+  "confusedWith": [
+    "Sensor mounted in the wrong spot (reads RA or OA only, not mixed)",
+    "Wrong strategy/changeover setpoint locking out economizing",
+    "Missing OCC input (damper stays closed)"
+  ],
+  "labCases": [
+    {
+      "id": "c7250-lx-good",
+      "unitId": "lennox-lch240",
+      "designation": "MAT sensor",
+      "context": "Verifying MAT during a JADE commissioning.",
+      "rating": { "type": "20k NTC" },
+      "condition": "good",
+      "tests": [
+        { "id": "ref", "label": "Reference probe at sensor", "setup": "Calibrated probe taped next to the sensor.", "minutes": 2, "power": "off", "readings": { "ref_temp_f": 55 } },
+        { "id": "ohm", "label": "Sensor resistance", "setup": "Leads lifted from JADE.", "minutes": 2, "power": "off", "readings": { "ohm": 35100 } }
+      ],
+      "explanation": "35,100 Ω at 55°F is right on the chart (≈35,235 Ω). Good sensor."
+    },
+    {
+      "id": "c7250-lx-open",
+      "unitId": "lennox-lch240",
+      "designation": "MAT sensor",
+      "context": "JADE showing a MAT sensor error.",
+      "rating": { "type": "20k NTC" },
+      "condition": "bad",
+      "failureMode": "open",
+      "tests": [
+        { "id": "ref", "label": "Reference probe", "setup": "Probe at sensor.", "minutes": 2, "power": "off", "readings": { "ref_temp_f": 70 } },
+        { "id": "ohm", "label": "Sensor resistance", "setup": "Leads lifted from JADE.", "minutes": 2, "power": "off", "readings": { "ohm": "OL" } }
+      ],
+      "explanation": "OL = open element or broken lead. Check the wire run before condemning the sensor."
+    },
+    {
+      "id": "c7250-tr-drift",
+      "unitId": "trane-tsc072",
+      "designation": "MAT sensor",
+      "context": "Damper hunting during free cooling.",
+      "rating": { "type": "20k NTC" },
+      "condition": "marginal",
+      "failureMode": "drifted",
+      "tests": [
+        { "id": "ref", "label": "Reference probe", "setup": "Probe at sensor.", "minutes": 2, "power": "off", "readings": { "ref_temp_f": 75 } },
+        { "id": "ohm", "label": "Sensor resistance", "setup": "Leads lifted from JADE.", "minutes": 2, "power": "off", "readings": { "ohm": 22950 } }
+      ],
+      "explanation": "22,950 Ω reads as ~71.5°F, so it's 3.5°F off your probe. Not dead, but enough to throw off MAT control. Use the JADE MAT T CAL offset or replace it."
+    },
+    {
+      "id": "c7250-tr-short",
+      "unitId": "trane-tsc072",
+      "designation": "MAT sensor",
+      "context": "JADE showing MA TEMP pegged high and a sensor error.",
+      "rating": { "type": "20k NTC" },
+      "condition": "bad",
+      "failureMode": "shorted",
+      "tests": [
+        { "id": "ref", "label": "Reference probe", "setup": "Probe at sensor.", "minutes": 2, "power": "off", "readings": { "ref_temp_f": 68 } },
+        { "id": "ohm", "label": "Sensor resistance", "setup": "Leads lifted from JADE.", "minutes": 2, "power": "off", "readings": { "ohm": 12 } }
+      ],
+      "explanation": "12 Ω is a dead short, probably a pinched lead. Trace the wire before you replace the sensor."
+    }
+  ]
+}

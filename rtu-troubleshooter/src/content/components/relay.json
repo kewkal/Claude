@@ -1,0 +1,115 @@
+{
+  "id": "relay",
+  "name": "General-purpose control relay (SPDT/DPDT, 24 VAC coil)",
+  "kind": "relay",
+  "domain": "electrical",
+  "function": "Low-current switching: a 24 VAC coil moves NO/NC contacts to bring on fans, heat, economizer inputs, or interlocks. Common as blower, condenser fan, and heat relays.",
+  "perUnit": {
+    "lennox-lch240": {
+      "availability": { "value": "factory-standard", "verified": false, "basis": "generic" },
+      "designation": { "value": "K-series relay (e.g. condenser fan relay)", "verified": false, "basis": "generic", "note": "Exact relay designations come from the LCH wiring diagram." },
+      "location": { "value": "Control panel, 24V section. On the diagram: coil between an M2 output and common; contacts in the circuit it controls.", "verified": false, "basis": "generic" },
+      "sequenceRole": "Lets the M2 switch loads its board outputs can't carry directly.",
+      "partNumber": { "value": "—", "verified": false }
+    },
+    "trane-tsc072": {
+      "availability": { "value": "factory-standard", "verified": false, "basis": "generic" },
+      "designation": { "value": "K-relay (e.g. fan or heat relay)", "verified": false, "basis": "generic" },
+      "location": { "value": "Control box, 24V section.", "verified": false, "basis": "generic" },
+      "sequenceRole": "Controller output drives the coil; contacts switch fan or heat circuits.",
+      "partNumber": { "value": "—", "verified": false }
+    }
+  },
+  "failureModes": [
+    { "id": "coil-open", "name": "Coil open", "goodVsBad": "Coil reads OL. 24V present, contacts never change state.", "symptoms": "The load it controls never comes on." },
+    { "id": "coil-shorted", "name": "Coil shorted", "goodVsBad": "Coil reads far below rated range; pops the control fuse.", "symptoms": "Blown 24V fuse when that output energizes." },
+    { "id": "contacts-welded", "name": "NO contacts welded", "goodVsBad": "NO reads continuity with the coil de-energized.", "symptoms": "Load runs constantly (e.g. blower won't shut off, heat stays on)." },
+    { "id": "contacts-burned-open", "name": "NO contacts burned open", "goodVsBad": "Coil energizes (you hear/see it), but NO stays OL.", "symptoms": "Load never comes on; looks like a dead motor or a missing call." },
+    { "id": "contacts-high-resistance", "name": "High-resistance contacts", "goodVsBad": "Energized NO reads over a fraction of an ohm; under load it drops voltage and heats up.", "symptoms": "Intermittent load, especially when hot. Classic 'works when I'm here' call." }
+  ],
+  "test": {
+    "meter": "Ω with the relay out or leads lifted; VAC at the coil in circuit.",
+    "procedure": [
+      "In circuit, with the call present: 24V across the coil? If not, the problem is upstream.",
+      "LOTO, verify dead, pull the relay or lift leads.",
+      "Ohm the coil.",
+      "De-energized: NO should read OL, NC near 0 Ω.",
+      "Energize the coil from a 24V source: NO near 0 Ω, NC OL. Anything in between is high-resistance contacts."
+    ],
+    "safety": [
+      "Some relay contacts switch line voltage (fan motors, heat). Treat contact terminals as live until verified dead.",
+      "Lift leads before ohming or you'll read through the rest of the circuit."
+    ]
+  },
+  "thresholds": {
+    "coilOhms": { "value": [20, 300], "verified": false, "basis": "rule-of-thumb", "note": "Typical 24 VAC relay coil range. Use the coil resistance on the relay's spec sheet." },
+    "contactOhmsMax": { "value": 0.5, "verified": false, "basis": "rule-of-thumb", "note": "Closed contacts over 0.5 Ω = marginal; over 5 Ω = bad." }
+  },
+  "symptoms": {
+    "customer": "\"Fan won't shut off\" (welded) or \"blowing warm\" / \"freezing up\" (blower relay open).",
+    "tech": "Load and call don't agree. Call present, load off; or no call, load running."
+  },
+  "confusedWith": [
+    "Failed blower relay looks like a frozen coil call (compressor runs, no airflow, coil ices)",
+    "Burned-open condenser fan relay looks like a dead fan motor or capacitor",
+    "Welded heat relay looks like a stuck thermostat"
+  ],
+  "labCases": [
+    {
+      "id": "rel-lx-good",
+      "unitId": "lennox-lch240",
+      "designation": "Condenser fan relay",
+      "context": "Bench-checking a relay before reinstalling.",
+      "rating": { "coilVoltage": "24 VAC", "form": "DPDT" },
+      "condition": "good",
+      "tests": [
+        { "id": "coil", "label": "Coil Ω", "setup": "On bench.", "minutes": 1, "power": "off", "readings": { "coil_ohm": 95 } },
+        { "id": "de", "label": "Contacts, de-energized", "setup": "Coil not powered.", "minutes": 1, "power": "off", "readings": { "no_deenergized": "OL", "nc_deenergized": 0.1 } },
+        { "id": "en", "label": "Contacts, energized", "setup": "24 VAC applied to coil from bench supply; meter on contacts only (not a live load).", "minutes": 2, "power": "on", "readings": { "no_energized": 0.1, "nc_energized": "OL" } }
+      ],
+      "explanation": "Coil in range, contacts swap state cleanly with near-zero closed resistance."
+    },
+    {
+      "id": "rel-lx-welded",
+      "unitId": "lennox-lch240",
+      "designation": "Blower relay",
+      "context": "Complaint: blower runs all night with the store closed.",
+      "rating": { "coilVoltage": "24 VAC", "form": "SPDT" },
+      "condition": "bad",
+      "failureMode": "contacts-welded",
+      "tests": [
+        { "id": "coil", "label": "Coil Ω", "setup": "On bench.", "minutes": 1, "power": "off", "readings": { "coil_ohm": 88 } },
+        { "id": "de", "label": "Contacts, de-energized", "setup": "Coil not powered.", "minutes": 1, "power": "off", "readings": { "no_deenergized": 0.1, "nc_deenergized": "OL" } }
+      ],
+      "explanation": "NO closed with no coil power = welded. That's the blower that won't quit."
+    },
+    {
+      "id": "rel-tr-coil-open",
+      "unitId": "trane-tsc072",
+      "designation": "Heat relay",
+      "context": "No heat. 24V present at the relay coil terminals, nothing clicks.",
+      "rating": { "coilVoltage": "24 VAC", "form": "SPDT" },
+      "condition": "bad",
+      "failureMode": "coil-open",
+      "tests": [
+        { "id": "coil", "label": "Coil Ω", "setup": "LOTO, relay pulled.", "minutes": 2, "power": "off", "readings": { "coil_ohm": "OL" } }
+      ],
+      "explanation": "OL coil. 24V got there and had nowhere to go."
+    },
+    {
+      "id": "rel-tr-hiR",
+      "unitId": "trane-tsc072",
+      "designation": "Fan relay",
+      "context": "Intermittent: fan drops out on hot afternoons.",
+      "rating": { "coilVoltage": "24 VAC", "form": "SPDT" },
+      "condition": "marginal",
+      "failureMode": "contacts-high-resistance",
+      "tests": [
+        { "id": "coil", "label": "Coil Ω", "setup": "On bench.", "minutes": 1, "power": "off", "readings": { "coil_ohm": 102 } },
+        { "id": "de", "label": "Contacts, de-energized", "setup": "Coil not powered.", "minutes": 1, "power": "off", "readings": { "no_deenergized": "OL", "nc_deenergized": 0.2 } },
+        { "id": "en", "label": "Contacts, energized", "setup": "24 VAC to coil from bench supply.", "minutes": 2, "power": "on", "readings": { "no_energized": 1.8, "nc_energized": "OL" } }
+      ],
+      "explanation": "1.8 Ω across closed contacts is high. It works cold, then cooks under load. Replace it. That's your intermittent."
+    }
+  ]
+}

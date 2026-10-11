@@ -1,0 +1,87 @@
+{
+  "id": "tr-med-jade-actuator",
+  "title": "Headaches at the call center",
+  "unitId": "trane-tsc072",
+  "difficulty": "medium",
+  "domains": ["controls", "components", "airflow"],
+  "honeywell": true,
+  "honeywellTypes": ["vdc-present-no-movement"],
+  "dispatch": {
+    "complaint": "People are getting headaches by mid-afternoon. It's not hot, just stuffy. The room feels dead.",
+    "customer": "Facilities lead, call center (packed floor)",
+    "outdoorF": 88,
+    "outdoorRH": 50,
+    "timeOfDay": "2:45 PM",
+    "economizer": "Honeywell JADE W7220 retrofit, C7232 CO2 sensor for DCV, MS7503 actuator"
+  },
+  "state": { "callForCooling": true, "blower": "running", "compressor1": "running", "condFan1": "running", "damperActualPct": 0, "damperFree": true, "economizerController": "jade-w7220" },
+  "faults": [
+    { "type": "actuator-failed", "componentId": "honeywell-actuator", "designation": "Economizer actuator", "role": "root", "description": "MS7503 actuator dead: good power and signal, no movement." }
+  ],
+  "baseline": "cooling-95F",
+  "readings": {
+    "t_oat": 88, "t_rat": 77, "t_mat": 77, "t_sat": 58,
+    "ohm_mat_sensor": 20005,
+    "vdc_act_cmd": 5.2,
+    "vac_act_power": 24.7,
+    "pct_damper_actual": 0,
+    "ppm_co2_ref": 1450,
+    "txt_tstat": "Thermostat: occupied, Cool, setpoint 74°F, space 75°F. Y1 and G on.",
+    "txt_controller": "Unit controller normal. No diagnostics.",
+    "txt_look_unit": "Unit running normally on mechanical cooling.",
+    "txt_look_economizer": "OA damper fully shut. Actuator shaft indicator at 0. Coupling tight on the shaft. No sound from the actuator.",
+    "txt_manual_stroke": "With the actuator released, blades swing open and shut smoothly. No binding.",
+    "txt_jade_checkout": "DAMPER OPEN: DAMPER OUT goes to 10.0 V. Actuator silent. Blades don't move. DAMPER CLOSE: nothing to close."
+  },
+  "jade": {
+    "sensorsDetected": ["MAT (C7250A)", "OAT (C7250A)", "CO2 (C7232, 2-10 Vdc)"],
+    "values": {
+      "ECON AVAIL": "NO",
+      "ECONOMIZING": "NO",
+      "OCCUPIED": "YES",
+      "COOL Y1-IN": "ON",
+      "COOL Y1-OUT": "ON",
+      "MA TEMP": 77,
+      "OA TEMP": 88,
+      "IN CO2": 1450,
+      "DCV STATUS": "ON",
+      "DAMPER OUT": 5.2,
+      "ACT POS": "--",
+      "MECH COOLING": "ON",
+      "DCV SET": 1100,
+      "VENTMIN": 3.6,
+      "VENTMAX": 6.0,
+      "DRYBLB SET": 63
+    },
+    "alarms": []
+  },
+  "hints": [
+    "What is the JADE asking for vs what the blades are doing?",
+    "Before you blame the actuator, prove the damper isn't bound."
+  ],
+  "diagnosis": [
+    { "id": "act", "label": "Economizer actuator failed", "correct": true, "feedback": "24.7 VAC power, 5.2 Vdc command, blades free by hand, actuator silent. That's the actuator." },
+    { "id": "bind", "label": "Damper/linkage binding", "feedback": "Blades swing freely by hand. Not binding." },
+    { "id": "jade", "label": "JADE output failed", "feedback": "You measured 5.2 Vdc AT the actuator. The JADE and the wire are fine." },
+    { "id": "co2", "label": "CO2 sensor out of calibration", "feedback": "Your handheld agrees: 1450 ppm. It's real." },
+    { "id": "minpos", "label": "Minimum position set to zero", "feedback": "VENTMIN is 3.6 V, and DCV's commanding 5.2 V. The setting's fine." }
+  ],
+  "repair": [
+    { "id": "replace-act", "label": "Replace actuator (MS7503-series, match torque & spring-return)", "correct": true, "partsCost": 260, "feedback": "Damper drives to 40%, CO2 starts dropping within the hour." },
+    { "id": "lube", "label": "Lube the linkage and leave", "partsCost": 0, "feedback": "Linkage was never the problem. Callback." },
+    { "id": "replace-jade", "label": "Replace JADE controller", "partsCost": 420, "feedback": "Controller's output was fine. Callback." },
+    { "id": "raise-dcv", "label": "Raise DCV SET to 2000 ppm", "partsCost": 0, "feedback": "You just told it to ventilate less in a building that's already suffocating." }
+  ],
+  "idealPath": [
+    { "action": "co2-ref", "why": "1450 ppm. Confirms under-ventilation." },
+    { "action": "jade", "why": "DCV ON, DAMPER OUT 5.2 V. JADE is asking for ~40%." },
+    { "action": "damper-pos", "why": "Blades shut. Command and reality disagree." },
+    { "action": "act-power", "why": "24.7 VAC. Actuator has power." },
+    { "action": "act-signal", "why": "5.2 Vdc at the actuator. Signal made it." },
+    { "action": "loto", "why": "Lock out before you release the actuator and hand-stroke." },
+    { "action": "verify-dead", "why": "Test before touch." },
+    { "action": "manual-stroke", "why": "Blades free. That leaves the actuator." }
+  ],
+  "debrief": "Power, signal, mechanism: prove each one. 24 VAC in, a real 2-10 Vdc command at the actuator, and blades that move freely by hand leave one suspect. A non-communicating actuator gives the JADE no feedback, so no alarm. Your eyes and meter are the only feedback loop.",
+  "concepts": ["actuator-power-signal-mechanism", "dcv-basics", "non-comm-actuator-no-feedback"]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "houston-retail",
+  "title": "Houston strip-center retail: JADE retrofit",
+  "unitId": "lennox-lch240",
+  "climate": "Houston, TX: hot and humid. Plenty of 65-70°F days at 90%+ RH.",
+  "spec": [
+    "Engineer's spec: differential enthalpy economizer control.",
+    "Occupied minimum OA damper position: 15% (3.2 V).",
+    "No DCV on this job.",
+    "Mixed air low limit 45°F, damper to closed on freeze protection.",
+    "Occupancy from the BAS through the OCC input.",
+    "Prove full actuator stroke and Y1 staging at checkout."
+  ],
+  "strategy": "differential enthalpy",
+  "targets": {
+    "MIN POS": { "value": 3.2, "tol": 0.1 },
+    "MA LO SET": { "value": 45, "tol": 0 },
+    "FREEZE POS": { "value": "CLO" },
+    "OCC": { "value": "INPUT" }
+  },
+  "checkout": ["DAMPER OPEN", "DAMPER CLOSE", "CONNECT Y1-O"],
+  "parSeconds": 240,
+  "consequences": {
+    "strategy": "30 days later: humidity complaints. Dry bulb says 68°F air is free cooling, so the JADE pulls in 95% RH air all morning. Store's clammy, mold on the ceiling tile at the entrance. Callback.",
+    "MIN POS": "30 days later: wrong ventilation. Too high = coil overloaded and bills up in August; too low = stale air and an IAQ complaint.",
+    "MA LO SET": "30 days later: a cold front comes through and the freeze limit doesn't protect the coil the way the engineer intended.",
+    "FREEZE POS": "30 days later: a January cold snap. Damper holds open on freeze protection and the coil sees sub-freezing air.",
+    "OCC": "30 days later: the damper stays at min position all night with the store empty. Wasted energy, and the BAS tech calls you.",
+    "checkout": "You never proved the actuator strokes. Two weeks later the owner finds the damper was stuck at closed the whole time."
+  },
+  "verified": false,
+  "note": "Job specs are training values written to exercise the controller, not code-required values."
+}

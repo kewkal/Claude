@@ -1,0 +1,110 @@
+{
+  "id": "run-capacitor",
+  "name": "Condenser fan motor run capacitor",
+  "kind": "run-capacitor",
+  "domain": "components",
+  "function": "Phase-shifts the start/aux winding of a PSC condenser fan motor so it starts and runs in the right direction at rated torque.",
+  "perUnit": {
+    "lennox-lch240": {
+      "availability": { "value": "factory-standard", "verified": false, "basis": "generic", "note": "Only applies if the condenser fans are PSC motors. Some Landmark builds use 3-phase or ECM fan motors with no capacitor. Confirm from the manual." },
+      "designation": { "value": "C1 (fan 1)", "verified": false, "basis": "generic" },
+      "location": { "value": "Control panel or at the fan motor. On the diagram: across the motor's run and start leads.", "verified": false, "basis": "generic" },
+      "sequenceRole": "Fan starts when its contactor/relay closes. No cap = no start.",
+      "partNumber": { "value": "—", "verified": false }
+    },
+    "trane-tsc072": {
+      "availability": { "value": "factory-standard", "verified": false, "basis": "generic", "note": "Confirm the ODM is a PSC motor on this model." },
+      "designation": { "value": "CF", "verified": false, "basis": "generic" },
+      "location": { "value": "Control box, near CC1.", "verified": false, "basis": "generic" },
+      "sequenceRole": "ODM starts with CC1.",
+      "partNumber": { "value": "—", "verified": false }
+    }
+  },
+  "failureModes": [
+    { "id": "weak", "name": "Lost capacitance", "goodVsBad": "Measured µF outside the label tolerance.", "symptoms": "Fan slow to start, runs slow and hot, may trip on internal overload." },
+    { "id": "open", "name": "Open", "goodVsBad": "Meter reads OL / no capacitance.", "symptoms": "Fan hums, won't start; spins if you nudge it (DON'T, unless locked out and verified)." },
+    { "id": "shorted", "name": "Shorted", "goodVsBad": "Continuity across terminals.", "symptoms": "Fan won't start; may blow fuses." },
+    { "id": "bulged-case", "name": "Bulged / leaking case", "goodVsBad": "Physical damage. Replace regardless of µF reading.", "symptoms": "Failure imminent." }
+  ],
+  "test": {
+    "meter": "DMM on capacitance (µF).",
+    "procedure": [
+      "LOTO, verify dead.",
+      "Discharge the capacitor through a resistor (not a screwdriver).",
+      "Remove at least one lead so you're only reading the capacitor.",
+      "Measure µF and compare to the label rating and tolerance (e.g. 5 µF ±6%).",
+      "Inspect the case for bulging or leaking."
+    ],
+    "safety": [
+      "Caps hold charge after power is off. Discharge before touching.",
+      "Never spin a humming fan by hand on a live unit."
+    ]
+  },
+  "thresholds": {
+    "tolerancePct": { "value": 6, "verified": false, "basis": "rating-label", "note": "Default only. Use the tolerance printed on the actual capacitor (commonly ±5, ±6 or ±10%)." },
+    "marginalPct": { "value": 10, "verified": false, "basis": "rule-of-thumb", "note": "Just outside label tolerance up to 10% low = marginal (replace soon); beyond = bad." }
+  },
+  "symptoms": {
+    "customer": "\"Unit trips the breaker\" or \"blowing warm in the afternoon\" (compressor tripping on head pressure).",
+    "tech": "Condenser fan not turning or humming, high head, HPS trips or compressor cycling on its internal overload."
+  },
+  "confusedWith": [
+    "Seized condenser fan motor bearings (also hums; spin test with power locked out)",
+    "Open condenser fan relay/contact (no voltage at the motor at all)",
+    "Dirty condenser coil (high head, but the fan is running)"
+  ],
+  "labCases": [
+    {
+      "id": "cap-lx-good",
+      "unitId": "lennox-lch240",
+      "designation": "C1",
+      "context": "PM visit, testing caps as a matter of course.",
+      "rating": { "uf": 5, "tolerancePct": 6, "vac": 370 },
+      "condition": "good",
+      "tests": [
+        { "id": "uf", "label": "Capacitance", "setup": "LOTO, discharged, one lead off.", "minutes": 3, "power": "off", "readings": { "uf": 4.9 } },
+        { "id": "case", "label": "Case", "setup": "Visual.", "minutes": 1, "power": "off", "readings": { "case": "flat" } }
+      ],
+      "explanation": "4.9 µF on a 5 µF ±6% cap = 2% low, well inside tolerance."
+    },
+    {
+      "id": "cap-lx-weak",
+      "unitId": "lennox-lch240",
+      "designation": "C1",
+      "context": "Fan 1 slow to come up to speed.",
+      "rating": { "uf": 5, "tolerancePct": 6, "vac": 370 },
+      "condition": "bad",
+      "failureMode": "weak",
+      "tests": [
+        { "id": "uf", "label": "Capacitance", "setup": "LOTO, discharged, one lead off.", "minutes": 3, "power": "off", "readings": { "uf": 3.1 } }
+      ],
+      "explanation": "3.1 on a 5 = 38% low. Way out of tolerance. Replace."
+    },
+    {
+      "id": "cap-tr-open",
+      "unitId": "trane-tsc072",
+      "designation": "CF",
+      "context": "ODM hums, won't start.",
+      "rating": { "uf": 5, "tolerancePct": 6, "vac": 370 },
+      "condition": "bad",
+      "failureMode": "open",
+      "tests": [
+        { "id": "uf", "label": "Capacitance", "setup": "LOTO, discharged, one lead off.", "minutes": 3, "power": "off", "readings": { "uf": "OL" } }
+      ],
+      "explanation": "No capacitance at all: open cap. Motor hums because it has no phase shift to start."
+    },
+    {
+      "id": "cap-tr-marginal",
+      "unitId": "trane-tsc072",
+      "designation": "CF",
+      "context": "PM visit.",
+      "rating": { "uf": 5, "tolerancePct": 6, "vac": 370 },
+      "condition": "marginal",
+      "failureMode": "weak",
+      "tests": [
+        { "id": "uf", "label": "Capacitance", "setup": "LOTO, discharged, one lead off.", "minutes": 3, "power": "off", "readings": { "uf": 4.6 } }
+      ],
+      "explanation": "4.6 on a 5 is 8% low. Just outside ±6%. It'll run for now, but it's on its way out. Quote it."
+    }
+  ]
+}

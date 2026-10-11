@@ -1,0 +1,32 @@
+{
+  "id": "chicago-school",
+  "title": "Chicago school gym: differential dry bulb",
+  "unitId": "lennox-lch240",
+  "climate": "Chicago, IL: cold winters, mixed summers. Freeze protection matters.",
+  "spec": [
+    "Differential dry bulb (OA and RA temperature sensors).",
+    "Occupied minimum position 30% (4.4 V). No DCV.",
+    "Mixed air low limit 42°F, damper to MIN on freeze protection per the engineer.",
+    "Compressor low-temp lockout 45°F.",
+    "Prove stroke and both cooling stages at checkout."
+  ],
+  "strategy": "differential dry bulb",
+  "targets": {
+    "MIN POS": { "value": 4.4, "tol": 0.1 },
+    "MA LO SET": { "value": 42, "tol": 0 },
+    "FREEZE POS": { "value": "MIN" },
+    "LOW T LOCK": { "value": 45, "tol": 0 }
+  },
+  "checkout": ["DAMPER OPEN", "DAMPER CLOSE", "CONNECT Y1-O", "CONNECT Y2-O"],
+  "parSeconds": 270,
+  "consequences": {
+    "strategy": "30 days later: one sensor short of the spec. Free cooling decisions are made on OA alone. The engineer's commissioning report flags it.",
+    "MIN POS": "30 days later: the gym is either stuffy during a basketball game or the coil can't keep up.",
+    "MA LO SET": "30 days later: freeze protection kicks in at the wrong mixed-air temp.",
+    "FREEZE POS": "30 days later: the spec wanted ventilation held at MIN on freeze. You closed it, and the IAQ survey flags it.",
+    "LOW T LOCK": "30 days later: compressors running on 38°F days. Wasted energy and liquid slugging risk.",
+    "checkout": "Y2 never proved. Stage 2 contactor was bad from the factory. Found on the first hot day."
+  },
+  "verified": false,
+  "note": "Job specs are training values written to exercise the controller, not code-required values."
+}

@@ -1,0 +1,47 @@
+[
+  { "id": "loto", "label": "Lock out / tag out the unit disconnect", "group": "safety", "minutes": 3, "readings": [], "power": "any" },
+  { "id": "verify-dead", "label": "Verify zero energy (live-dead-live) at the load side", "group": "safety", "minutes": 2, "readings": [], "power": "any" },
+  { "id": "restore", "label": "Remove lock, restore power", "group": "safety", "minutes": 2, "readings": [], "power": "any" },
+
+  { "id": "look-unit", "label": "Walk around and listen", "group": "look", "minutes": 3, "readings": ["txt_look_unit"], "power": "any" },
+  { "id": "look-condenser", "label": "Inspect condenser section", "group": "look", "minutes": 3, "readings": ["txt_look_condenser"], "power": "any" },
+  { "id": "look-evap", "label": "Pull filter/blower panels and look", "group": "look", "minutes": 5, "readings": ["txt_look_evap"], "power": "any" },
+  { "id": "look-electrical", "label": "Open control panel, visual", "group": "look", "minutes": 2, "readings": ["txt_look_electrical"], "power": "any" },
+  { "id": "look-economizer", "label": "Inspect economizer: blades, linkage, sensors", "group": "look", "minutes": 4, "readings": ["txt_look_economizer"], "power": "any" },
+
+  { "id": "check-tstat", "label": "Check thermostat / BAS call", "group": "controls", "minutes": 3, "readings": ["txt_tstat"], "power": "any" },
+  { "id": "read-controller", "label": "Read unit controller alarms / status", "group": "controls", "minutes": 3, "readings": ["txt_controller"], "power": "on" },
+  { "id": "v-lps1", "label": "Measure 24V across LPS 1", "group": "controls", "minutes": 2, "readings": ["v_lps1"], "power": "on" },
+  { "id": "ohm-lps1", "label": "Ohm LPS 1 (leads lifted)", "group": "controls", "minutes": 4, "readings": ["ohm_lps1"], "power": "off" },
+
+  { "id": "jade", "label": "Open the JADE display", "group": "jade", "minutes": 1, "readings": [], "power": "on" },
+  { "id": "jade-checkout", "label": "Run JADE checkout (damper open/close)", "group": "jade", "minutes": 5, "readings": ["txt_jade_checkout"], "power": "on" },
+
+  { "id": "v-line", "label": "Measure line voltage, all three pairs", "group": "electrical", "minutes": 2, "readings": ["v_l1_l2", "v_l2_l3", "v_l1_l3"], "power": "on" },
+  { "id": "v-xfmr", "label": "Measure transformer secondary", "group": "electrical", "minutes": 2, "readings": ["v_xfmr_sec"], "power": "on" },
+  { "id": "v-cc1-coil", "label": "Measure 24V at compressor contactor coil", "group": "electrical", "minutes": 2, "readings": ["v_cc1_coil"], "power": "on" },
+  { "id": "ohm-cc1-coil", "label": "Ohm compressor contactor coil", "group": "electrical", "minutes": 3, "readings": ["ohm_cc1_coil"], "power": "off" },
+  { "id": "v-cc1-drop", "label": "Voltage drop across contactor poles (energized)", "group": "electrical", "minutes": 3, "readings": ["v_cc1_drop_p1", "v_cc1_drop_p2", "v_cc1_drop_p3"], "power": "on" },
+  { "id": "a-comp1", "label": "Clamp compressor 1, all three legs", "group": "electrical", "minutes": 3, "readings": ["a_comp1_l1", "a_comp1_l2", "a_comp1_l3"], "power": "on" },
+  { "id": "ohm-comp1", "label": "Ohm compressor 1 windings + megger to ground", "group": "electrical", "minutes": 6, "readings": ["ohm_comp1_t1t2", "ohm_comp1_t2t3", "ohm_comp1_t1t3", "meg_comp1_gnd"], "power": "off" },
+  { "id": "t-comp1", "label": "Touch-check compressor shell temp", "group": "electrical", "minutes": 1, "readings": ["t_comp1_shell"], "power": "any" },
+  { "id": "a-cfm1", "label": "Clamp condenser fan motor 1 + voltage at leads", "group": "electrical", "minutes": 3, "readings": ["a_cfm1", "v_cfm1"], "power": "on" },
+  { "id": "uf-cfm1", "label": "Discharge and test condenser fan run capacitor", "group": "electrical", "minutes": 4, "readings": ["uf_cfm1_cap"], "power": "off" },
+  { "id": "a-blower", "label": "Clamp blower motor", "group": "electrical", "minutes": 2, "readings": ["a_blower"], "power": "on" },
+
+  { "id": "gauges", "label": "Hook up gauges + line temp clamps, circuit 1", "group": "refrigeration", "minutes": 8, "readings": ["p_suction1", "t_suction1", "p_liquid1", "t_liquid1"], "power": "on" },
+
+  { "id": "temps", "label": "Air temps: outdoor, return, mixed, supply", "group": "air", "minutes": 5, "readings": ["t_oat", "t_rat", "t_mat", "t_sat"], "power": "any" },
+  { "id": "humidity", "label": "Outdoor and return humidity", "group": "air", "minutes": 3, "readings": ["rh_oa", "rh_ra"], "power": "any" },
+  { "id": "static", "label": "Static pressure: total ESP and filter drop", "group": "air", "minutes": 5, "readings": ["sp_esp", "sp_filter"], "power": "on" },
+
+  { "id": "act-power", "label": "Measure 24 VAC at actuator", "group": "economizer", "minutes": 2, "readings": ["vac_act_power"], "power": "on" },
+  { "id": "act-signal", "label": "Measure 2-10 Vdc command at actuator", "group": "economizer", "minutes": 2, "readings": ["vdc_act_cmd"], "power": "on" },
+  { "id": "damper-pos", "label": "Eyeball actual damper blade position", "group": "economizer", "minutes": 2, "readings": ["pct_damper_actual"], "power": "any" },
+  { "id": "manual-stroke", "label": "Release actuator and stroke damper by hand", "group": "economizer", "minutes": 4, "readings": ["txt_manual_stroke"], "power": "off" },
+  { "id": "ohm-mat", "label": "Lift MAT sensor leads and ohm it", "group": "economizer", "minutes": 4, "readings": ["ohm_mat_sensor"], "power": "any" },
+  { "id": "co2-ref", "label": "Read CO2 with your handheld", "group": "economizer", "minutes": 2, "readings": ["ppm_co2_ref"], "power": "any" },
+
+  { "id": "jump-lps1", "label": "Jump out LPS 1 to see if it runs", "group": "hands-on", "minutes": 2, "readings": [], "power": "on", "hint": "Diagnostic jumpers on safeties are a judgment call. Leaving one in is never OK." },
+  { "id": "remove-jumper", "label": "Remove safety jumper", "group": "hands-on", "minutes": 1, "readings": [], "power": "any" }
+]

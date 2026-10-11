@@ -1,0 +1,207 @@
+{
+  "id": "trane-tsc072",
+  "shortName": "Trane TSC072 (6T)",
+  "model": {
+    "value": "TSC072F3E0A1F0000000000C000000000",
+    "verified": true,
+    "source": "project brief (customer nameplate)"
+  },
+  "brand": "Trane",
+  "series": {
+    "value": "Precedent",
+    "verified": false,
+    "source": "project brief"
+  },
+  "nominalTons": {
+    "value": 6,
+    "verified": false,
+    "source": "project brief / model digits 072 = 72 MBH"
+  },
+  "refrigerant": {
+    "value": "R-410A",
+    "verified": false,
+    "basis": "generic",
+    "note": "Confirm in the Precedent manual."
+  },
+  "voltage": {
+    "value": "208-230V-3ph-60Hz",
+    "verified": false,
+    "basis": "generic",
+    "note": "Decoded from model digit 7 ('3') by convention only. Confirm against nameplate."
+  },
+  "controller": {
+    "value": "ReliaTel (RTRM) or Symbio 700, depends on vintage",
+    "verified": false,
+    "basis": "generic",
+    "note": "Identify the exact board from the manual for this model string."
+  },
+  "compressorCount": {
+    "value": 1,
+    "verified": false,
+    "basis": "generic"
+  },
+  "compressorType": {
+    "value": "scroll",
+    "verified": false,
+    "basis": "generic"
+  },
+  "blowerDrive": {
+    "value": "belt drive standard (direct-drive option on some models)",
+    "verified": false,
+    "basis": "generic"
+  },
+  "chargeLbsCircuit1": {
+    "value": null,
+    "verified": false,
+    "note": "Factory charge not available without the unit manual / nameplate."
+  },
+  "hpsCutoutPsig": {
+    "value": 650,
+    "verified": false,
+    "basis": "generic"
+  },
+  "lpsCutoutPsig": {
+    "value": 25,
+    "verified": false,
+    "basis": "generic"
+  },
+  "lpsCutinPsig": {
+    "value": 40,
+    "verified": false,
+    "basis": "generic"
+  },
+  "factoryEconomizer": {
+    "value": "Trane economizer with ReliaTel ECA / Symbio control (factory option or field kit)",
+    "verified": false,
+    "basis": "generic"
+  },
+  "honeywellJade": {
+    "value": "field-installed retrofit",
+    "verified": false,
+    "basis": "generic"
+  },
+  "designations": {
+    "cc1": {
+      "value": "CC1",
+      "verified": false,
+      "basis": "generic"
+    },
+    "comp1": {
+      "value": "CPR1",
+      "verified": false,
+      "basis": "generic"
+    },
+    "cfm1": {
+      "value": "ODM",
+      "verified": false,
+      "basis": "generic"
+    },
+    "cfm1cap": {
+      "value": "CF",
+      "verified": false,
+      "basis": "generic"
+    },
+    "blower": {
+      "value": "IDM",
+      "verified": false,
+      "basis": "generic"
+    },
+    "lps1": {
+      "value": "LPC1",
+      "verified": false,
+      "basis": "generic"
+    },
+    "hps1": {
+      "value": "HPC1",
+      "verified": false,
+      "basis": "generic"
+    },
+    "xfmr": {
+      "value": "TNS1",
+      "verified": false,
+      "basis": "generic"
+    },
+    "controller": {
+      "value": "RTRM",
+      "verified": false,
+      "basis": "generic"
+    }
+  },
+  "ratings": {
+    "cfm1CapUf": {
+      "value": 5,
+      "verified": false,
+      "basis": "generic",
+      "note": "Condenser fan run capacitor rating not confirmed; read the capacitor label / parts list."
+    }
+  },
+  "sequenceOfOperation": {
+    "verified": false,
+    "basis": "generic",
+    "note": "Generic packaged-RTU cooling sequence. Replace with the Precedent / ReliaTel sequence from the manual.",
+    "value": [
+      "Zone sensor or thermostat calls G: unit controller energizes the indoor fan.",
+      "Y1: economizer free cooling first if enabled; otherwise compressor contactor CC1 pulls in once the anti-short-cycle timer is satisfied.",
+      "Outdoor fan runs with the compressor.",
+      "LPC/HPC open → compressor drops; repeated trips lock out and the controller flags a diagnostic."
+    ]
+  },
+  "baselines": {
+    "cooling-95F": {
+      "verified": false,
+      "basis": "generic",
+      "note": "Representative healthy-unit readings at 95°F OA / 75°F RA. Not Trane charging-chart values.",
+      "readings": {
+        "v_l1_l2": 232,
+        "v_l2_l3": 229,
+        "v_l1_l3": 234,
+        "v_xfmr_sec": 26.0,
+        "v_cc1_coil": 25.4,
+        "ohm_cc1_coil": 12.5,
+        "v_cc1_drop_p1": 0.1,
+        "v_cc1_drop_p2": 0.0,
+        "v_cc1_drop_p3": 0.1,
+        "a_comp1_l1": 18.6,
+        "a_comp1_l2": 18.9,
+        "a_comp1_l3": 18.4,
+        "ohm_comp1_t1t2": 0.6,
+        "ohm_comp1_t2t3": 0.6,
+        "ohm_comp1_t1t3": 0.6,
+        "meg_comp1_gnd": 2000,
+        "t_comp1_shell": 160,
+        "a_cfm1": 1.3,
+        "v_cfm1": 232,
+        "uf_cfm1_cap": 5.0,
+        "a_blower": 4.2,
+        "p_suction1": 128,
+        "t_suction1": 54,
+        "p_liquid1": 405,
+        "t_liquid1": 106,
+        "t_oat": 95,
+        "t_rat": 75,
+        "t_mat": 79,
+        "t_sat": 59,
+        "rh_oa": 45,
+        "rh_ra": 50,
+        "sp_esp": 0.7,
+        "sp_filter": 0.2,
+        "vac_act_power": 24.9,
+        "vdc_act_cmd": 3.6,
+        "pct_damper_actual": 20,
+        "ohm_mat_sensor": 19043,
+        "ppm_co2_ref": 650,
+        "v_lps1": 0,
+        "ohm_lps1": 0.2,
+        "txt_tstat": "Thermostat: Cool, setpoint 73°F, space 75°F. Y1 and G energized.",
+        "txt_controller": "Controller status normal. No diagnostics active.",
+        "txt_look_unit": "Unit running. Compressor steady, outdoor fan spinning, blower running.",
+        "txt_look_condenser": "Coil reasonably clean. Fan turning, warm discharge air.",
+        "txt_look_evap": "Filters average. Coil sweating evenly. Belt OK.",
+        "txt_look_electrical": "Panel clean. Contactor looks normal.",
+        "txt_look_economizer": "Damper about 20% open. Linkage tight. Mixed air sensor downstream of the dampers, ahead of filters.",
+        "txt_manual_stroke": "Damper strokes freely through full travel by hand.",
+        "txt_jade_checkout": "DAMPER OPEN: actuator drives full open, blades follow. DAMPER CLOSE: drives closed, blades seal."
+      }
+    }
+  }
+}

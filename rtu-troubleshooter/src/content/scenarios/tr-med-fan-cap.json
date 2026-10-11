@@ -1,0 +1,63 @@
+{
+  "id": "tr-med-fan-cap",
+  "title": "Afternoon trips at the dental office",
+  "unitId": "trane-tsc072",
+  "difficulty": "medium",
+  "domains": ["refrigeration", "components", "electrical"],
+  "honeywell": false,
+  "dispatch": {
+    "complaint": "AC works in the morning, then every afternoon it starts blowing warm. Patients are complaining.",
+    "customer": "Office manager, dental clinic",
+    "outdoorF": 95,
+    "outdoorRH": 40,
+    "timeOfDay": "3:30 PM",
+    "economizer": "Honeywell JADE W7220 retrofit"
+  },
+  "state": { "callForCooling": true, "blower": "running", "compressor1": "short-cycling", "condFan1": "humming", "damperActualPct": 20, "damperFree": true, "economizerController": "jade-w7220" },
+  "faults": [
+    { "type": "run-capacitor-failed", "componentId": "run-capacitor", "designation": "CF", "role": "root", "description": "Outdoor fan run capacitor failed (lost capacitance)." },
+    { "type": "hps-trip", "role": "secondary", "description": "Compressor cycling off on HPC as head pressure climbs with no condenser airflow." }
+  ],
+  "baseline": "cooling-95F",
+  "readings": {
+    "a_comp1_l1": 23.5, "a_comp1_l2": 23.9, "a_comp1_l3": 23.3,
+    "t_comp1_shell": 195,
+    "a_cfm1": 2.1, "v_cfm1": 231,
+    "uf_cfm1_cap": 0.8,
+    "p_suction1": 142, "t_suction1": 60, "p_liquid1": 560, "t_liquid1": 132,
+    "t_rat": 76, "t_mat": 80, "t_sat": 63,
+    "ohm_mat_sensor": 18580,
+    "txt_tstat": "Thermostat: Cool, setpoint 72°F, space 77°F. Y1 and G on.",
+    "txt_controller": "Controller: compressor safety-string trips logged on circuit 1 today (HPC/LPC string opened while running). ⚠ Exact diagnostic code/LED pattern not verified against Trane docs.",
+    "txt_look_unit": "Compressor running, but the outdoor fan isn't turning. Motor hums. Compressor shuts off after a few minutes, restarts after the delay.",
+    "txt_look_condenser": "Outdoor fan stopped, motor humming and hot. Heat pouring off the coil. Coil itself is fairly clean.",
+    "txt_look_electrical": "CC1 pulled in. Capacitor CF top is slightly domed."
+  },
+  "hints": [
+    "What's the condenser fan doing?",
+    "A humming PSC motor that won't start: motor or capacitor?"
+  ],
+  "diagnosis": [
+    { "id": "cap", "label": "Outdoor fan run capacitor failed", "correct": true, "feedback": "0.8 µF on a 5 µF cap. The motor can't start, head goes through the roof, HPC opens." },
+    { "id": "odm", "label": "Outdoor fan motor seized", "feedback": "Possible on a humming motor, but the cap measures dead. Test the cheap part first." },
+    { "id": "hpc", "label": "Faulty high-pressure switch", "feedback": "The HPC is doing its job. 560 psig liquid with no condenser airflow." },
+    { "id": "overcharge", "label": "Overcharged", "feedback": "Subcooling is about 10°F. Charge looks fine. High head is from no airflow." },
+    { "id": "dirty-coil", "label": "Dirty condenser coil", "feedback": "Coil's fairly clean, and the fan isn't even turning." }
+  ],
+  "repair": [
+    { "id": "replace-cap", "label": "Replace CF (match µF and VAC rating)", "correct": true, "partsCost": 25, "feedback": "Fan comes up to speed, head drops, unit stays on." },
+    { "id": "replace-odm", "label": "Replace outdoor fan motor", "partsCost": 350, "unneededPart": true, "feedback": "New motors usually ship with a cap, so it'll run, but you threw a $350 motor at a $25 problem." },
+    { "id": "reset-hpc", "label": "Reset HPC and restart", "symptomOnly": true, "partsCost": 0, "feedback": "It'll trip again in 10 minutes. Callback." },
+    { "id": "recover", "label": "Recover some charge", "partsCost": 0, "feedback": "Now you've undercharged it AND the fan's still dead." }
+  ],
+  "idealPath": [
+    { "action": "look-unit", "why": "Fan not turning while the compressor runs. Big clue." },
+    { "action": "a-cfm1", "why": "Voltage at the motor and humming amps: it's getting power but can't start." },
+    { "action": "gauges", "why": "Confirms high head from no airflow, and normal subcooling rules out overcharge." },
+    { "action": "loto", "why": "Lock out before you touch the cap." },
+    { "action": "verify-dead", "why": "Test before touch." },
+    { "action": "uf-cfm1", "why": "0.8 µF on a 5 µF cap. Dead." }
+  ],
+  "debrief": "Morning works, afternoon fails: heat-dependent. A weak cap can still start the fan when it's cool, then dies when it's hot. The HPC trip is the symptom; the cap is the root. Reset the HPC without finding the cap and you're back tomorrow.",
+  "concepts": ["capacitor-test", "high-head-no-condenser-airflow", "symptom-vs-root"]
+}

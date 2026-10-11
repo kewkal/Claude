@@ -1,0 +1,78 @@
+{
+  "id": "lx-med-jade-mat-open",
+  "title": "Spring bill shock at the bank",
+  "unitId": "lennox-lch240",
+  "difficulty": "medium",
+  "domains": ["controls", "components", "airflow"],
+  "honeywell": true,
+  "honeywellTypes": ["mat-sensor-failed"],
+  "dispatch": {
+    "complaint": "Our electric bill nearly doubled this spring. The unit runs all day, even when it's nice out.",
+    "customer": "Branch manager, bank",
+    "outdoorF": 58,
+    "outdoorRH": 50,
+    "timeOfDay": "10:15 AM",
+    "economizer": "Honeywell JADE W7220 retrofit, C7250A MAT + OAT sensors (referential dry bulb)",
+    "notes": "⚠ JADE fallback behavior on MAT sensor failure is not yet verified against Honeywell 63-2700. Modeled here as: economizing disabled, damper held at minimum."
+  },
+  "state": { "callForCooling": true, "blower": "running", "compressor1": "running", "condFan1": "running", "damperActualPct": 20, "damperFree": true, "economizerController": "jade-w7220" },
+  "faults": [
+    { "type": "mat-sensor-failed", "componentId": "c7250a", "designation": "MAT sensor", "role": "root", "description": "C7250A mixed air sensor open (moisture in a cracked sensor body)." }
+  ],
+  "baseline": "cooling-95F",
+  "readings": {
+    "t_oat": 58, "t_rat": 72, "t_mat": 69, "t_sat": 52,
+    "rh_oa": 50, "rh_ra": 48,
+    "ohm_mat_sensor": "OL",
+    "a_comp1_l1": 11.0, "a_comp1_l2": 11.3, "a_comp1_l3": 10.9,
+    "p_suction1": 116, "t_suction1": 49, "p_liquid1": 250, "t_liquid1": 74,
+    "txt_tstat": "BAS: occupied, G on, Y1 called. Space 73°F, setpoint 72°F.",
+    "txt_controller": "M2: compressor 1 on, blower on. No M2 alarms.",
+    "txt_look_unit": "Compressor 1 running on a 58°F morning. That should be free cooling weather.",
+    "txt_look_economizer": "Damper at about 20%. Linkage fine. MAT sensor body cracked, beads of moisture inside. Wire run intact, no splices.",
+    "txt_jade_checkout": "DAMPER OPEN / CLOSE both work. Blades follow the actuator."
+  },
+  "jade": {
+    "sensorsDetected": ["OAT (C7250A)"],
+    "values": {
+      "ECON AVAIL": "NO",
+      "ECONOMIZING": "NO",
+      "OCCUPIED": "YES",
+      "COOL Y1-IN": "ON",
+      "COOL Y1-OUT": "ON",
+      "MA TEMP": "---",
+      "OA TEMP": 58,
+      "DAMPER OUT": 3.6,
+      "ACT POS": "--",
+      "MECH COOLING": "ON",
+      "DRYBLB SET": 63,
+      "MIN POS": 3.6
+    },
+    "alarms": ["MA T SENS ERR"]
+  },
+  "hints": [
+    "58°F outside, 63°F changeover. Should it be economizing?",
+    "Check the JADE ALARMS menu."
+  ],
+  "diagnosis": [
+    { "id": "mat", "label": "MAT sensor (C7250A) failed open", "correct": true, "feedback": "OL at the leads, cracked body with moisture. JADE can't modulate without MAT, so it won't economize." },
+    { "id": "oat", "label": "OA sensor failed", "feedback": "JADE reads 58°F OA, matching your probe." },
+    { "id": "setpoint", "label": "DRYBLB SET too low", "feedback": "63°F changeover with 58°F outside means free cooling should be available. The setpoint isn't the issue." },
+    { "id": "act", "label": "Actuator failed", "feedback": "Checkout drives the damper full open and closed. Actuator's fine." },
+    { "id": "m2", "label": "M2 locking out the economizer", "feedback": "M2 has no alarms, and the JADE is the one saying ECON AVAIL NO, with a sensor alarm." }
+  ],
+  "repair": [
+    { "id": "replace-mat", "label": "Replace C7250A MAT sensor and confirm MA TEMP vs probe", "correct": true, "partsCost": 45, "feedback": "Alarm clears, JADE starts free cooling, compressor drops off." },
+    { "id": "replace-jade", "label": "Replace the JADE", "partsCost": 420, "feedback": "The new JADE throws the same alarm with the same dead sensor. Callback." },
+    { "id": "raise-dry", "label": "Raise DRYBLB SET to 70°F", "partsCost": 0, "feedback": "Still no MAT, still no economizing." },
+    { "id": "jumper-mat", "label": "Put a fixed resistor across the MAT terminals", "symptomOnly": true, "partsCost": 2, "feedback": "Clears the alarm, but now the JADE is modulating blind and freeze protection is gone. Callback waiting to happen." }
+  ],
+  "idealPath": [
+    { "action": "temps", "why": "58°F OA, compressor running. Free cooling should be carrying this." },
+    { "action": "jade", "why": "ECON AVAIL NO, MA TEMP ---, alarm MA T SENS ERR." },
+    { "action": "look-economizer", "why": "Cracked sensor body with moisture. Wire run intact." },
+    { "action": "ohm-mat", "why": "OL: open sensor confirmed." }
+  ],
+  "debrief": "The JADE needs MAT to modulate free cooling and protect against freezing. Lose it and it falls back (verify the exact behavior in 63-2700). The tell was a compressor running on a 58°F morning. The bill was the customer's symptom; the JADE alarm was sitting there the whole time.",
+  "concepts": ["jade-mat-role", "jade-alarms-first", "c7250a-test"]
+}

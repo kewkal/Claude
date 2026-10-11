@@ -1,0 +1,117 @@
+{
+  "id": "honeywell-actuator",
+  "name": "Honeywell direct-coupled economizer actuator, 2-10 Vdc non-communicating (MS7503 series)",
+  "kind": "actuator-2-10",
+  "domain": "components",
+  "function": "Takes 24 VAC power plus a 2-10 Vdc command from the JADE and positions the OA/RA damper shaft. 2 V = closed, 10 V = full open. Spring-return models drive closed on power loss.",
+  "perUnit": {
+    "lennox-lch240": {
+      "availability": { "value": "field-accessory", "verified": false, "basis": "generic" },
+      "designation": { "value": "Economizer actuator (JADE ACT terminals)", "verified": false, "basis": "generic" },
+      "location": { "value": "Clamped onto the economizer damper jackshaft in the return/OA section.", "verified": false, "basis": "generic" },
+      "sequenceRole": "Holds minimum position when occupied, modulates for free cooling and DCV, closes when unoccupied / on shutdown.",
+      "partNumber": { "value": "MS7503A3008", "verified": false, "note": "Example MS7503 model. Torque, spring return, and stroke time to be confirmed from Honeywell datasheet." }
+    },
+    "trane-tsc072": {
+      "availability": { "value": "field-accessory", "verified": false, "basis": "generic" },
+      "designation": { "value": "Economizer actuator (JADE ACT terminals)", "verified": false, "basis": "generic" },
+      "location": { "value": "On the economizer damper shaft.", "verified": false, "basis": "generic" },
+      "sequenceRole": "Same as Lennox.",
+      "partNumber": { "value": "MS7503A3008", "verified": false }
+    }
+  },
+  "failureModes": [
+    { "id": "no-response", "name": "No response to signal", "goodVsBad": "Good 24 VAC + valid 2-10 Vdc, shaft doesn't move, no motor noise. Dead electronics or motor.", "symptoms": "Damper stuck at last position (or closed if spring return lost power)." },
+    { "id": "stalled-gear-train", "name": "Stalled / stripped gear train", "goodVsBad": "Hums or clicks, shaft barely moves or slips.", "symptoms": "Damper creeps or won't reach position." },
+    { "id": "poor-tracking", "name": "Poor tracking", "goodVsBad": "Shaft position off from the command by more than the tracking tolerance.", "symptoms": "Min position wrong, hunting." },
+    { "id": "slow-stroke", "name": "Slow stroke", "goodVsBad": "Full stroke takes much longer than rated.", "symptoms": "Sluggish response, checkout times out." }
+  ],
+  "test": {
+    "meter": "VAC for power, VDC for signal, protractor/scale on the shaft indicator for position, stopwatch for stroke time.",
+    "procedure": [
+      "Measure 24 VAC at the actuator power terminals. No power = not the actuator.",
+      "Measure the 2-10 Vdc command at the actuator (not at the JADE: proves the wire).",
+      "Compare the shaft indicator to the command: % = (V - 2) / 8 x 100.",
+      "Shaft not moving? Release the actuator (manual override / loosen coupling) and stroke the damper by hand. Stiff = binding linkage or blades, not the actuator.",
+      "Damper free and actuator still won't track = actuator.",
+      "Use the JADE checkout DAMPER OPEN / DAMPER CLOSE to drive full stroke and time it."
+    ],
+    "safety": [
+      "Keep hands out of the blades and linkage when power or signal is applied.",
+      "Spring-return actuators store energy. Release slowly."
+    ]
+  },
+  "thresholds": {
+    "powerVac": { "value": [19.2, 28.8], "verified": false, "basis": "rule-of-thumb", "note": "24 VAC ±20%. Confirm with datasheet." },
+    "trackTolPct": { "value": 10, "verified": false, "basis": "rule-of-thumb" },
+    "strokeSecondsMax": { "value": 150, "verified": false, "basis": "generic", "note": "Placeholder. Use rated stroke time from the datasheet." }
+  },
+  "symptoms": {
+    "customer": "\"Stuffy in here,\" \"bills high,\" \"humid,\" depending on where it's stuck.",
+    "tech": "JADE DAMPER OUT says one thing, blades show another."
+  },
+  "confusedWith": [
+    "Bound damper blades / seized jackshaft bearings",
+    "Slipped shaft coupling (actuator turns, blades don't)",
+    "Missing 2-10 signal (controller, wiring, or no OCC/fan input)"
+  ],
+  "labCases": [
+    {
+      "id": "act-lx-good",
+      "unitId": "lennox-lch240",
+      "designation": "Economizer actuator",
+      "context": "Bench check after removing it to replace a bent jackshaft.",
+      "rating": { "power": "24 VAC", "signal": "2-10 Vdc" },
+      "condition": "good",
+      "tests": [
+        { "id": "pwr", "label": "Supply 24 VAC", "setup": "Bench transformer.", "minutes": 1, "power": "on", "readings": { "vac": 24.6 } },
+        { "id": "sig", "label": "Apply 6.0 Vdc, read shaft", "setup": "Signal generator on input.", "minutes": 3, "power": "on", "readings": { "vdc": 6.0, "shaft_pct": 51 } },
+        { "id": "stroke", "label": "Full stroke time", "setup": "2 V → 10 V, stopwatch.", "minutes": 3, "power": "on", "readings": { "stroke_s": 95 } }
+      ],
+      "explanation": "6 V commands 50%; shaft at 51%. Strokes in 95 s. Healthy."
+    },
+    {
+      "id": "act-lx-dead",
+      "unitId": "lennox-lch240",
+      "designation": "Economizer actuator",
+      "context": "Damper stuck shut. 10 Vdc at the actuator, 24 VAC present.",
+      "rating": { "power": "24 VAC", "signal": "2-10 Vdc" },
+      "condition": "bad",
+      "failureMode": "no-response",
+      "tests": [
+        { "id": "pwr", "label": "Supply 24 VAC", "setup": "Bench.", "minutes": 1, "power": "on", "readings": { "vac": 24.4 } },
+        { "id": "sig", "label": "Apply 10 Vdc, read shaft", "setup": "Signal generator.", "minutes": 3, "power": "on", "readings": { "vdc": 10.0, "shaft_pct": 0, "motor_sound": "none" } }
+      ],
+      "explanation": "Full command, good power, zero movement, silent. Dead actuator."
+    },
+    {
+      "id": "act-tr-stalled",
+      "unitId": "trane-tsc072",
+      "designation": "Economizer actuator",
+      "context": "Damper creeps but never opens fully.",
+      "rating": { "power": "24 VAC", "signal": "2-10 Vdc" },
+      "condition": "bad",
+      "failureMode": "stalled-gear-train",
+      "tests": [
+        { "id": "pwr", "label": "Supply 24 VAC", "setup": "Bench.", "minutes": 1, "power": "on", "readings": { "vac": 24.8 } },
+        { "id": "sig", "label": "Apply 10 Vdc, read shaft (no load)", "setup": "Off the damper.", "minutes": 3, "power": "on", "readings": { "vdc": 10.0, "shaft_pct": 12, "motor_sound": "hum" } }
+      ],
+      "explanation": "Hums, moves 12% with no load on it. The gear train is stripped. It wasn't the damper."
+    },
+    {
+      "id": "act-tr-slow",
+      "unitId": "trane-tsc072",
+      "designation": "Economizer actuator",
+      "context": "JADE checkout seems sluggish.",
+      "rating": { "power": "24 VAC", "signal": "2-10 Vdc" },
+      "condition": "marginal",
+      "failureMode": "slow-stroke",
+      "tests": [
+        { "id": "pwr", "label": "Supply 24 VAC", "setup": "Bench.", "minutes": 1, "power": "on", "readings": { "vac": 24.2 } },
+        { "id": "sig", "label": "Apply 6.0 Vdc, read shaft", "setup": "Signal generator.", "minutes": 3, "power": "on", "readings": { "vdc": 6.0, "shaft_pct": 48 } },
+        { "id": "stroke", "label": "Full stroke time", "setup": "2 V → 10 V, stopwatch.", "minutes": 4, "power": "on", "readings": { "stroke_s": 210 } }
+      ],
+      "explanation": "Tracks fine, but a 210 s stroke is way over rating. Motor or gears are wearing. Replace soon."
+    }
+  ]
+}

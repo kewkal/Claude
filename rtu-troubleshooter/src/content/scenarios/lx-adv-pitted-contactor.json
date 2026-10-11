@@ -1,0 +1,65 @@
+{
+  "id": "lx-adv-pitted-contactor",
+  "title": "Compressor keeps tripping at the warehouse",
+  "unitId": "lennox-lch240",
+  "difficulty": "advanced",
+  "domains": ["electrical", "components"],
+  "honeywell": false,
+  "dispatch": {
+    "complaint": "Last guy said the compressor is going bad. We want a second opinion before we spend five grand.",
+    "customer": "Warehouse operations manager",
+    "outdoorF": 95,
+    "outdoorRH": 40,
+    "timeOfDay": "1:20 PM",
+    "economizer": "Honeywell JADE W7220 retrofit",
+    "notes": "Previous tech's note: 'Comp 1 tripping on internal OL. Recommend replace.'"
+  },
+  "state": { "callForCooling": true, "blower": "running", "compressor1": "humming", "condFan1": "running", "damperActualPct": 20, "damperFree": true, "economizerController": "jade-w7220" },
+  "faults": [
+    { "type": "contactor-pole-open", "componentId": "contactor", "designation": "K1", "role": "root", "description": "K1 L1 pole burned open." },
+    { "type": "single-phasing", "role": "secondary", "description": "Compressor 1 sees only two phases. Locked-rotor amps on two legs." },
+    { "type": "compressor-overload-trip", "role": "secondary", "description": "Internal overload trips on heat from single-phase locked-rotor current." }
+  ],
+  "baseline": "cooling-95F",
+  "readings": {
+    "v_cc1_drop_p1": 398, "v_cc1_drop_p2": 0.4, "v_cc1_drop_p3": 0.4,
+    "a_comp1_l1": 0, "a_comp1_l2": 68, "a_comp1_l3": 68,
+    "t_comp1_shell": 235,
+    "ohm_comp1_t1t2": 1.9, "ohm_comp1_t2t3": 1.9, "ohm_comp1_t1t3": 1.9, "meg_comp1_gnd": 2000,
+    "p_suction1": 205, "t_suction1": 84, "p_liquid1": 215, "t_liquid1": 92,
+    "t_rat": 78, "t_mat": 81, "t_sat": 72,
+    "ohm_mat_sensor": 18136,
+    "txt_tstat": "BAS: occupied, Y1 and Y2 called. Space 79°F.",
+    "txt_controller": "M2: compressor 1 output on. Compressor 2 running. ⚠ M2 alarm list shows compressor 1 trips; exact code not verified against Lennox docs.",
+    "txt_look_unit": "Compressor 1 hums loudly for a few seconds, then goes quiet. Compressor 2 running normally.",
+    "txt_look_electrical": "K1 pulled in. L1 pole contact face burned and cratered. Discoloration on the L1 load lug.",
+    "txt_look_condenser": "Coil clean, fans running (compressor 2 still carrying load)."
+  },
+  "hints": [
+    "Did anybody check what's feeding the compressor?"
+  ],
+  "diagnosis": [
+    { "id": "k1-pole", "label": "K1 L1 pole burned open → single-phasing → internal overload trips", "correct": true, "feedback": "Root cause found. Balanced line voltage, 398 V across a 'closed' pole, 0 A on L1." },
+    { "id": "comp", "label": "Compressor 1 failing (bad windings)", "feedback": "Windings are balanced at 1.9 Ω and megger is clean. The compressor's a victim, not the cause." },
+    { "id": "utility", "label": "Utility phase loss", "feedback": "Line voltage is balanced at the disconnect. The leg is lost after K1." },
+    { "id": "ol", "label": "Bad internal overload", "feedback": "It's doing its job. Locked rotor on two legs will trip anything." },
+    { "id": "m2", "label": "M2 board cycling the compressor", "feedback": "M2 output stays on. The compressor trips on its own protection." }
+  ],
+  "repair": [
+    { "id": "replace-k1", "label": "Replace K1, let the compressor cool, verify balanced amps", "correct": true, "partsCost": 85, "feedback": "Compressor starts clean, three balanced legs. You just saved them a compressor." },
+    { "id": "replace-comp", "label": "Replace compressor 1 (previous tech's call)", "partsCost": 4800, "feedback": "New compressor, same burned K1. It'll single-phase and trip again, maybe cook the new one." },
+    { "id": "reset", "label": "Let the overload reset and leave", "symptomOnly": true, "partsCost": 0, "feedback": "It'll trip again within the hour." },
+    { "id": "both", "label": "Replace both K1 and compressor 1", "partsCost": 4885, "unneededPart": true, "feedback": "Fixed, but the compressor tested good. That's a $4,800 part they didn't need." }
+  ],
+  "idealPath": [
+    { "action": "look-unit", "why": "Hums then trips. Not a dead compressor; something's starving it." },
+    { "action": "v-line", "why": "Balanced supply. Problem is inside the unit." },
+    { "action": "a-comp1", "why": "0 / 68 / 68 A: single-phasing." },
+    { "action": "v-cc1-drop", "why": "398 V across the L1 pole: that pole isn't making contact." },
+    { "action": "loto", "why": "Lock out before you ohm windings." },
+    { "action": "verify-dead", "why": "Test before touch." },
+    { "action": "ohm-comp1", "why": "Balanced windings, clean megger. Compressor's healthy." }
+  ],
+  "debrief": "The previous tech found a symptom (internal overload) and called it a cause. Single-phasing at locked-rotor amps will trip any healthy overload. On a 460 V unit, an open pole back-fed through the motor windings reads about 1.5x phase voltage (~398 V) across the contacts. Balanced supply plus a big drop across one pole puts the fault in the contactor. Always check what feeds a compressor before condemning it.",
+  "concepts": ["single-phasing", "contact-voltage-drop", "verify-before-condemning-compressor", "symptom-vs-root"]
+}

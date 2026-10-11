@@ -1,0 +1,34 @@
+{
+  "id": "denver-office",
+  "title": "Denver office floor: dry bulb + DCV",
+  "unitId": "trane-tsc072",
+  "climate": "Denver, CO: dry. Humidity rarely matters; dry bulb works fine here.",
+  "spec": [
+    "Referential dry bulb economizer. Changeover (high limit) 70°F.",
+    "DCV with a C7232 CO2 sensor: DCV setpoint 1000 ppm.",
+    "VENTMIN 2.8 V (10%), VENTMAX 5.2 V (40%).",
+    "Mixed air setpoint 55°F.",
+    "Prove full actuator stroke at checkout."
+  ],
+  "strategy": "referential dry bulb",
+  "targets": {
+    "DRYBLB SET": { "value": 70, "tol": 0 },
+    "DCV SET": { "value": 1000, "tol": 0 },
+    "VENTMIN": { "value": 2.8, "tol": 0.1 },
+    "VENTMAX": { "value": 5.2, "tol": 0.1 },
+    "MAT SET": { "value": 55, "tol": 0 }
+  },
+  "checkout": ["DAMPER OPEN", "DAMPER CLOSE"],
+  "parSeconds": 240,
+  "consequences": {
+    "strategy": "30 days later: wrong sensors on order and a change order you have to eat. The engineer specced simple dry bulb.",
+    "DRYBLB SET": "30 days later: wrong changeover. Too low wastes free cooling (compressors running at 65°F); too high brings in warm air.",
+    "DCV SET": "30 days later: DCV opens too early (energy) or too late (stuffy conference rooms).",
+    "VENTMIN": "30 days later: wrong base ventilation when the floor is empty.",
+    "VENTMAX": "30 days later: wrong ventilation at full occupancy. All-hands meeting gets stuffy.",
+    "MAT SET": "30 days later: discharge air too cold or too warm during free cooling. Comfort complaints.",
+    "checkout": "Never proved stroke. Damper was bound from shipping. Found on the callback."
+  },
+  "verified": false,
+  "note": "Job specs are training values written to exercise the controller, not code-required values."
+}

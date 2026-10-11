@@ -1,0 +1,95 @@
+{
+  "id": "low-pressure-switch",
+  "name": "Low-pressure switch (LPS)",
+  "kind": "pressure-switch",
+  "domain": "components",
+  "function": "Normally closed switch on the suction side. Opens on low suction pressure to protect the compressor (loss of charge, frozen coil, restriction, no airflow) and breaks the compressor's 24V safety string.",
+  "perUnit": {
+    "lennox-lch240": {
+      "availability": { "value": "factory-standard", "verified": false, "basis": "generic" },
+      "designation": { "value": "S87 (circuit 1)", "verified": false, "basis": "generic" },
+      "location": { "value": "Suction line, compressor section. On the diagram: wired to an M2 safety input; M2 counts trips and locks out after repeated trips.", "verified": false, "basis": "generic" },
+      "sequenceRole": "Must be closed for M2 to energize compressor 1. M2 may bypass it briefly on start (low-ambient start delay). Confirm from manual.",
+      "partNumber": { "value": "—", "verified": false }
+    },
+    "trane-tsc072": {
+      "availability": { "value": "factory-standard", "verified": false, "basis": "generic" },
+      "designation": { "value": "LPC1", "verified": false, "basis": "generic" },
+      "location": { "value": "Suction line. On the diagram: in series with the compressor contactor coil circuit / controller safety input.", "verified": false, "basis": "generic" },
+      "sequenceRole": "Opening drops CC1. Repeated trips lock out the compressor.",
+      "partNumber": { "value": "—", "verified": false }
+    }
+  },
+  "failureModes": [
+    { "id": "stuck-open", "name": "Stuck open", "goodVsBad": "Open (24V across it / OL) with suction pressure well above cut-in.", "symptoms": "Compressor never starts; controller shows LPS trip/lockout with normal pressures." },
+    { "id": "stuck-closed", "name": "Stuck closed", "goodVsBad": "Stays closed below the cut-out. You'd only catch it on a bench or with a recovery machine pulling it down.", "symptoms": "No symptom until the unit loses charge and the compressor runs into a vacuum." },
+    { "id": "out-of-calibration", "name": "Setpoint drifted", "goodVsBad": "Opens or closes more than the tolerance away from its rating.", "symptoms": "Nuisance trips on cool mornings or after defrost-like conditions; or fails to protect." }
+  ],
+  "test": {
+    "meter": "VAC across the switch in circuit; Ω with leads lifted; gauges on the suction port at the same time.",
+    "procedure": [
+      "Gauges on. Note suction pressure.",
+      "In circuit with a call: measure across the switch. 0 V = closed. 24 V = open.",
+      "Compare to pressure: open at a pressure above its cut-in = bad switch. Open at a low pressure = the switch is doing its job. Find out why suction is low.",
+      "Bench: ramp pressure with a regulated nitrogen source and note where it opens and closes."
+    ],
+    "safety": [
+      "Never leave an LPS jumped out. Running a compressor into a vacuum destroys it.",
+      "A jumper for a 30-second diagnostic test is a judgment call. Watch the gauges the whole time and pull it."
+    ]
+  },
+  "thresholds": {
+    "setpointTolPsig": { "value": 5, "verified": false, "basis": "rule-of-thumb", "note": "Use the switch's printed tolerance." }
+  },
+  "symptoms": {
+    "customer": "\"Unit runs then stops,\" \"warm air,\" \"keeps shutting off.\"",
+    "tech": "Compressor short-cycles or locks out. Controller shows a low-pressure alarm."
+  },
+  "confusedWith": [
+    "Low charge (switch is right, the system isn't)",
+    "Frozen coil / no airflow (dirty filter, blower relay, belt)",
+    "Restriction (drier, TXV)"
+  ],
+  "labCases": [
+    {
+      "id": "lps-lx-good",
+      "unitId": "lennox-lch240",
+      "designation": "S87",
+      "context": "Checking the switch during a low-charge repair.",
+      "rating": { "opensPsig": 40, "closesPsig": 90 },
+      "condition": "good",
+      "tests": [
+        { "id": "ramp-down", "label": "Ramp down: where does it open?", "setup": "Bench: regulated nitrogen, ohmmeter across switch.", "minutes": 5, "power": "off", "readings": { "opened_at_psig": 41, "ohm_above": 0.1 } },
+        { "id": "ramp-up", "label": "Ramp up: where does it close?", "setup": "Bench.", "minutes": 4, "power": "off", "readings": { "closed_at_psig": 88 } }
+      ],
+      "explanation": "Opens at 41 (rated 40) and closes at 88 (rated 90). Inside ±5 psi. Good."
+    },
+    {
+      "id": "lps-tr-stuck-open",
+      "unitId": "trane-tsc072",
+      "designation": "LPC1",
+      "context": "Compressor locked out on low pressure, but the gauges read 118 psig static.",
+      "rating": { "opensPsig": 25, "closesPsig": 40 },
+      "condition": "bad",
+      "failureMode": "stuck-open",
+      "tests": [
+        { "id": "ramp-up", "label": "Ramp up: where does it close?", "setup": "Bench: nitrogen to 150 psig, ohmmeter across switch.", "minutes": 5, "power": "off", "readings": { "closed_at_psig": "never", "ohm_above": "OL" } }
+      ],
+      "explanation": "Never closes even at 150 psig. Stuck open. The switch is the fault, not the charge."
+    },
+    {
+      "id": "lps-tr-drift",
+      "unitId": "trane-tsc072",
+      "designation": "LPC1",
+      "context": "Nuisance LP trips on cool mornings.",
+      "rating": { "opensPsig": 25, "closesPsig": 40 },
+      "condition": "bad",
+      "failureMode": "out-of-calibration",
+      "tests": [
+        { "id": "ramp-down", "label": "Ramp down: where does it open?", "setup": "Bench.", "minutes": 5, "power": "off", "readings": { "opened_at_psig": 62, "ohm_above": 0.2 } },
+        { "id": "ramp-up", "label": "Ramp up: where does it close?", "setup": "Bench.", "minutes": 4, "power": "off", "readings": { "closed_at_psig": 78 } }
+      ],
+      "explanation": "Opening at 62 when it's rated 25. A cold-morning startup dip trips it. Replace the switch."
+    }
+  ]
+}

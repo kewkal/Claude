@@ -1,0 +1,164 @@
+{
+ "sensor": "C7250A",
+ "verified": false,
+ "basis": "generic",
+ "note": "Generic 20k-at-77°F NTC, Beta 3950 approximation. NOT the Honeywell chart. Replace rows with the C7250A resistance-vs-temperature table from the datasheet in /docs and set verified:true with the page cite.",
+ "rows": [
+  {
+   "tempF": -40,
+   "ohms": 803719
+  },
+  {
+   "tempF": -35,
+   "ohms": 658378
+  },
+  {
+   "tempF": -30,
+   "ohms": 541829
+  },
+  {
+   "tempF": -25,
+   "ohms": 447915
+  },
+  {
+   "tempF": -20,
+   "ohms": 371886
+  },
+  {
+   "tempF": -15,
+   "ohms": 310056
+  },
+  {
+   "tempF": -10,
+   "ohms": 259553
+  },
+  {
+   "tempF": -5,
+   "ohms": 218128
+  },
+  {
+   "tempF": 0,
+   "ohms": 184009
+  },
+  {
+   "tempF": 5,
+   "ohms": 155796
+  },
+  {
+   "tempF": 10,
+   "ohms": 132377
+  },
+  {
+   "tempF": 15,
+   "ohms": 112865
+  },
+  {
+   "tempF": 20,
+   "ohms": 96550
+  },
+  {
+   "tempF": 25,
+   "ohms": 82859
+  },
+  {
+   "tempF": 30,
+   "ohms": 71332
+  },
+  {
+   "tempF": 35,
+   "ohms": 61595
+  },
+  {
+   "tempF": 40,
+   "ohms": 53344
+  },
+  {
+   "tempF": 45,
+   "ohms": 46330
+  },
+  {
+   "tempF": 50,
+   "ohms": 40349
+  },
+  {
+   "tempF": 55,
+   "ohms": 35235
+  },
+  {
+   "tempF": 60,
+   "ohms": 30850
+  },
+  {
+   "tempF": 65,
+   "ohms": 27079
+  },
+  {
+   "tempF": 70,
+   "ohms": 23827
+  },
+  {
+   "tempF": 75,
+   "ohms": 21016
+  },
+  {
+   "tempF": 80,
+   "ohms": 18580
+  },
+  {
+   "tempF": 85,
+   "ohms": 16463
+  },
+  {
+   "tempF": 90,
+   "ohms": 14620
+  },
+  {
+   "tempF": 95,
+   "ohms": 13011
+  },
+  {
+   "tempF": 100,
+   "ohms": 11603
+  },
+  {
+   "tempF": 105,
+   "ohms": 10369
+  },
+  {
+   "tempF": 110,
+   "ohms": 9284
+  },
+  {
+   "tempF": 115,
+   "ohms": 8329
+  },
+  {
+   "tempF": 120,
+   "ohms": 7485
+  },
+  {
+   "tempF": 125,
+   "ohms": 6740
+  },
+  {
+   "tempF": 130,
+   "ohms": 6080
+  },
+  {
+   "tempF": 135,
+   "ohms": 5494
+  },
+  {
+   "tempF": 140,
+   "ohms": 4972
+  },
+  {
+   "tempF": 145,
+   "ohms": 4508
+  },
+  {
+   "tempF": 150,
+   "ohms": 4094
+  }
+ ]
+}

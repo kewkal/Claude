@@ -1,0 +1,968 @@
+{
+ "refrigerant": "R-410A",
+ "source": {
+  "tool": "CoolProp 8.0.0",
+  "citation": "Bell, I.H., Wronski, J., Quoilin, S., Lemon, V. (2014). Pure and Pseudo-pure Fluid Thermophysical Property Evaluation and the Open-Source Thermophysical Property Library CoolProp. Ind. Eng. Chem. Res. 53(6), 2498-2508.",
+  "fluidModel": "R410A pseudo-pure fluid (Lemmon 2003 EOS)",
+  "note": "Gauge pressure = absolute - 14.696 psia (sea level). Bubble = saturated liquid (use for subcooling). Dew = saturated vapor (use for superheat). R-410A glide is under 0.3 F, so the two columns nearly match.",
+  "generatedBy": "scripts/gen_pt_table.py"
+ },
+ "verified": true,
+ "rows": [
+  {
+   "tempF": -40,
+   "bubblePsig": 10.8,
+   "dewPsig": 10.7
+  },
+  {
+   "tempF": -39,
+   "bubblePsig": 11.4,
+   "dewPsig": 11.3
+  },
+  {
+   "tempF": -38,
+   "bubblePsig": 12.1,
+   "dewPsig": 12.0
+  },
+  {
+   "tempF": -37,
+   "bubblePsig": 12.7,
+   "dewPsig": 12.6
+  },
+  {
+   "tempF": -36,
+   "bubblePsig": 13.4,
+   "dewPsig": 13.3
+  },
+  {
+   "tempF": -35,
+   "bubblePsig": 14.1,
+   "dewPsig": 14.0
+  },
+  {
+   "tempF": -34,
+   "bubblePsig": 14.8,
+   "dewPsig": 14.7
+  },
+  {
+   "tempF": -33,
+   "bubblePsig": 15.6,
+   "dewPsig": 15.5
+  },
+  {
+   "tempF": -32,
+   "bubblePsig": 16.3,
+   "dewPsig": 16.2
+  },
+  {
+   "tempF": -31,
+   "bubblePsig": 17.1,
+   "dewPsig": 16.9
+  },
+  {
+   "tempF": -30,
+   "bubblePsig": 17.8,
+   "dewPsig": 17.7
+  },
+  {
+   "tempF": -29,
+   "bubblePsig": 18.6,
+   "dewPsig": 18.5
+  },
+  {
+   "tempF": -28,
+   "bubblePsig": 19.4,
+   "dewPsig": 19.3
+  },
+  {
+   "tempF": -27,
+   "bubblePsig": 20.2,
+   "dewPsig": 20.1
+  },
+  {
+   "tempF": -26,
+   "bubblePsig": 21.0,
+   "dewPsig": 20.9
+  },
+  {
+   "tempF": -25,
+   "bubblePsig": 21.9,
+   "dewPsig": 21.8
+  },
+  {
+   "tempF": -24,
+   "bubblePsig": 22.7,
+   "dewPsig": 22.6
+  },
+  {
+   "tempF": -23,
+   "bubblePsig": 23.6,
+   "dewPsig": 23.5
+  },
+  {
+   "tempF": -22,
+   "bubblePsig": 24.5,
+   "dewPsig": 24.4
+  },
+  {
+   "tempF": -21,
+   "bubblePsig": 25.4,
+   "dewPsig": 25.3
+  },
+  {
+   "tempF": -20,
+   "bubblePsig": 26.3,
+   "dewPsig": 26.2
+  },
+  {
+   "tempF": -19,
+   "bubblePsig": 27.3,
+   "dewPsig": 27.1
+  },
+  {
+   "tempF": -18,
+   "bubblePsig": 28.2,
+   "dewPsig": 28.1
+  },
+  {
+   "tempF": -17,
+   "bubblePsig": 29.2,
+   "dewPsig": 29.0
+  },
+  {
+   "tempF": -16,
+   "bubblePsig": 30.2,
+   "dewPsig": 30.0
+  },
+  {
+   "tempF": -15,
+   "bubblePsig": 31.2,
+   "dewPsig": 31.0
+  },
+  {
+   "tempF": -14,
+   "bubblePsig": 32.2,
+   "dewPsig": 32.0
+  },
+  {
+   "tempF": -13,
+   "bubblePsig": 33.2,
+   "dewPsig": 33.1
+  },
+  {
+   "tempF": -12,
+   "bubblePsig": 34.3,
+   "dewPsig": 34.1
+  },
+  {
+   "tempF": -11,
+   "bubblePsig": 35.4,
+   "dewPsig": 35.2
+  },
+  {
+   "tempF": -10,
+   "bubblePsig": 36.5,
+   "dewPsig": 36.3
+  },
+  {
+   "tempF": -9,
+   "bubblePsig": 37.6,
+   "dewPsig": 37.4
+  },
+  {
+   "tempF": -8,
+   "bubblePsig": 38.7,
+   "dewPsig": 38.5
+  },
+  {
+   "tempF": -7,
+   "bubblePsig": 39.9,
+   "dewPsig": 39.7
+  },
+  {
+   "tempF": -6,
+   "bubblePsig": 41.0,
+   "dewPsig": 40.8
+  },
+  {
+   "tempF": -5,
+   "bubblePsig": 42.2,
+   "dewPsig": 42.0
+  },
+  {
+   "tempF": -4,
+   "bubblePsig": 43.4,
+   "dewPsig": 43.2
+  },
+  {
+   "tempF": -3,
+   "bubblePsig": 44.6,
+   "dewPsig": 44.4
+  },
+  {
+   "tempF": -2,
+   "bubblePsig": 45.9,
+   "dewPsig": 45.7
+  },
+  {
+   "tempF": -1,
+   "bubblePsig": 47.2,
+   "dewPsig": 46.9
+  },
+  {
+   "tempF": 0,
+   "bubblePsig": 48.4,
+   "dewPsig": 48.2
+  },
+  {
+   "tempF": 1,
+   "bubblePsig": 49.7,
+   "dewPsig": 49.5
+  },
+  {
+   "tempF": 2,
+   "bubblePsig": 51.1,
+   "dewPsig": 50.8
+  },
+  {
+   "tempF": 3,
+   "bubblePsig": 52.4,
+   "dewPsig": 52.2
+  },
+  {
+   "tempF": 4,
+   "bubblePsig": 53.8,
+   "dewPsig": 53.5
+  },
+  {
+   "tempF": 5,
+   "bubblePsig": 55.2,
+   "dewPsig": 54.9
+  },
+  {
+   "tempF": 6,
+   "bubblePsig": 56.6,
+   "dewPsig": 56.3
+  },
+  {
+   "tempF": 7,
+   "bubblePsig": 58.0,
+   "dewPsig": 57.8
+  },
+  {
+   "tempF": 8,
+   "bubblePsig": 59.5,
+   "dewPsig": 59.2
+  },
+  {
+   "tempF": 9,
+   "bubblePsig": 60.9,
+   "dewPsig": 60.7
+  },
+  {
+   "tempF": 10,
+   "bubblePsig": 62.4,
+   "dewPsig": 62.2
+  },
+  {
+   "tempF": 11,
+   "bubblePsig": 63.9,
+   "dewPsig": 63.7
+  },
+  {
+   "tempF": 12,
+   "bubblePsig": 65.5,
+   "dewPsig": 65.2
+  },
+  {
+   "tempF": 13,
+   "bubblePsig": 67.1,
+   "dewPsig": 66.8
+  },
+  {
+   "tempF": 14,
+   "bubblePsig": 68.6,
+   "dewPsig": 68.4
+  },
+  {
+   "tempF": 15,
+   "bubblePsig": 70.3,
+   "dewPsig": 70.0
+  },
+  {
+   "tempF": 16,
+   "bubblePsig": 71.9,
+   "dewPsig": 71.6
+  },
+  {
+   "tempF": 17,
+   "bubblePsig": 73.5,
+   "dewPsig": 73.3
+  },
+  {
+   "tempF": 18,
+   "bubblePsig": 75.2,
+   "dewPsig": 74.9
+  },
+  {
+   "tempF": 19,
+   "bubblePsig": 76.9,
+   "dewPsig": 76.6
+  },
+  {
+   "tempF": 20,
+   "bubblePsig": 78.7,
+   "dewPsig": 78.4
+  },
+  {
+   "tempF": 21,
+   "bubblePsig": 80.4,
+   "dewPsig": 80.1
+  },
+  {
+   "tempF": 22,
+   "bubblePsig": 82.2,
+   "dewPsig": 81.9
+  },
+  {
+   "tempF": 23,
+   "bubblePsig": 84.0,
+   "dewPsig": 83.7
+  },
+  {
+   "tempF": 24,
+   "bubblePsig": 85.8,
+   "dewPsig": 85.5
+  },
+  {
+   "tempF": 25,
+   "bubblePsig": 87.7,
+   "dewPsig": 87.4
+  },
+  {
+   "tempF": 26,
+   "bubblePsig": 89.6,
+   "dewPsig": 89.2
+  },
+  {
+   "tempF": 27,
+   "bubblePsig": 91.5,
+   "dewPsig": 91.1
+  },
+  {
+   "tempF": 28,
+   "bubblePsig": 93.4,
+   "dewPsig": 93.1
+  },
+  {
+   "tempF": 29,
+   "bubblePsig": 95.4,
+   "dewPsig": 95.0
+  },
+  {
+   "tempF": 30,
+   "bubblePsig": 97.4,
+   "dewPsig": 97.0
+  },
+  {
+   "tempF": 31,
+   "bubblePsig": 99.4,
+   "dewPsig": 99.0
+  },
+  {
+   "tempF": 32,
+   "bubblePsig": 101.4,
+   "dewPsig": 101.1
+  },
+  {
+   "tempF": 33,
+   "bubblePsig": 103.5,
+   "dewPsig": 103.1
+  },
+  {
+   "tempF": 34,
+   "bubblePsig": 105.6,
+   "dewPsig": 105.2
+  },
+  {
+   "tempF": 35,
+   "bubblePsig": 107.7,
+   "dewPsig": 107.3
+  },
+  {
+   "tempF": 36,
+   "bubblePsig": 109.9,
+   "dewPsig": 109.5
+  },
+  {
+   "tempF": 37,
+   "bubblePsig": 112.1,
+   "dewPsig": 111.7
+  },
+  {
+   "tempF": 38,
+   "bubblePsig": 114.3,
+   "dewPsig": 113.9
+  },
+  {
+   "tempF": 39,
+   "bubblePsig": 116.5,
+   "dewPsig": 116.1
+  },
+  {
+   "tempF": 40,
+   "bubblePsig": 118.8,
+   "dewPsig": 118.4
+  },
+  {
+   "tempF": 41,
+   "bubblePsig": 121.1,
+   "dewPsig": 120.6
+  },
+  {
+   "tempF": 42,
+   "bubblePsig": 123.4,
+   "dewPsig": 123.0
+  },
+  {
+   "tempF": 43,
+   "bubblePsig": 125.8,
+   "dewPsig": 125.3
+  },
+  {
+   "tempF": 44,
+   "bubblePsig": 128.2,
+   "dewPsig": 127.7
+  },
+  {
+   "tempF": 45,
+   "bubblePsig": 130.6,
+   "dewPsig": 130.1
+  },
+  {
+   "tempF": 46,
+   "bubblePsig": 133.0,
+   "dewPsig": 132.6
+  },
+  {
+   "tempF": 47,
+   "bubblePsig": 135.5,
+   "dewPsig": 135.0
+  },
+  {
+   "tempF": 48,
+   "bubblePsig": 138.0,
+   "dewPsig": 137.5
+  },
+  {
+   "tempF": 49,
+   "bubblePsig": 140.6,
+   "dewPsig": 140.1
+  },
+  {
+   "tempF": 50,
+   "bubblePsig": 143.1,
+   "dewPsig": 142.6
+  },
+  {
+   "tempF": 51,
+   "bubblePsig": 145.8,
+   "dewPsig": 145.2
+  },
+  {
+   "tempF": 52,
+   "bubblePsig": 148.4,
+   "dewPsig": 147.9
+  },
+  {
+   "tempF": 53,
+   "bubblePsig": 151.1,
+   "dewPsig": 150.5
+  },
+  {
+   "tempF": 54,
+   "bubblePsig": 153.8,
+   "dewPsig": 153.2
+  },
+  {
+   "tempF": 55,
+   "bubblePsig": 156.5,
+   "dewPsig": 156.0
+  },
+  {
+   "tempF": 56,
+   "bubblePsig": 159.3,
+   "dewPsig": 158.7
+  },
+  {
+   "tempF": 57,
+   "bubblePsig": 162.1,
+   "dewPsig": 161.5
+  },
+  {
+   "tempF": 58,
+   "bubblePsig": 164.9,
+   "dewPsig": 164.4
+  },
+  {
+   "tempF": 59,
+   "bubblePsig": 167.8,
+   "dewPsig": 167.2
+  },
+  {
+   "tempF": 60,
+   "bubblePsig": 170.7,
+   "dewPsig": 170.1
+  },
+  {
+   "tempF": 61,
+   "bubblePsig": 173.7,
+   "dewPsig": 173.1
+  },
+  {
+   "tempF": 62,
+   "bubblePsig": 176.6,
+   "dewPsig": 176.0
+  },
+  {
+   "tempF": 63,
+   "bubblePsig": 179.6,
+   "dewPsig": 179.0
+  },
+  {
+   "tempF": 64,
+   "bubblePsig": 182.7,
+   "dewPsig": 182.1
+  },
+  {
+   "tempF": 65,
+   "bubblePsig": 185.8,
+   "dewPsig": 185.1
+  },
+  {
+   "tempF": 66,
+   "bubblePsig": 188.9,
+   "dewPsig": 188.3
+  },
+  {
+   "tempF": 67,
+   "bubblePsig": 192.0,
+   "dewPsig": 191.4
+  },
+  {
+   "tempF": 68,
+   "bubblePsig": 195.2,
+   "dewPsig": 194.6
+  },
+  {
+   "tempF": 69,
+   "bubblePsig": 198.5,
+   "dewPsig": 197.8
+  },
+  {
+   "tempF": 70,
+   "bubblePsig": 201.7,
+   "dewPsig": 201.1
+  },
+  {
+   "tempF": 71,
+   "bubblePsig": 205.0,
+   "dewPsig": 204.4
+  },
+  {
+   "tempF": 72,
+   "bubblePsig": 208.4,
+   "dewPsig": 207.7
+  },
+  {
+   "tempF": 73,
+   "bubblePsig": 211.8,
+   "dewPsig": 211.1
+  },
+  {
+   "tempF": 74,
+   "bubblePsig": 215.2,
+   "dewPsig": 214.5
+  },
+  {
+   "tempF": 75,
+   "bubblePsig": 218.6,
+   "dewPsig": 217.9
+  },
+  {
+   "tempF": 76,
+   "bubblePsig": 222.1,
+   "dewPsig": 221.4
+  },
+  {
+   "tempF": 77,
+   "bubblePsig": 225.7,
+   "dewPsig": 224.9
+  },
+  {
+   "tempF": 78,
+   "bubblePsig": 229.2,
+   "dewPsig": 228.5
+  },
+  {
+   "tempF": 79,
+   "bubblePsig": 232.9,
+   "dewPsig": 232.1
+  },
+  {
+   "tempF": 80,
+   "bubblePsig": 236.5,
+   "dewPsig": 235.7
+  },
+  {
+   "tempF": 81,
+   "bubblePsig": 240.2,
+   "dewPsig": 239.4
+  },
+  {
+   "tempF": 82,
+   "bubblePsig": 243.9,
+   "dewPsig": 243.2
+  },
+  {
+   "tempF": 83,
+   "bubblePsig": 247.7,
+   "dewPsig": 246.9
+  },
+  {
+   "tempF": 84,
+   "bubblePsig": 251.5,
+   "dewPsig": 250.7
+  },
+  {
+   "tempF": 85,
+   "bubblePsig": 255.4,
+   "dewPsig": 254.6
+  },
+  {
+   "tempF": 86,
+   "bubblePsig": 259.3,
+   "dewPsig": 258.5
+  },
+  {
+   "tempF": 87,
+   "bubblePsig": 263.2,
+   "dewPsig": 262.4
+  },
+  {
+   "tempF": 88,
+   "bubblePsig": 267.2,
+   "dewPsig": 266.4
+  },
+  {
+   "tempF": 89,
+   "bubblePsig": 271.3,
+   "dewPsig": 270.4
+  },
+  {
+   "tempF": 90,
+   "bubblePsig": 275.3,
+   "dewPsig": 274.5
+  },
+  {
+   "tempF": 91,
+   "bubblePsig": 279.5,
+   "dewPsig": 278.6
+  },
+  {
+   "tempF": 92,
+   "bubblePsig": 283.6,
+   "dewPsig": 282.7
+  },
+  {
+   "tempF": 93,
+   "bubblePsig": 287.8,
+   "dewPsig": 286.9
+  },
+  {
+   "tempF": 94,
+   "bubblePsig": 292.1,
+   "dewPsig": 291.2
+  },
+  {
+   "tempF": 95,
+   "bubblePsig": 296.4,
+   "dewPsig": 295.4
+  },
+  {
+   "tempF": 96,
+   "bubblePsig": 300.7,
+   "dewPsig": 299.8
+  },
+  {
+   "tempF": 97,
+   "bubblePsig": 305.1,
+   "dewPsig": 304.1
+  },
+  {
+   "tempF": 98,
+   "bubblePsig": 309.5,
+   "dewPsig": 308.6
+  },
+  {
+   "tempF": 99,
+   "bubblePsig": 314.0,
+   "dewPsig": 313.0
+  },
+  {
+   "tempF": 100,
+   "bubblePsig": 318.5,
+   "dewPsig": 317.6
+  },
+  {
+   "tempF": 101,
+   "bubblePsig": 323.1,
+   "dewPsig": 322.1
+  },
+  {
+   "tempF": 102,
+   "bubblePsig": 327.7,
+   "dewPsig": 326.7
+  },
+  {
+   "tempF": 103,
+   "bubblePsig": 332.4,
+   "dewPsig": 331.4
+  },
+  {
+   "tempF": 104,
+   "bubblePsig": 337.1,
+   "dewPsig": 336.1
+  },
+  {
+   "tempF": 105,
+   "bubblePsig": 341.9,
+   "dewPsig": 340.8
+  },
+  {
+   "tempF": 106,
+   "bubblePsig": 346.7,
+   "dewPsig": 345.7
+  },
+  {
+   "tempF": 107,
+   "bubblePsig": 351.6,
+   "dewPsig": 350.5
+  },
+  {
+   "tempF": 108,
+   "bubblePsig": 356.5,
+   "dewPsig": 355.4
+  },
+  {
+   "tempF": 109,
+   "bubblePsig": 361.4,
+   "dewPsig": 360.4
+  },
+  {
+   "tempF": 110,
+   "bubblePsig": 366.5,
+   "dewPsig": 365.4
+  },
+  {
+   "tempF": 111,
+   "bubblePsig": 371.5,
+   "dewPsig": 370.4
+  },
+  {
+   "tempF": 112,
+   "bubblePsig": 376.6,
+   "dewPsig": 375.5
+  },
+  {
+   "tempF": 113,
+   "bubblePsig": 381.8,
+   "dewPsig": 380.7
+  },
+  {
+   "tempF": 114,
+   "bubblePsig": 387.0,
+   "dewPsig": 385.9
+  },
+  {
+   "tempF": 115,
+   "bubblePsig": 392.3,
+   "dewPsig": 391.2
+  },
+  {
+   "tempF": 116,
+   "bubblePsig": 397.6,
+   "dewPsig": 396.5
+  },
+  {
+   "tempF": 117,
+   "bubblePsig": 403.0,
+   "dewPsig": 401.9
+  },
+  {
+   "tempF": 118,
+   "bubblePsig": 408.4,
+   "dewPsig": 407.3
+  },
+  {
+   "tempF": 119,
+   "bubblePsig": 413.9,
+   "dewPsig": 412.8
+  },
+  {
+   "tempF": 120,
+   "bubblePsig": 419.5,
+   "dewPsig": 418.3
+  },
+  {
+   "tempF": 121,
+   "bubblePsig": 425.1,
+   "dewPsig": 423.9
+  },
+  {
+   "tempF": 122,
+   "bubblePsig": 430.7,
+   "dewPsig": 429.6
+  },
+  {
+   "tempF": 123,
+   "bubblePsig": 436.4,
+   "dewPsig": 435.3
+  },
+  {
+   "tempF": 124,
+   "bubblePsig": 442.2,
+   "dewPsig": 441.0
+  },
+  {
+   "tempF": 125,
+   "bubblePsig": 448.0,
+   "dewPsig": 446.8
+  },
+  {
+   "tempF": 126,
+   "bubblePsig": 453.9,
+   "dewPsig": 452.7
+  },
+  {
+   "tempF": 127,
+   "bubblePsig": 459.9,
+   "dewPsig": 458.7
+  },
+  {
+   "tempF": 128,
+   "bubblePsig": 465.9,
+   "dewPsig": 464.7
+  },
+  {
+   "tempF": 129,
+   "bubblePsig": 471.9,
+   "dewPsig": 470.7
+  },
+  {
+   "tempF": 130,
+   "bubblePsig": 478.0,
+   "dewPsig": 476.8
+  },
+  {
+   "tempF": 131,
+   "bubblePsig": 484.2,
+   "dewPsig": 483.0
+  },
+  {
+   "tempF": 132,
+   "bubblePsig": 490.5,
+   "dewPsig": 489.3
+  },
+  {
+   "tempF": 133,
+   "bubblePsig": 496.8,
+   "dewPsig": 495.6
+  },
+  {
+   "tempF": 134,
+   "bubblePsig": 503.1,
+   "dewPsig": 501.9
+  },
+  {
+   "tempF": 135,
+   "bubblePsig": 509.5,
+   "dewPsig": 508.4
+  },
+  {
+   "tempF": 136,
+   "bubblePsig": 516.0,
+   "dewPsig": 514.9
+  },
+  {
+   "tempF": 137,
+   "bubblePsig": 522.6,
+   "dewPsig": 521.4
+  },
+  {
+   "tempF": 138,
+   "bubblePsig": 529.2,
+   "dewPsig": 528.0
+  },
+  {
+   "tempF": 139,
+   "bubblePsig": 535.9,
+   "dewPsig": 534.7
+  },
+  {
+   "tempF": 140,
+   "bubblePsig": 542.6,
+   "dewPsig": 541.5
+  },
+  {
+   "tempF": 141,
+   "bubblePsig": 549.4,
+   "dewPsig": 548.3
+  },
+  {
+   "tempF": 142,
+   "bubblePsig": 556.3,
+   "dewPsig": 555.2
+  },
+  {
+   "tempF": 143,
+   "bubblePsig": 563.3,
+   "dewPsig": 562.2
+  },
+  {
+   "tempF": 144,
+   "bubblePsig": 570.3,
+   "dewPsig": 569.2
+  },
+  {
+   "tempF": 145,
+   "bubblePsig": 577.4,
+   "dewPsig": 576.3
+  },
+  {
+   "tempF": 146,
+   "bubblePsig": 584.5,
+   "dewPsig": 583.5
+  },
+  {
+   "tempF": 147,
+   "bubblePsig": 591.8,
+   "dewPsig": 590.8
+  },
+  {
+   "tempF": 148,
+   "bubblePsig": 599.1,
+   "dewPsig": 598.1
+  },
+  {
+   "tempF": 149,
+   "bubblePsig": 606.4,
+   "dewPsig": 605.5
+  },
+  {
+   "tempF": 150,
+   "bubblePsig": 613.9,
+   "dewPsig": 613.0
+  }
+ ]
+}

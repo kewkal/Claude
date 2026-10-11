@@ -1,0 +1,216 @@
+{
+  "id": "lennox-lch240",
+  "shortName": "Lennox LCH240 (20T)",
+  "model": {
+    "value": "LCH240H4BN4G",
+    "verified": true,
+    "source": "project brief (customer nameplate)"
+  },
+  "brand": "Lennox",
+  "series": {
+    "value": "Landmark",
+    "verified": false,
+    "source": "project brief",
+    "note": "Confirm series name in the LCH installation manual."
+  },
+  "nominalTons": {
+    "value": 20,
+    "verified": false,
+    "source": "project brief / model digits 240 = 240 MBH",
+    "note": "Confirm on nameplate."
+  },
+  "refrigerant": {
+    "value": "R-410A",
+    "verified": false,
+    "basis": "generic",
+    "note": "Assumed from vintage. Confirm in the LCH manual before trusting any PT-based reading."
+  },
+  "voltage": {
+    "value": "460V-3ph-60Hz",
+    "verified": false,
+    "basis": "generic",
+    "note": "Decoded from the trailing 'G' voltage digit by convention only. Confirm against nameplate / manual."
+  },
+  "controller": {
+    "value": "Lennox M2 unit controller (A55)",
+    "verified": false,
+    "source": "project brief names M2; board designation A55 is unconfirmed",
+    "basis": "generic"
+  },
+  "compressorCount": {
+    "value": 4,
+    "verified": false,
+    "basis": "generic",
+    "note": "Compressor count and circuiting not confirmed. Scenarios only reference compressor 1 / circuit 1."
+  },
+  "compressorType": {
+    "value": "scroll",
+    "verified": false,
+    "basis": "generic"
+  },
+  "blowerDrive": {
+    "value": "belt drive, VFD optional",
+    "verified": false,
+    "basis": "generic"
+  },
+  "chargeLbsCircuit1": {
+    "value": null,
+    "verified": false,
+    "note": "Factory charge not available without the unit manual / nameplate."
+  },
+  "hpsCutoutPsig": {
+    "value": 640,
+    "verified": false,
+    "basis": "generic",
+    "note": "Typical R-410A HPS range; confirm switch rating from manual."
+  },
+  "lpsCutoutPsig": {
+    "value": 40,
+    "verified": false,
+    "basis": "generic",
+    "note": "Typical R-410A LPS open point; confirm from manual."
+  },
+  "lpsCutinPsig": {
+    "value": 90,
+    "verified": false,
+    "basis": "generic"
+  },
+  "factoryEconomizer": {
+    "value": "Lennox economizer accessory, controlled by M2 (factory option)",
+    "verified": false,
+    "basis": "generic",
+    "note": "Confirm whether economizer is factory-installed option or field accessory and which controller drives it."
+  },
+  "honeywellJade": {
+    "value": "field-installed retrofit",
+    "verified": false,
+    "basis": "generic",
+    "note": "Per brief: treat as retrofit unless /docs says factory."
+  },
+  "designations": {
+    "cc1": {
+      "value": "K1",
+      "verified": false,
+      "basis": "generic"
+    },
+    "comp1": {
+      "value": "B1",
+      "verified": false,
+      "basis": "generic"
+    },
+    "cfm1": {
+      "value": "B4",
+      "verified": false,
+      "basis": "generic"
+    },
+    "cfm1cap": {
+      "value": "C1",
+      "verified": false,
+      "basis": "generic"
+    },
+    "blower": {
+      "value": "B3",
+      "verified": false,
+      "basis": "generic"
+    },
+    "lps1": {
+      "value": "S87",
+      "verified": false,
+      "basis": "generic"
+    },
+    "hps1": {
+      "value": "S4",
+      "verified": false,
+      "basis": "generic"
+    },
+    "xfmr": {
+      "value": "T1",
+      "verified": false,
+      "basis": "generic"
+    },
+    "controller": {
+      "value": "A55",
+      "verified": false,
+      "basis": "generic"
+    }
+  },
+  "ratings": {
+    "cfm1CapUf": {
+      "value": 5,
+      "verified": false,
+      "basis": "generic",
+      "note": "Condenser fan run capacitor rating not confirmed; read the capacitor label / parts list."
+    }
+  },
+  "sequenceOfOperation": {
+    "verified": false,
+    "basis": "generic",
+    "note": "Generic packaged-RTU cooling sequence. Replace with the M2 sequence from the manual.",
+    "value": [
+      "Thermostat/BAS closes G: M2 energizes the blower contactor (or VFD run), blower starts.",
+      "Y1 call: if outdoor conditions allow, economizer modulates to hold mixed/discharge air setpoint (free cooling) before any compressor runs.",
+      "If free cooling can't satisfy or is locked out: M2 checks safeties (HPS, LPS, freezestat) and minimum-off timers, then energizes compressor 1 contactor.",
+      "Condenser fans cycle on head pressure or with the compressor contactor.",
+      "Y2 call: next compressor stage after the inter-stage delay.",
+      "A safety opening drops the compressor; repeated trips within the M2's count window lock the stage out and post an alarm."
+    ]
+  },
+  "baselines": {
+    "cooling-95F": {
+      "verified": false,
+      "basis": "generic",
+      "note": "Normal-operation readings are representative values for a healthy R-410A RTU at 95°F OA / 75°F RA, not manufacturer charging-chart values.",
+      "readings": {
+        "v_l1_l2": 468,
+        "v_l2_l3": 471,
+        "v_l1_l3": 466,
+        "v_xfmr_sec": 25.5,
+        "v_cc1_coil": 25.1,
+        "ohm_cc1_coil": 13.8,
+        "v_cc1_drop_p1": 0.1,
+        "v_cc1_drop_p2": 0.1,
+        "v_cc1_drop_p3": 0.1,
+        "a_comp1_l1": 13.2,
+        "a_comp1_l2": 13.5,
+        "a_comp1_l3": 13.1,
+        "ohm_comp1_t1t2": 1.9,
+        "ohm_comp1_t2t3": 1.9,
+        "ohm_comp1_t1t3": 1.9,
+        "meg_comp1_gnd": 2000,
+        "t_comp1_shell": 165,
+        "a_cfm1": 1.6,
+        "v_cfm1": 468,
+        "uf_cfm1_cap": 5.1,
+        "a_blower": 11.0,
+        "p_suction1": 130,
+        "t_suction1": 55,
+        "p_liquid1": 408,
+        "t_liquid1": 107,
+        "t_oat": 95,
+        "t_rat": 75,
+        "t_mat": 79,
+        "t_sat": 59,
+        "rh_oa": 45,
+        "rh_ra": 50,
+        "sp_esp": 0.9,
+        "sp_filter": 0.25,
+        "vac_act_power": 24.8,
+        "vdc_act_cmd": 3.6,
+        "pct_damper_actual": 20,
+        "ohm_mat_sensor": 19043,
+        "ppm_co2_ref": 650,
+        "v_lps1": 0,
+        "ohm_lps1": 0.2,
+        "txt_tstat": "BAS shows occupied, G on, Y1 and Y2 called. Space 76°F, setpoint 72°F.",
+        "txt_controller": "No active alarms. Compressor 1 and 2 outputs on, blower on.",
+        "txt_look_unit": "Unit running. Compressors humming steady, condenser fans spinning, blower running. No odd noises.",
+        "txt_look_condenser": "Condenser coil reasonably clean. All fans turning, warm air off the top.",
+        "txt_look_evap": "Filters moderately loaded. Coil clean and sweating evenly. Belt tension good.",
+        "txt_look_electrical": "Panel clean. No burn marks or discolored wire. Contactors look fine.",
+        "txt_look_economizer": "Damper at about 20% open. Linkage tight, coupling secure. Mixed air sensor mounted downstream of the dampers, ahead of the filters.",
+        "txt_manual_stroke": "Damper strokes freely through full travel by hand.",
+        "txt_jade_checkout": "DAMPER OPEN: actuator drives full open, blades follow. DAMPER CLOSE: drives closed, blades seal."
+      }
+    }
+  }
+}
