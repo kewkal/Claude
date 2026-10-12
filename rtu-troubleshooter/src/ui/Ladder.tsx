@@ -17,7 +17,7 @@ export function ladderPoints(sc: Scenario, unit: Unit, r: Record<string, Reading
   return [
     { id: 'tp1', label: `${d('xfmr')} secondary (R)`, volts: sec },
     { id: 'tp2', label: 'Load side of control fuse', volts: sec },
-    { id: 'tp3', label: `${d('controller')} compressor 1 output`, volts: out },
+    { id: 'tp3', label: `${d('controller')} (compressor 1 call)`, volts: out },
     { id: 'tp4', label: `Load side of ${d('hps1')} (HPS)`, volts: afterHps },
     { id: 'tp5', label: `Load side of ${d('lps1')} (LPS)`, volts: afterLps },
     { id: 'tp6', label: `${d('cc1')} coil, line side`, volts: coil },

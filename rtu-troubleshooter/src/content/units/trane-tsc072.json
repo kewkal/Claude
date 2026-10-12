@@ -9,31 +9,35 @@
   "brand": "Trane",
   "series": {
     "value": "Precedent",
-    "verified": false,
-    "source": "project brief"
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.1",
+    "basis": "manual"
   },
   "nominalTons": {
     "value": 6,
-    "verified": false,
-    "source": "project brief / model digits 072 = 72 MBH"
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.4",
+    "basis": "manual",
+    "note": "Digits 4-6 = 072 = 6 Ton."
   },
   "refrigerant": {
     "value": "R-410A",
     "verified": false,
     "basis": "generic",
-    "note": "Confirm in the Precedent manual."
+    "note": "Manual lists digit 7 E = R-410A and F = microchannel condenser coils, but doesn't state the refrigerant for F explicitly. Confirm on the nameplate."
   },
   "voltage": {
     "value": "208-230V-3ph-60Hz",
     "verified": false,
     "basis": "generic",
-    "note": "Decoded from model digit 7 ('3') by convention only. Confirm against nameplate."
+    "note": "Digit 8 = '3' is not listed in RT-SVX37B-EN (50 Hz edition lists only D = 380-415/50/3). Needs the 60 Hz IOM or the nameplate."
   },
   "controller": {
-    "value": "ReliaTel (RTRM) or Symbio 700, depends on vintage",
-    "verified": false,
-    "basis": "generic",
-    "note": "Identify the exact board from the manual for this model string."
+    "value": "Electromechanical controls (no RTRM / ReliaTel)",
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.4",
+    "basis": "manual",
+    "note": "Digit 9 = E = Electromechanical. Model-number digits decoded from the 50 Hz edition's Model Number Description. Confirm against the 60 Hz IOM when available."
   },
   "compressorCount": {
     "value": 1,
@@ -46,9 +50,11 @@
     "basis": "generic"
   },
   "blowerDrive": {
-    "value": "belt drive standard (direct-drive option on some models)",
-    "verified": false,
-    "basis": "generic"
+    "value": "Belt drive (standard drive)",
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.5",
+    "basis": "manual",
+    "note": "Digit 15 = 0, standard efficiency 3-phase 3-8½ ton = belt drive. Assumes 3-phase supply (digit 8 not yet verified)."
   },
   "chargeLbsCircuit1": {
     "value": null,
@@ -58,12 +64,14 @@
   "hpsCutoutPsig": {
     "value": 650,
     "verified": false,
-    "basis": "generic"
+    "basis": "generic",
+    "note": "HPC is standard (p.5) but its setpoint is not in RT-SVX37B-EN. Typical R-410A value until the Service Facts/60 Hz IOM is added."
   },
   "lpsCutoutPsig": {
     "value": 25,
     "verified": false,
-    "basis": "generic"
+    "basis": "generic",
+    "note": "LPC setpoints not in RT-SVX37B-EN."
   },
   "lpsCutinPsig": {
     "value": 40,
@@ -71,20 +79,26 @@
     "basis": "generic"
   },
   "factoryEconomizer": {
-    "value": "Trane economizer with ReliaTel ECA / Symbio control (factory option or field kit)",
-    "verified": false,
-    "basis": "generic"
+    "value": "None. Digit 14 = 0 = No Fresh Air.",
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.4",
+    "basis": "manual",
+    "note": "Model notes 3 and 30 (p.5): enthalpy economizers and DCV are not available with electromechanical controls."
   },
   "honeywellJade": {
     "value": "field-installed retrofit",
-    "verified": false,
-    "basis": "generic"
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.4",
+    "basis": "manual",
+    "note": "No factory fresh-air option on this unit (digit 14 = 0), so any economizer is field-installed."
   },
   "designations": {
     "cc1": {
       "value": "CC1",
-      "verified": false,
-      "basis": "generic"
+      "verified": true,
+      "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.23",
+      "basis": "manual",
+      "note": "Field power lands on CC1 line side in the control panel."
     },
     "comp1": {
       "value": "CPR1",
@@ -103,18 +117,21 @@
     },
     "blower": {
       "value": "IDM",
-      "verified": false,
-      "basis": "generic"
+      "verified": true,
+      "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.38",
+      "basis": "manual"
     },
     "lps1": {
       "value": "LPC1",
-      "verified": false,
-      "basis": "generic"
+      "verified": true,
+      "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.38",
+      "basis": "manual"
     },
     "hps1": {
       "value": "HPC1",
-      "verified": false,
-      "basis": "generic"
+      "verified": true,
+      "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.38",
+      "basis": "manual"
     },
     "xfmr": {
       "value": "TNS1",
@@ -122,9 +139,10 @@
       "basis": "generic"
     },
     "controller": {
-      "value": "RTRM",
+      "value": "Thermostat Y1",
       "verified": false,
-      "basis": "generic"
+      "basis": "generic",
+      "note": "Electromechanical unit: Y1 from the thermostat drives CC1 through the safeties. Confirm rung order on the unit wiring diagram."
     }
   },
   "ratings": {
@@ -138,12 +156,12 @@
   "sequenceOfOperation": {
     "verified": false,
     "basis": "generic",
-    "note": "Generic packaged-RTU cooling sequence. Replace with the Precedent / ReliaTel sequence from the manual.",
+    "note": "Electromechanical sequence not detailed in RT-SVX37B-EN (its sequence/troubleshooting sections are ReliaTel). Replace from the unit wiring diagram / 60 Hz IOM.",
     "value": [
-      "Zone sensor or thermostat calls G: unit controller energizes the indoor fan.",
-      "Y1: economizer free cooling first if enabled; otherwise compressor contactor CC1 pulls in once the anti-short-cycle timer is satisfied.",
-      "Outdoor fan runs with the compressor.",
-      "LPC/HPC open → compressor drops; repeated trips lock out and the controller flags a diagnostic."
+      "Thermostat G: indoor fan contactor energizes the IDM (belt drive).",
+      "Thermostat Y1: 24 V passes through the high-pressure (HPC1) and low-pressure (LPC1) controls to the CC1 coil. CC1 starts the compressor and outdoor fan.",
+      "No microprocessor: no lockout counter, no diagnostics display, no anti-short-cycle logic unless a field thermostat provides it.",
+      "A safety opening drops CC1 directly. When it recloses, the compressor restarts on the next call."
     ]
   },
   "baselines": {
@@ -193,7 +211,7 @@
         "v_lps1": 0,
         "ohm_lps1": 0.2,
         "txt_tstat": "Thermostat: Cool, setpoint 73°F, space 75°F. Y1 and G energized.",
-        "txt_controller": "Controller status normal. No diagnostics active.",
+        "txt_controller": "No unit controller on this unit (electromechanical). Nothing to read but the thermostat and the safeties.",
         "txt_look_unit": "Unit running. Compressor steady, outdoor fan spinning, blower running.",
         "txt_look_condenser": "Coil reasonably clean. Fan turning, warm discharge air.",
         "txt_look_evap": "Filters average. Coil sweating evenly. Belt OK.",
@@ -203,5 +221,47 @@
         "txt_jade_checkout": "DAMPER OPEN: actuator drives full open, blades follow. DAMPER CLOSE: drives closed, blades seal."
       }
     }
+  },
+  "condenserCoil": {
+    "value": "Microchannel condenser coil",
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.4",
+    "basis": "manual",
+    "note": "Digit 7 = F. Note 23 (p.5): standard on TSC 6 ton standard efficiency."
+  },
+  "meteringDevice": {
+    "value": "TXV",
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.5",
+    "basis": "manual",
+    "note": "Model note 10: standard metering devices are TXVs."
+  },
+  "highPressureControl": {
+    "value": "Standard (HPC)",
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.5",
+    "basis": "manual",
+    "note": "Model note 5. Setpoint not in this manual."
+  },
+  "refrigerationControls": {
+    "value": "None: no Frostat, no crankcase heater",
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.4",
+    "basis": "manual",
+    "note": "Digit 23 = 0. Note 11: Frostat cannot be field-installed on electromechanical units."
+  },
+  "smokeDetectors": {
+    "value": "Supply and return air smoke detectors (factory)",
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.4",
+    "basis": "manual",
+    "note": "Digit 24 = C."
+  },
+  "manualFacts": {
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.28",
+    "basis": "manual",
+    "value": "Max allowable supply voltage imbalance 2.0%. Over 2% can mean up to 20% current imbalance.",
+    "note": "Also p.9: DLTS (discharge line temp switch) in series with HPC/LPC opens over 300°F dome temp where fitted. Applicability to this electromechanical model not stated."
   }
 }

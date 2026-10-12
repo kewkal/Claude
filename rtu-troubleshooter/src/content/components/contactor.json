@@ -6,25 +6,80 @@
   "function": "24 VAC coil pulls in three line-voltage poles to start the compressor. The control board decides when; the contactor just does the heavy switching.",
   "perUnit": {
     "lennox-lch240": {
-      "availability": { "value": "factory-standard", "verified": false, "basis": "generic" },
-      "designation": { "value": "K1 (compressor 1)", "verified": false, "basis": "generic" },
-      "location": { "value": "Main control panel, line-voltage section. On the wiring diagram: coil in the 24V ladder fed from the M2 compressor 1 output; poles in the line-voltage section feeding B1.", "verified": false, "basis": "generic" },
+      "availability": {
+        "value": "factory-standard",
+        "verified": false,
+        "basis": "generic"
+      },
+      "designation": {
+        "value": "K1 (compressor 1)",
+        "verified": false,
+        "basis": "generic"
+      },
+      "location": {
+        "value": "Main control panel, line-voltage section. On the wiring diagram: coil in the 24V ladder fed from the M2 compressor 1 output; poles in the line-voltage section feeding B1.",
+        "verified": false,
+        "basis": "generic"
+      },
       "sequenceRole": "M2 energizes the K1 coil on a Y1 call once safeties are closed and the minimum-off timer is satisfied.",
-      "partNumber": { "value": "—", "verified": false, "note": "Pull from the LCH parts list." }
+      "partNumber": {
+        "value": "—",
+        "verified": false,
+        "note": "Pull from the LCH parts list."
+      }
     },
     "trane-tsc072": {
-      "availability": { "value": "factory-standard", "verified": false, "basis": "generic" },
-      "designation": { "value": "CC1", "verified": false, "basis": "generic" },
-      "location": { "value": "Control box, line-voltage section. Coil driven by the unit controller compressor output through the LPC/HPC safety string.", "verified": false, "basis": "generic" },
-      "sequenceRole": "Controller energizes CC1 on Y1 after the anti-short-cycle timer; CC1 also brings on the outdoor fan.",
-      "partNumber": { "value": "—", "verified": false, "note": "Pull from the Precedent parts list." }
+      "availability": {
+        "value": "factory-standard",
+        "verified": false,
+        "basis": "generic"
+      },
+      "designation": {
+        "value": "CC1",
+        "verified": true,
+        "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.23",
+        "basis": "manual"
+      },
+      "location": {
+        "value": "Unit control panel. Field power wiring terminates at CC1 (p.23). Coil fed from thermostat Y1 through HPC1/LPC1.",
+        "verified": false,
+        "basis": "generic",
+        "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.23",
+        "note": "CC1 power termination verified (p.23); coil circuit path unverified until the wiring diagram is in /docs."
+      },
+      "sequenceRole": "Thermostat Y1 energizes CC1 through the safeties. CC1 also brings on the outdoor fan. No board, no timer.",
+      "partNumber": {
+        "value": "—",
+        "verified": false,
+        "note": "Pull from the Precedent parts list."
+      }
     }
   },
   "failureModes": [
-    { "id": "coil-open", "name": "Coil open", "goodVsBad": "Good coil: low tens of ohms. Open: OL with 24V present at the coil and the contactor not pulled in.", "symptoms": "Compressor never starts; fans and blower may run. Board shows the compressor output on." },
-    { "id": "coil-shorted", "name": "Coil shorted", "goodVsBad": "Reads near 0 Ω; often blows the 24V fuse or trips the transformer breaker on a cooling call.", "symptoms": "Control fuse pops on Y call, thermostat goes blank." },
-    { "id": "contacts-pitted", "name": "Contacts pitted / burned", "goodVsBad": "Good: well under 0.5 V across each closed pole under load. Pitted: measurable drop and heat. One pole fully burned open = single-phasing.", "symptoms": "Compressor runs hot, trips on overload, hums, or draws unbalanced amps." },
-    { "id": "contacts-welded", "name": "Contacts welded", "goodVsBad": "Line voltage reaches T side with the coil de-energized.", "symptoms": "Compressor runs with no call; won't shut off; can freeze the coil or run with no blower." }
+    {
+      "id": "coil-open",
+      "name": "Coil open",
+      "goodVsBad": "Good coil: low tens of ohms. Open: OL with 24V present at the coil and the contactor not pulled in.",
+      "symptoms": "Compressor never starts; fans and blower may run. Board shows the compressor output on."
+    },
+    {
+      "id": "coil-shorted",
+      "name": "Coil shorted",
+      "goodVsBad": "Reads near 0 Ω; often blows the 24V fuse or trips the transformer breaker on a cooling call.",
+      "symptoms": "Control fuse pops on Y call, thermostat goes blank."
+    },
+    {
+      "id": "contacts-pitted",
+      "name": "Contacts pitted / burned",
+      "goodVsBad": "Good: well under 0.5 V across each closed pole under load. Pitted: measurable drop and heat. One pole fully burned open = single-phasing.",
+      "symptoms": "Compressor runs hot, trips on overload, hums, or draws unbalanced amps."
+    },
+    {
+      "id": "contacts-welded",
+      "name": "Contacts welded",
+      "goodVsBad": "Line voltage reaches T side with the coil de-energized.",
+      "symptoms": "Compressor runs with no call; won't shut off; can freeze the coil or run with no blower."
+    }
   ],
   "test": {
     "meter": "DMM on VAC for coil and pole drop; Ω for coil with one lead lifted and power locked out.",
@@ -41,9 +96,26 @@
     ]
   },
   "thresholds": {
-    "coilOhms": { "value": [5, 40], "verified": false, "basis": "rule-of-thumb", "note": "Typical 24 VAC definite-purpose coil range. Real value is on the contactor label/spec sheet." },
-    "contactDropGoodV": { "value": 0.5, "verified": false, "basis": "rule-of-thumb" },
-    "contactDropBadV": { "value": 2.0, "verified": false, "basis": "rule-of-thumb", "note": "Between 0.5 and 2 V = marginal, replace soon. Over 2 V = replace now." }
+    "coilOhms": {
+      "value": [
+        5,
+        40
+      ],
+      "verified": false,
+      "basis": "rule-of-thumb",
+      "note": "Typical 24 VAC definite-purpose coil range. Real value is on the contactor label/spec sheet."
+    },
+    "contactDropGoodV": {
+      "value": 0.5,
+      "verified": false,
+      "basis": "rule-of-thumb"
+    },
+    "contactDropBadV": {
+      "value": 2.0,
+      "verified": false,
+      "basis": "rule-of-thumb",
+      "note": "Between 0.5 and 2 V = marginal, replace soon. Over 2 V = replace now."
+    }
   },
   "symptoms": {
     "customer": "\"Unit's running but blowing warm\" or \"breaker keeps tripping\" (welded/shorted cases).",
@@ -60,12 +132,45 @@
       "unitId": "lennox-lch240",
       "designation": "K1",
       "context": "Pulled K1 during a no-cool call that turned out to be a board issue. Shop wants to know if it can go back on the truck.",
-      "rating": { "coilVoltage": "24 VAC", "poles": 3, "fla": "40 A" },
+      "rating": {
+        "coilVoltage": "24 VAC",
+        "poles": 3,
+        "fla": "40 A"
+      },
       "condition": "good",
       "tests": [
-        { "id": "coil", "label": "Coil resistance", "setup": "Off the unit, on the bench.", "minutes": 1, "power": "off", "readings": { "coil_ohm": 13.6 } },
-        { "id": "drop", "label": "Pole drop under load", "setup": "Bench rig: 24V to the coil, resistive load bank on the poles.", "minutes": 3, "power": "on", "readings": { "drop_p1": 0.1, "drop_p2": 0.2, "drop_p3": 0.1 } },
-        { "id": "visual", "label": "Visual", "setup": "Contacts inspected.", "minutes": 1, "power": "off", "readings": { "visual": "Light gray contact faces, no pitting, armature moves freely." } }
+        {
+          "id": "coil",
+          "label": "Coil resistance",
+          "setup": "Off the unit, on the bench.",
+          "minutes": 1,
+          "power": "off",
+          "readings": {
+            "coil_ohm": 13.6
+          }
+        },
+        {
+          "id": "drop",
+          "label": "Pole drop under load",
+          "setup": "Bench rig: 24V to the coil, resistive load bank on the poles.",
+          "minutes": 3,
+          "power": "on",
+          "readings": {
+            "drop_p1": 0.1,
+            "drop_p2": 0.2,
+            "drop_p3": 0.1
+          }
+        },
+        {
+          "id": "visual",
+          "label": "Visual",
+          "setup": "Contacts inspected.",
+          "minutes": 1,
+          "power": "off",
+          "readings": {
+            "visual": "Light gray contact faces, no pitting, armature moves freely."
+          }
+        }
       ],
       "explanation": "Coil inside the typical range and every pole drops ≤0.2 V under load. Good part."
     },
@@ -74,12 +179,34 @@
       "unitId": "lennox-lch240",
       "designation": "K1",
       "context": "No-cool call. 24.9 V measured across the K1 coil, contactor not pulled in. Pulled for bench test.",
-      "rating": { "coilVoltage": "24 VAC", "poles": 3, "fla": "40 A" },
+      "rating": {
+        "coilVoltage": "24 VAC",
+        "poles": 3,
+        "fla": "40 A"
+      },
       "condition": "bad",
       "failureMode": "coil-open",
       "tests": [
-        { "id": "coil", "label": "Coil resistance", "setup": "Off the unit.", "minutes": 1, "power": "off", "readings": { "coil_ohm": "OL" } },
-        { "id": "visual", "label": "Visual", "setup": "Inspect coil.", "minutes": 1, "power": "off", "readings": { "visual": "Coil body slightly darkened near one terminal." } }
+        {
+          "id": "coil",
+          "label": "Coil resistance",
+          "setup": "Off the unit.",
+          "minutes": 1,
+          "power": "off",
+          "readings": {
+            "coil_ohm": "OL"
+          }
+        },
+        {
+          "id": "visual",
+          "label": "Visual",
+          "setup": "Inspect coil.",
+          "minutes": 1,
+          "power": "off",
+          "readings": {
+            "visual": "Coil body slightly darkened near one terminal."
+          }
+        }
       ],
       "explanation": "OL across the coil = open winding. That's why 24 V was present and nothing happened."
     },
@@ -88,13 +215,46 @@
       "unitId": "trane-tsc072",
       "designation": "CC1",
       "context": "PM visit. Compressor running fine, but you take pole drops on CC1 while you're in there.",
-      "rating": { "coilVoltage": "24 VAC", "poles": 3, "fla": "30 A" },
+      "rating": {
+        "coilVoltage": "24 VAC",
+        "poles": 3,
+        "fla": "30 A"
+      },
       "condition": "marginal",
       "failureMode": "contacts-pitted",
       "tests": [
-        { "id": "drop", "label": "Pole drop under load", "setup": "In circuit, compressor running.", "minutes": 3, "power": "on", "readings": { "drop_p1": 0.2, "drop_p2": 1.2, "drop_p3": 0.3 } },
-        { "id": "coil", "label": "Coil resistance", "setup": "LOTO, coil lead lifted.", "minutes": 2, "power": "off", "readings": { "coil_ohm": 11.9 } },
-        { "id": "visual", "label": "Visual", "setup": "LOTO, cover off.", "minutes": 1, "power": "off", "readings": { "visual": "Pole 2 contacts pitted and darkened." } }
+        {
+          "id": "drop",
+          "label": "Pole drop under load",
+          "setup": "In circuit, compressor running.",
+          "minutes": 3,
+          "power": "on",
+          "readings": {
+            "drop_p1": 0.2,
+            "drop_p2": 1.2,
+            "drop_p3": 0.3
+          }
+        },
+        {
+          "id": "coil",
+          "label": "Coil resistance",
+          "setup": "LOTO, coil lead lifted.",
+          "minutes": 2,
+          "power": "off",
+          "readings": {
+            "coil_ohm": 11.9
+          }
+        },
+        {
+          "id": "visual",
+          "label": "Visual",
+          "setup": "LOTO, cover off.",
+          "minutes": 1,
+          "power": "off",
+          "readings": {
+            "visual": "Pole 2 contacts pitted and darkened."
+          }
+        }
       ],
       "explanation": "Pole 2 drops 1.2 V under load. That's heat and wasted power, but not failed yet. Quote it as replace-soon."
     },
@@ -103,12 +263,36 @@
       "unitId": "trane-tsc072",
       "designation": "CC1",
       "context": "Compressor tripping on overload. Contactor pulled in when you arrive.",
-      "rating": { "coilVoltage": "24 VAC", "poles": 3, "fla": "30 A" },
+      "rating": {
+        "coilVoltage": "24 VAC",
+        "poles": 3,
+        "fla": "30 A"
+      },
       "condition": "bad",
       "failureMode": "contacts-pitted",
       "tests": [
-        { "id": "drop", "label": "Pole drop while energized", "setup": "In circuit, energized.", "minutes": 3, "power": "on", "readings": { "drop_p1": 0.1, "drop_p2": 96.0, "drop_p3": 0.2 } },
-        { "id": "coil", "label": "Coil resistance", "setup": "LOTO, lead lifted.", "minutes": 2, "power": "off", "readings": { "coil_ohm": 12.2 } }
+        {
+          "id": "drop",
+          "label": "Pole drop while energized",
+          "setup": "In circuit, energized.",
+          "minutes": 3,
+          "power": "on",
+          "readings": {
+            "drop_p1": 0.1,
+            "drop_p2": 96.0,
+            "drop_p3": 0.2
+          }
+        },
+        {
+          "id": "coil",
+          "label": "Coil resistance",
+          "setup": "LOTO, lead lifted.",
+          "minutes": 2,
+          "power": "off",
+          "readings": {
+            "coil_ohm": 12.2
+          }
+        }
       ],
       "explanation": "96 V across a closed pole means it isn't making contact. The compressor is single-phasing on that leg. Replace the contactor, then check the compressor."
     }

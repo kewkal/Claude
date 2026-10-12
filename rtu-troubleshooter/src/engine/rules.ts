@@ -24,7 +24,7 @@ const STOPPED: ScenarioState['compressor1'][] = ['off', 'tripped', 'locked-out']
 
 /** Rule-of-thumb tolerances used by the generic checks. Listed in UNVERIFIED.md via RULES_OF_THUMB. */
 export const RULES_OF_THUMB = {
-  maxVoltageImbalancePct: { value: 2, note: 'NEMA MG-1 derating starts above 1%; 2% used as the "normal supply" ceiling.' },
+  maxVoltageImbalancePct: { value: 2, note: 'Trane RT-SVX37B-EN p.28: 2.0% max allowable supply imbalance (verified for the Trane unit; Lennox value pending its manual).' },
   goodContactDropV: { value: 0.5, note: 'Closed contacts under load should drop well under 1 V.' },
   mixedAirTolF: { value: 3, note: 'Mixing-equation tolerance; assumes OA fraction ≈ damper position (linear damper, a simplification).' },
   actuatorTrackPct: { value: 7, note: '2-10 Vdc maps linearly to 0-100 % stroke (2 V = closed, 10 V = open).' },

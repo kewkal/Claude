@@ -3,7 +3,10 @@
   "title": "Short-cycling at the boutique",
   "unitId": "trane-tsc072",
   "difficulty": "beginner",
-  "domains": ["refrigeration", "components"],
+  "domains": [
+    "refrigeration",
+    "components"
+  ],
   "honeywell": false,
   "dispatch": {
     "complaint": "The unit keeps turning on and off and it's not keeping up.",
@@ -13,19 +16,45 @@
     "timeOfDay": "11:40 AM",
     "economizer": "Honeywell JADE W7220 retrofit"
   },
-  "state": { "callForCooling": true, "blower": "running", "compressor1": "short-cycling", "condFan1": "running", "damperActualPct": 20, "damperFree": true, "economizerController": "jade-w7220" },
+  "state": {
+    "callForCooling": true,
+    "blower": "running",
+    "compressor1": "short-cycling",
+    "condFan1": "running",
+    "damperActualPct": 20,
+    "damperFree": true,
+    "economizerController": "jade-w7220"
+  },
   "faults": [
-    { "type": "low-charge", "role": "root", "description": "Refrigerant leak at the liquid-line Schrader core. System undercharged." },
-    { "type": "lps-trip", "componentId": "low-pressure-switch", "designation": "LPC1", "role": "secondary", "description": "LPC1 opens as suction drops. Switch is working correctly." }
+    {
+      "type": "low-charge",
+      "role": "root",
+      "description": "Refrigerant leak at the liquid-line Schrader core. System undercharged."
+    },
+    {
+      "type": "lps-trip",
+      "componentId": "low-pressure-switch",
+      "designation": "LPC1",
+      "role": "secondary",
+      "description": "LPC1 opens as suction drops. Switch is working correctly."
+    }
   ],
   "baseline": "cooling-95F",
   "readings": {
-    "t_oat": 88, "t_rat": 77, "t_mat": 79, "t_sat": 66,
-    "a_comp1_l1": 13.0, "a_comp1_l2": 13.3, "a_comp1_l3": 12.9,
-    "p_suction1": 60, "t_suction1": 52, "p_liquid1": 300, "t_liquid1": 94,
+    "t_oat": 88,
+    "t_rat": 77,
+    "t_mat": 79,
+    "t_sat": 66,
+    "a_comp1_l1": 13.0,
+    "a_comp1_l2": 13.3,
+    "a_comp1_l3": 12.9,
+    "p_suction1": 60,
+    "t_suction1": 52,
+    "p_liquid1": 300,
+    "t_liquid1": 94,
     "txt_tstat": "Thermostat: Cool, setpoint 72°F, space 76°F. Y1 and G on.",
-    "txt_controller": "Controller: multiple low-pressure trips logged on circuit 1. ⚠ Code/LED pattern not verified.",
-    "txt_look_unit": "Compressor runs 2-3 minutes, stops, restarts after the anti-short-cycle delay.",
+    "txt_controller": "No unit controller (electromechanical unit). No fault history. You'll have to catch it in the act.",
+    "txt_look_unit": "Compressor runs 2-3 minutes, stops, then restarts a few minutes later. Over and over.",
     "txt_look_condenser": "Coil OK. Oily residue around the liquid-line service port.",
     "txt_look_evap": "Filters clean. Frost on the lower distributor tubes. Belt good."
   },
@@ -35,24 +64,84 @@
     "Is the LPS lying, or telling you the truth?"
   ],
   "diagnosis": [
-    { "id": "low-charge", "label": "Low refrigerant charge (leak)", "correct": true, "feedback": "Low suction, high superheat, low subcooling, oil at a Schrader. Textbook." },
-    { "id": "lps-bad", "label": "Defective LPS", "feedback": "The LPS is doing its job. Suction is really low." },
-    { "id": "filter", "label": "Dirty filter / low airflow", "feedback": "Filters are clean, and low airflow gives LOW superheat, not high." },
-    { "id": "txv", "label": "TXV stuck closed / restriction", "feedback": "A restriction also gives high superheat, but subcooling would be HIGH (charge stacks up in the condenser). Yours is low." },
-    { "id": "fan", "label": "Condenser fan problem", "feedback": "Fan's running, head is LOW. Opposite symptom." }
+    {
+      "id": "low-charge",
+      "label": "Low refrigerant charge (leak)",
+      "correct": true,
+      "feedback": "Low suction, high superheat, low subcooling, oil at a Schrader. Textbook."
+    },
+    {
+      "id": "lps-bad",
+      "label": "Defective LPS",
+      "feedback": "The LPS is doing its job. Suction is really low."
+    },
+    {
+      "id": "filter",
+      "label": "Dirty filter / low airflow",
+      "feedback": "Filters are clean, and low airflow gives LOW superheat, not high."
+    },
+    {
+      "id": "txv",
+      "label": "TXV stuck closed / restriction",
+      "feedback": "A restriction also gives high superheat, but subcooling would be HIGH (charge stacks up in the condenser). Yours is low."
+    },
+    {
+      "id": "fan",
+      "label": "Condenser fan problem",
+      "feedback": "Fan's running, head is LOW. Opposite symptom."
+    }
   ],
   "repair": [
-    { "id": "proper", "label": "Leak check, replace Schrader core, evacuate, weigh in charge", "correct": true, "partsCost": 120, "feedback": "Leak fixed, charge restored, compressor stays on." },
-    { "id": "topoff", "label": "Top off charge and leave", "symptomOnly": true, "partsCost": 60, "feedback": "Runs today, short again next month. EPA 608 also expects you to repair leaks, not just top off." },
-    { "id": "lps", "label": "Replace LPS", "partsCost": 60, "feedback": "New switch, same low charge. Trips again." },
-    { "id": "txv", "label": "Replace TXV", "partsCost": 300, "feedback": "TXV was fine. Callback." }
+    {
+      "id": "proper",
+      "label": "Leak check, replace Schrader core, evacuate, weigh in charge",
+      "correct": true,
+      "partsCost": 120,
+      "feedback": "Leak fixed, charge restored, compressor stays on."
+    },
+    {
+      "id": "topoff",
+      "label": "Top off charge and leave",
+      "symptomOnly": true,
+      "partsCost": 60,
+      "feedback": "Runs today, short again next month. EPA 608 also expects you to repair leaks, not just top off."
+    },
+    {
+      "id": "lps",
+      "label": "Replace LPS",
+      "partsCost": 60,
+      "feedback": "New switch, same low charge. Trips again."
+    },
+    {
+      "id": "txv",
+      "label": "Replace TXV",
+      "partsCost": 300,
+      "feedback": "TXV was fine. Callback."
+    }
   ],
   "idealPath": [
-    { "action": "look-unit", "why": "Short-cycling: a safety is opening." },
-    { "action": "read-controller", "why": "Low-pressure trips logged." },
-    { "action": "gauges", "why": "60 psig suction (~8°F sat), 44°F superheat, 2°F subcooling." },
-    { "action": "look-condenser", "why": "Oil at the Schrader: there's your leak." }
+    {
+      "action": "look-unit",
+      "why": "Short-cycling: a safety is opening and auto-resetting."
+    },
+    {
+      "action": "v-lps1",
+      "why": "0 V across LPC1 while it runs: the switch is closed right now and opens as suction falls. It's cycling on pressure, not stuck. Gauges next."
+    },
+    {
+      "action": "gauges",
+      "why": "60 psig suction (~8°F sat), 44°F superheat, 2°F subcooling."
+    },
+    {
+      "action": "look-condenser",
+      "why": "Oil at the Schrader: there's your leak."
+    }
   ],
   "debrief": "Superheat and subcooling read together pin it down. High SH + low SC = undercharge. High SH + high SC = restriction. Low SH + high SC = overcharge. The LPS wasn't broken; it was the messenger.",
-  "concepts": ["sh-sc-diagnosis", "low-charge-signature", "lps-is-messenger", "epa-leak-repair"]
+  "concepts": [
+    "sh-sc-diagnosis",
+    "low-charge-signature",
+    "lps-is-messenger",
+    "epa-leak-repair"
+  ]
 }
