@@ -1,0 +1,49 @@
+{
+ "search_metadata": {
+  "id": "fixture-ta",
+  "status": "Success"
+ },
+ "locations": [
+  {
+   "position": 1,
+   "title": "Sample Castle Viewpoint",
+   "place_id": "9100001",
+   "place_type": "ATTRACTION",
+   "link": "https://www.tripadvisor.com/Attraction_Review-fixture-1",
+   "rating": 4.5,
+   "reviews": 41000,
+   "location": "Lisbon, Portugal"
+  },
+  {
+   "position": 2,
+   "title": "Sample Monastery",
+   "place_id": "9100002",
+   "place_type": "ATTRACTION",
+   "link": "https://www.tripadvisor.com/Attraction_Review-fixture-2",
+   "rating": 4.5,
+   "reviews": 38000,
+   "location": "Lisbon, Portugal"
+  },
+  {
+   "position": 3,
+   "title": "Sample Tram 28 Walking Tour",
+   "place_id": "9100003",
+   "place_type": "ATTRACTION",
+   "link": "https://www.tripadvisor.com/Attraction_Review-fixture-3",
+   "rating": 5.0,
+   "reviews": 1200,
+   "location": "Lisbon, Portugal"
+  },
+  {
+   "position": 4,
+   "title": "Sample Hidden Garden",
+   "place_id": "9100004",
+   "place_type": "ATTRACTION",
+   "link": "https://www.tripadvisor.com/Attraction_Review-fixture-4",
+   "rating": 4.5,
+   "reviews": 350,
+   "location": "Lisbon, Portugal",
+   "description": "Fixture-only Tripadvisor attraction."
+  }
+ ]
+}

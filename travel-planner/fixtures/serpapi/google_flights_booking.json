@@ -1,0 +1,8 @@
+{
+  "search_metadata": { "id": "fixture-booking", "status": "Success", "google_flights_url": "https://www.google.com/travel/flights?hl=en&gl=us&curr=USD" },
+  "selected_flights": [],
+  "booking_options": [
+    { "together": { "book_with": "United", "airline_logos": ["https://www.gstatic.com/flights/airline_logos/70px/UA.png"], "marketed_as": ["UA 2034", "UA 64"], "price": 1684, "option_title": "Economy", "extensions": ["Free carry-on bag", "1st checked bag: $35"], "booking_request": { "url": "https://www.google.com/travel/clk/f", "post_data": "u=FIXTURE" } } },
+    { "together": { "book_with": "Expedia", "price": 1702, "extensions": [], "booking_request": { "url": "https://www.google.com/travel/clk/f", "post_data": "u=FIXTURE2" } } }
+  ]
+}

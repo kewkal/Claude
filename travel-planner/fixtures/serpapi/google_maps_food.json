@@ -1,0 +1,153 @@
+{
+ "search_metadata": {
+  "id": "fixture-maps-food",
+  "status": "Success"
+ },
+ "local_results": [
+  {
+   "position": 1,
+   "title": "Sample Pastry Shop",
+   "place_id": "FIXTURE_PLACE_SAMPLE_PASTRY_SHOP",
+   "data_id": "0xFIX191f96d:0x0",
+   "gps_coordinates": {
+    "latitude": 38.6975,
+    "longitude": -9.203
+   },
+   "rating": 4.6,
+   "reviews": 60000,
+   "type": "Bakery",
+   "types": [
+    "Bakery"
+   ],
+   "address": "100 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace789/400/300",
+   "price": "$"
+  },
+  {
+   "position": 2,
+   "title": "Sample Seafood House",
+   "place_id": "FIXTURE_PLACE_SAMPLE_SEAFOOD_HOUSE",
+   "data_id": "0xFIX98d21a:0x1",
+   "gps_coordinates": {
+    "latitude": 38.72,
+    "longitude": -9.135
+   },
+   "rating": 4.5,
+   "reviews": 12000,
+   "type": "Seafood restaurant",
+   "types": [
+    "Seafood restaurant"
+   ],
+   "address": "101 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace258/400/300",
+   "price": "$$$"
+  },
+  {
+   "position": 3,
+   "title": "Sample Tasca",
+   "place_id": "FIXTURE_PLACE_SAMPLE_TASCA",
+   "data_id": "0xFIX888dc5:0x2",
+   "gps_coordinates": {
+    "latitude": 38.7125,
+    "longitude": -9.1295
+   },
+   "rating": 4.7,
+   "reviews": 1800,
+   "type": "Portuguese restaurant",
+   "types": [
+    "Portuguese restaurant"
+   ],
+   "address": "102 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace189/400/300",
+   "price": "$10\u201320"
+  },
+  {
+   "position": 4,
+   "title": "Sample Market Hall",
+   "place_id": "FIXTURE_PLACE_SAMPLE_MARKET_HALL",
+   "data_id": "0xFIX11224ba:0x3",
+   "gps_coordinates": {
+    "latitude": 38.7068,
+    "longitude": -9.1458
+   },
+   "rating": 4.5,
+   "reviews": 70000,
+   "type": "Food court",
+   "types": [
+    "Food court"
+   ],
+   "address": "103 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace266/400/300",
+   "price": "$$"
+  },
+  {
+   "position": 5,
+   "title": "Sample Fine Dining",
+   "place_id": "FIXTURE_PLACE_SAMPLE_FINE_DINING",
+   "data_id": "0xFIX1689099:0x4",
+   "gps_coordinates": {
+    "latitude": 38.7105,
+    "longitude": -9.143
+   },
+   "rating": 4.8,
+   "reviews": 950,
+   "type": "Fine dining restaurant",
+   "types": [
+    "Fine dining restaurant"
+   ],
+   "address": "104 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace977/400/300",
+   "price": "$$$$"
+  }
+ ]
+}
