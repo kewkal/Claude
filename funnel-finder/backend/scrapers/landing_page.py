@@ -38,9 +38,9 @@ async def analyze(url: str) -> dict:
         result["final_url"] = url
         return result
 
+    import platform
     try:
         async with async_playwright() as pw:
-            import platform
             is_windows = platform.system() == "Windows"
             launch_opts = {"headless": True, "args": ["--no-sandbox", "--disable-dev-shm-usage"]}
             if not is_windows:

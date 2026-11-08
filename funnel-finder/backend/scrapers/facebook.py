@@ -60,13 +60,13 @@ async def _scrape_library(query: str, query_type: str, max_results: int = 30) ->
     qs = "&".join(f"{k}={v}" for k, v in params.items())
     url = f"{FB_LIBRARY_URL}?{qs}"
 
+    import platform
     async with async_playwright() as pw:
-        import platform
-            is_windows = platform.system() == "Windows"
-            launch_opts = {"headless": True, "args": ["--no-sandbox", "--disable-dev-shm-usage"]}
-            if not is_windows:
-                launch_opts["executable_path"] = "/opt/pw-browsers/chromium-1243/chrome-linux64/chrome"
-            browser = await pw.chromium.launch(**launch_opts)
+        is_windows = platform.system() == "Windows"
+        launch_opts = {"headless": True, "args": ["--no-sandbox", "--disable-dev-shm-usage"]}
+        if not is_windows:
+            launch_opts["executable_path"] = "/opt/pw-browsers/chromium-1243/chrome-linux64/chrome"
+        browser = await pw.chromium.launch(**launch_opts)
         ctx = await browser.new_context(
             viewport={"width": 1280, "height": 900},
             user_agent=_next_ua(),
