@@ -1,6 +1,6 @@
 "use client";
 
-import { airportLabel, US_AIRPORTS } from "@/lib/airports";
+import { airportLabel, airportsForCity, milesFrom, US_AIRPORTS, withNearbyAirports } from "@/lib/airports";
 import type { Travelers } from "@/lib/flights/types";
 
 export function Stepper({ label, value, min, max, onChange }: { label: string; value: number; min: number; max: number; onChange: (n: number) => void }) {
@@ -122,5 +122,33 @@ export function AirportInput({
       />
       {known && <p className="mt-1 text-xs text-muted">{known}</p>}
     </div>
+  );
+}
+
+/** The airports a typed origin will actually search (city -> airports, plus nearby when on). */
+export function originAirports(origin: string, nearby: boolean): string[] {
+  const t = origin.trim();
+  const base = /^[a-z]{3}$/i.test(t) ? t.toUpperCase() : airportsForCity(t);
+  if (!base) return [];
+  return (nearby ? withNearbyAirports(base) : base).split(",");
+}
+
+/** "Include nearby airports" switch with a preview of exactly which airports get searched. */
+export function NearbyAirportsToggle({ origin, checked, onChange }: { origin: string; checked: boolean; onChange: (v: boolean) => void }) {
+  const all = originAirports(origin, true);
+  const base = originAirports(origin, false);
+  const extra = all.filter((c) => !base.includes(c));
+  return (
+    <label className="flex items-start gap-3 rounded-xl bg-surface-2 px-3 py-2.5">
+      <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--accent)]" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <span className="text-sm">
+        <span className="block font-semibold">Include nearby airports</span>
+        <span className="block text-muted">
+          {extra.length
+            ? `Also checks ${extra.map((c) => `${c}${base[0] ? ` (${milesFrom(base[0], c)} mi)` : ""}`).join(", ")}. Still 1 search.`
+            : "Checks airports within 100 miles in the same search: catches low-cost carriers like Avelo, Allegiant, and Breeze at smaller airports."}
+        </span>
+      </span>
+    </label>
   );
 }

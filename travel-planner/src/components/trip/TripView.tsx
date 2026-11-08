@@ -8,11 +8,13 @@ import { DEFAULT_SETTINGS } from "@/lib/settings-shared";
 import { fmtDate, fmtDuration, fmtTime, fmtTimestamp, fmtUsd } from "@/lib/format";
 import { findRef, VERSION_KEYS, VERSION_LABEL, type RefPlace, type TripEditClient, type TripRecord, type VersionKey } from "@/lib/planner/types";
 import { refsInDays } from "@/lib/planner/validate";
-import { travelersLabel } from "@/components/inputs";
+import { milesFrom } from "@/lib/airports";
+import { originAirports, travelersLabel } from "@/components/inputs";
 import { PlaceDetailsSheet } from "@/components/PlaceCard";
 import { AiText, Badge, ErrorState, Rating } from "@/components/ui";
 import { BudgetBar, CostTable } from "./CostTable";
 import { DayCard } from "./DayCard";
+import { SavingsPanel } from "./SavingsPanel";
 
 export function TripView({
   initial,
@@ -253,18 +255,26 @@ export function TripView({
             </div>
             {f && firstSeg && lastSeg ? (
               <>
-                <p className="mt-2 text-sm font-semibold">{f.airlines.join(" + ")}</p>
+                <p className="mt-2 text-sm font-semibold">
+                  {f.airlines.join(" + ")}
+                  {!originAirports(trip.inputs.origin, false).includes(firstSeg.from.code) && originAirports(trip.inputs.origin, false).length > 0 && (
+                    <span className="ml-2 font-normal text-accent">
+                      📍 from {firstSeg.from.code}
+                      {milesFrom(originAirports(trip.inputs.origin, false)[0], firstSeg.from.code) !== null ? ` · ${milesFrom(originAirports(trip.inputs.origin, false)[0], firstSeg.from.code)} mi away` : ""}
+                    </span>
+                  )}
+                </p>
                 <div className="mt-1 flex items-center gap-2">
                   <div>
                     <p className="text-base font-bold tabular-nums">{fmtTime(firstSeg.from.time)}</p>
                     <p className="text-xs text-muted">{firstSeg.from.code}</p>
                   </div>
                   <div className="flex-1 text-center">
-                    <p className="text-[0.7rem] text-muted">{fmtDuration(f.totalDurationMin)}</p>
+                    <p className="text-xs text-muted">{fmtDuration(f.totalDurationMin)}</p>
                     <div className="relative my-0.5 h-px bg-border">
-                      <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface px-1 text-[0.7rem]">✈</span>
+                      <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface px-1 text-xs">✈</span>
                     </div>
-                    <p className="text-[0.7rem] text-muted">{f.stops === 0 ? "Nonstop" : `${f.stops} stop${f.stops > 1 ? "s" : ""} · ${f.layovers.map((l) => l.code).join(", ")}`}</p>
+                    <p className="text-xs text-muted">{f.stops === 0 ? "Nonstop" : `${f.stops} stop${f.stops > 1 ? "s" : ""} · ${f.layovers.map((l) => l.code).join(", ")}`}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-base font-bold tabular-nums">{fmtTime(lastSeg.to.time)}</p>
@@ -381,6 +391,8 @@ export function TripView({
           />
         ))}
       </section>
+
+      <SavingsPanel trip={trip} version={vk} readOnly={readOnly} onTrip={setTrip} />
 
       <details className="group" open={printMode}>
         <summary className="section-title cursor-pointer list-none">

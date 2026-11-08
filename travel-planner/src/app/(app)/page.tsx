@@ -7,7 +7,7 @@ import { loadSession, saveSession, useSettings } from "@/lib/client/useSettings"
 import { fmtDate, fmtUsd } from "@/lib/format";
 import type { ComparisonRow } from "@/lib/planner/compare";
 import { TRIP_STYLES, type Pace, type PlanInput, type TripStyle } from "@/lib/planner/types";
-import { AirportInput, AirportSuggestions, Stepper, todayPlus, TravelersInput } from "@/components/inputs";
+import { AirportInput, AirportSuggestions, NearbyAirportsToggle, Stepper, todayPlus, TravelersInput } from "@/components/inputs";
 import { ErrorState, Segmented } from "@/components/ui";
 
 const DEFAULT: PlanInput = {
@@ -26,6 +26,7 @@ const DEFAULT: PlanInput = {
   budgetUsd: 5000,
   styles: ["cultural", "foodie"],
   pace: "balanced",
+  nearbyOrigin: true,
 };
 
 interface Estimate {
@@ -238,6 +239,7 @@ export default function PlanPage() {
           <AirportSuggestions />
           <FormSection n={1} title="Where">
             <AirportInput id="porigin" label="From" value={input.origin} onChange={(v) => setInput({ ...input, origin: v })} required />
+            <NearbyAirportsToggle origin={input.origin} checked={input.nearbyOrigin !== false} onChange={(v) => setInput({ ...input, nearbyOrigin: v })} />
 
             <div className="space-y-2">
               <span className="label">Destination{input.destinations.length > 1 ? "s to compare" : ""}</span>

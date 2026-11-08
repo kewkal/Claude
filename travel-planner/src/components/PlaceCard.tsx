@@ -147,11 +147,11 @@ function PopularTimesChart({ pt }: { pt: PopularTimes }) {
           </div>
         ))}
       </div>
-      <div className="flex justify-between text-[0.65rem] text-muted">
+      <div className="flex justify-between text-xs text-muted">
         <span>{data[0]?.time}</span>
         <span>{data[data.length - 1]?.time}</span>
       </div>
-      <p className="mt-1 text-[0.7rem] text-muted">Google Maps popular times (relative busyness).</p>
+      <p className="mt-1 text-xs text-muted">Google Maps popular times (relative busyness).</p>
     </div>
   );
 }
@@ -210,7 +210,7 @@ export function PlaceDetailsSheet({ item, destination, threshold, onClose }: { i
             ))}
             {item.website && <SourceLink href={item.website}>Website</SourceLink>}
           </div>
-          <p className="mt-1 text-[0.7rem] text-muted">
+          <p className="mt-1 text-xs text-muted">
             {item.sources.map((s) => `${SOURCE_LABEL[s.source]} fetched ${fmtTimestamp(s.fetchedAt)}`).join(" · ")}
           </p>
         </section>
@@ -255,7 +255,7 @@ export function PlaceDetailsSheet({ item, destination, threshold, onClose }: { i
           <section>
             <h3 className="mb-1 font-bold">About</h3>
             <p className="text-sm">{item.description}</p>
-            <p className="text-[0.7rem] text-muted">From {item.sources[0] ? SOURCE_LABEL[item.sources[0].source] : "source"}</p>
+            <p className="text-xs text-muted">From {item.sources[0] ? SOURCE_LABEL[item.sources[0].source] : "source"}</p>
           </section>
         )}
 
@@ -317,7 +317,7 @@ export function PlaceDetailsSheet({ item, destination, threshold, onClose }: { i
             <ReviewList reviews={reviews} fetchedAt={d.fetchedAt.googleReviews ?? d.fetchedAt.tripadvisorReviews} />
           </section>
         )}
-        <p className="text-[0.7rem] text-muted">Opening an item uses up to 4 SerpApi searches (reviews ×2, photos, videos), each cached for 7 days.</p>
+        <p className="text-xs text-muted">Opening an item uses up to 4 SerpApi searches (reviews ×2, photos, videos), each cached for 7 days.</p>
       </div>
     </Sheet>
   );

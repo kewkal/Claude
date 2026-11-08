@@ -1,5 +1,5 @@
 import "server-only";
-import { airportsForCity } from "@/lib/airports";
+import { airportsForCity, withNearbyAirports } from "@/lib/airports";
 import { AppError, badInput } from "@/lib/errors";
 import { buildFlightParams, flexSearch, resolvePlace, searchFlights } from "@/lib/flights/service";
 import { valueScore } from "@/lib/flights/sort";
@@ -72,6 +72,7 @@ function flightInput(input: PlanInput, destination: string, start: string, end: 
     returnDate: end,
     travelers: input.travelers,
     cabin: input.cabin,
+    nearbyOrigin: input.nearbyOrigin !== false,
   };
 }
 
@@ -140,7 +141,8 @@ export async function estimateSearches(
         dest = "";
       }
     }
-    const origin = await resolveIfCached(input.origin, reqs);
+    const resolvedOrigin = await resolveIfCached(input.origin, reqs);
+    const origin = resolvedOrigin && input.nearbyOrigin !== false ? withNearbyAirports(resolvedOrigin) : resolvedOrigin;
     if (dest && origin) reqs.push({ engine: "google_flights", params: buildFlightParams({ ...flightInput(input, dest, start, end), origin }) });
     else extra += 1;
     reqs.push({ engine: "google_hotels", params: buildHotelParams(hotelInput(input, raw, start, end)) });

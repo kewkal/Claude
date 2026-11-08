@@ -54,8 +54,8 @@ function PriceChip({ p, mine, readOnly, onSet }: { p: RefPlace; mine: number | u
 /** Small inline marker for Claude-written text — present but quieter than sourced facts. */
 export function AiNote({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mt-1.5 text-[0.82rem] leading-snug text-ai">
-      <span className="mr-1 rounded bg-ai-soft px-1 py-px text-[0.62rem] font-bold uppercase tracking-wide">AI</span>
+    <p className="mt-2 text-[0.88rem] leading-relaxed text-ai">
+      <span className="mr-1 rounded bg-ai-soft px-1 py-px text-xs font-bold uppercase tracking-wide">AI</span>
       {children}
     </p>
   );
@@ -136,7 +136,7 @@ export function DayCard({
     <section className="card break-inside-avoid overflow-hidden" aria-label={`Day ${index + 1}`}>
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="flex w-full items-center gap-3 px-4 py-3 text-left">
         <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-xl bg-accent-soft text-accent">
-          <span className="text-[0.6rem] font-bold uppercase leading-none">Day</span>
+          <span className="text-xs font-bold uppercase leading-none">Day</span>
           <span className="text-lg font-extrabold leading-none">{index + 1}</span>
         </div>
         <div className="min-w-0 flex-1">
@@ -152,7 +152,7 @@ export function DayCard({
             {weatherIcon(weather)} {weather?.highF != null ? `${Math.round(weather.highF)}°` : "—"}
             <span className="font-normal text-muted">{weather?.lowF != null ? ` / ${Math.round(weather.lowF)}°` : ""}</span>
           </span>
-          {weather?.precipChance != null && <span className={`block text-[0.68rem] leading-tight ${isRainy(weather) ? "font-semibold text-warn" : "text-muted"}`}>{weather.precipChance}% rain</span>}
+          {weather?.precipChance != null && <span className={`block text-xs leading-tight ${isRainy(weather) ? "font-semibold text-warn" : "text-muted"}`}>{weather.precipChance}% rain</span>}
         </div>
         <span className={`no-print text-muted transition-transform ${open ? "rotate-180" : ""}`} aria-hidden>
           ▾
@@ -212,7 +212,7 @@ export function DayCard({
                           {/* timeline rail */}
                           <span className="absolute left-[0.85rem] top-0 h-full w-px bg-border" aria-hidden style={last ? { height: "1.25rem" } : undefined} />
                           {it.travel && (
-                            <p className="pb-1.5 text-[0.72rem] text-muted">
+                            <p className="pb-2 text-[0.82rem] text-muted">
                               {lv ? (
                                 <span className="font-semibold text-text">
                                   {lv.minutes ?? "?"} min {lv.mode} · {fmtMiles(lv.miles)}
@@ -228,14 +228,14 @@ export function DayCard({
                           <span className="absolute left-0 flex h-7 w-7 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-contrast ring-4 ring-surface">
                             {n}
                           </span>
-                          <div className="pb-4">
+                          <div className="pb-6">
                             <div className="flex items-start justify-between gap-2">
-                              <button type="button" className="text-left text-[0.95rem] font-semibold leading-snug hover:underline disabled:no-underline" onClick={() => onOpenPlace(p)} disabled={readOnly}>
+                              <button type="button" className="text-left text-[1.02rem] font-semibold leading-snug hover:underline disabled:no-underline" onClick={() => onOpenPlace(p)} disabled={readOnly}>
                                 {p.name}
                               </button>
                               <PriceChip p={p} mine={ds.userPrices?.[p.ref]} readOnly={readOnly} onSet={(usd) => onEdit({ op: "set_price", ref: p.ref, usd })} />
                             </div>
-                            <p className="mt-0.5 text-xs text-muted">
+                            <p className="mt-1 text-[0.82rem] leading-snug text-muted">
                               <span className="capitalize">{p.types[0] ?? p.category}</span>
                               {ratings.map((s) => (
                                 <span key={s.source}>
@@ -245,7 +245,7 @@ export function DayCard({
                               ))}
                               {isVerified(p, threshold) && <span className="font-semibold text-ok"> · ✓ Verified</span>}
                             </p>
-                            {(p.event?.when ?? p.hours) && <p className="mt-0.5 truncate text-xs text-muted">{p.event?.when ?? p.hours}</p>}
+                            {(p.event?.when ?? p.hours) && <p className="mt-1 truncate text-[0.82rem] text-muted">{p.event?.when ?? p.hours}</p>}
                             {it.note && <AiNote>{it.note}</AiNote>}
                             {(src?.url || p.event?.tickets[0]) && (
                               <p className="mt-1 flex gap-3 text-xs">
@@ -334,7 +334,7 @@ export function DayCard({
                 ↻ Regenerate day
               </button>
               {legs.length > 0 && (
-                <span className="text-[0.7rem] text-muted">
+                <span className="text-xs text-muted">
                   Times are estimates
                   <InfoTip label="How travel time is estimated">{TRAVEL_ESTIMATE_NOTE}</InfoTip>
                 </span>
