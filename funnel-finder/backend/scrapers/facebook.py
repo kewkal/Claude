@@ -61,7 +61,11 @@ async def _scrape_library(query: str, query_type: str, max_results: int = 30) ->
     url = f"{FB_LIBRARY_URL}?{qs}"
 
     async with async_playwright() as pw:
-        browser = await pw.chromium.launch(headless=True)
+        browser = await pw.chromium.launch(
+                headless=True,
+                executable_path="/opt/pw-browsers/chromium-1243/chrome-linux64/chrome",
+                args=["--no-sandbox", "--disable-dev-shm-usage"],
+            )
         ctx = await browser.new_context(
             viewport={"width": 1280, "height": 900},
             user_agent=_next_ua(),
