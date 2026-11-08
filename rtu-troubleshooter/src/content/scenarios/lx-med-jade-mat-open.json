@@ -19,7 +19,7 @@
     "outdoorRH": 50,
     "timeOfDay": "10:15 AM",
     "economizer": "Honeywell JADE W7220 retrofit, C7250A MAT + OAT sensors (referential dry bulb)",
-    "notes": "⚠ JADE fallback behavior on MAT sensor failure is not yet verified against Honeywell 63-2700. Modeled here as: economizing disabled, damper held at minimum."
+    "notes": "JADE 63-2700-11 confirms a failed MAT reads --.- with alarm MA T SENS ERR, and that MAT is a critical sensor. ⚠ What the damper does after that alarm isn't stated in the manual; modeled here as economizing disabled, damper held at minimum."
   },
   "state": {
     "callForCooling": true,
@@ -71,13 +71,13 @@
       "OCCUPIED": "YES",
       "COOL Y1-IN": "ON",
       "COOL Y1-OUT": "ON",
-      "MA TEMP": "---",
+      "MA TEMP": "--.-",
       "OA TEMP": 58,
       "DAMPER OUT": 3.6,
-      "ACT POS": "--",
-      "MECH COOLING": "ON",
+      "ACT POS": "n/a",
       "DRYBLB SET": 63,
-      "MIN POS": 3.6
+      "MIN POS": 3.6,
+      "MECH COOL ON": 1
     },
     "alarms": [
       "MA T SENS ERR"
@@ -161,7 +161,7 @@
       "why": "OL: open sensor confirmed."
     }
   ],
-  "debrief": "The JADE needs MAT to modulate free cooling and protect against freezing. Lose it and it falls back (verify the exact behavior in 63-2700). The tell was a compressor running on a 58°F morning. The bill was the customer's symptom; the JADE alarm was sitting there the whole time.",
+  "debrief": "The JADE needs MAT to modulate free cooling and protect against freezing. Lose it and it falls back (63-2700-11 documents the alarm and the --.- display; the damper fallback itself isn't spelled out). The tell was a compressor running on a 58°F morning. The bill was the customer's symptom; the JADE alarm was sitting there the whole time.",
   "concepts": [
     "jade-mat-role",
     "jade-alarms-first",

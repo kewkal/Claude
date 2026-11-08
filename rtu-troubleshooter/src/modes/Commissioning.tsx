@@ -6,7 +6,7 @@ import { Pill, SourceTag } from '../ui/Tags';
 
 const PACKAGES = [
   { strategy: 'referential dry bulb', label: 'OA dry-bulb sensor only', parts: 'C7250A on OA' },
-  { strategy: 'differential dry bulb', label: 'OA + RA dry-bulb sensors', parts: 'C7250A on OA and RA' },
+  { strategy: 'differential dry bulb', label: 'OA dry bulb + RA Sylk sensor', parts: 'C7250A 20k on OAT + C7400S on RA (DIP switch = RA)' },
   { strategy: 'referential enthalpy', label: 'OA enthalpy sensor only', parts: 'C7400S (Sylk) on OA' },
   { strategy: 'differential enthalpy', label: 'OA + RA enthalpy sensors', parts: 'C7400S (Sylk) on OA and RA' },
 ];
@@ -53,11 +53,13 @@ export function CommissioningGame({ id, onExit }: { id: string; onExit: () => vo
   const enthalpy = strategy?.includes('enthalpy');
   const visible = (i: JadeItem) => {
     if (i.key === 'DRYBLB SET') return !enthalpy;
+    if (i.key === 'DRYBLB DIF') return strategy === 'differential dry bulb';
     if (i.key === 'ENTH CURVE') return !!enthalpy;
     if (['DCV SET', 'VENTMIN', 'VENTMAX', 'CO2 ZERO', 'CO2 SPAN'].includes(i.key)) return co2;
     if (i.key === 'MIN POS') return !co2;
     if (['OA HUM'].includes(i.key)) return !!enthalpy;
     if (['RA TEMP'].includes(i.key)) return !!strategy?.startsWith('differential');
+    if (['HEAT PUMP', 'DA TEMP', 'EXH2 OUT', 'ERV', 'FAN SPEED', 'W (HEAT IN)', 'ACT POS', 'ACT COUNT', 'ACTUATOR', 'ERV OAT SP', 'EXH2 SET'].includes(i.key)) return false;
     if (['RA HUM'].includes(i.key)) return strategy === 'differential enthalpy';
     if (['IN CO2', 'DCV STATUS'].includes(i.key)) return co2;
     return true;

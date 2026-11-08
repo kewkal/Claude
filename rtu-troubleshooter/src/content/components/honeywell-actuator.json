@@ -1,9 +1,9 @@
 {
   "id": "honeywell-actuator",
-  "name": "Honeywell direct-coupled economizer actuator, 2-10 Vdc non-communicating (MS7503 series)",
+  "name": "Honeywell MS7503 direct-coupled spring-return economizer actuator (27 lb-in, 2-10 Vdc)",
   "kind": "actuator-2-10",
   "domain": "components",
-  "function": "Takes 24 VAC power plus a 2-10 Vdc command from the JADE and positions the OA/RA damper shaft. 2 V = closed, 10 V = full open. Spring-return models drive closed on power loss.",
+  "function": "24 VAC powered, 27 lb-in spring-return actuator taking a 0(2)-10 Vdc command from the JADE; 2 V = closed, 10 V = full open. 90 s drive time, spring returns closed in under 25 s on power loss, 2-10 Vdc feedback output (JADE's 2-10 V output has no feedback input, so ACT POS shows n/a).",
   "perUnit": {
     "lennox-lch240": {
       "availability": {
@@ -23,9 +23,11 @@
       },
       "sequenceRole": "Holds minimum position when occupied, modulates for free cooling and DCV, closes when unoccupied / on shutdown.",
       "partNumber": {
-        "value": "MS7503A3008",
-        "verified": false,
-        "note": "Example MS7503 model. Torque, spring return, and stroke time to be confirmed from Honeywell datasheet."
+        "value": "MS7503A2021 (no aux switches) or MS7503A2221 (with aux switches)",
+        "verified": true,
+        "basis": "manual",
+        "source": "docs/manuals/honeywell-ms7103-ms7503-specdata.pdf (Honeywell 31-00141M-03, MS7103/MS7503 3 Nm spring return DCA) p.1",
+        "note": "MS7503A3008 used earlier is not a listed model."
       }
     },
     "trane-tsc072": {
@@ -48,8 +50,11 @@
       },
       "sequenceRole": "Same as Lennox.",
       "partNumber": {
-        "value": "MS7503A3008",
-        "verified": false
+        "value": "MS7503A2021 (no aux switches) or MS7503A2221 (with aux switches)",
+        "verified": true,
+        "basis": "manual",
+        "source": "docs/manuals/honeywell-ms7103-ms7503-specdata.pdf (Honeywell 31-00141M-03, MS7103/MS7503 3 Nm spring return DCA) p.1",
+        "note": "MS7503A3008 used earlier is not a listed model."
       }
     }
   },
@@ -82,16 +87,17 @@
   "test": {
     "meter": "VAC for power, VDC for signal, protractor/scale on the shaft indicator for position, stopwatch for stroke time.",
     "procedure": [
-      "Measure 24 VAC at the actuator power terminals. No power = not the actuator.",
-      "Measure the 2-10 Vdc command at the actuator (not at the JADE: proves the wire).",
-      "Compare the shaft indicator to the command: % = (V - 2) / 8 x 100.",
-      "Shaft not moving? Release the actuator (manual override / loosen coupling) and stroke the damper by hand. Stiff = binding linkage or blades, not the actuator.",
-      "Damper free and actuator still won't track = actuator.",
-      "Use the JADE checkout DAMPER OPEN / DAMPER CLOSE to drive full stroke and time it."
+      "Measure 24 VAC at the actuator supply leads (24 VAC ±20%). No power = not the actuator.",
+      "Measure the 2-10 Vdc command at the actuator, not at the JADE, to prove the wire.",
+      "Compare shaft position to command: % ≈ (V - 2) / 8 x 100. Full stroke takes about 90 s.",
+      "Shaft not moving? Lock out, then loosen the shaft adapter and move the damper by hand to check for binding. Do not twist the actuator itself: Honeywell says never turn the motor shaft by hand or with a wrench.",
+      "Damper free and actuator still won't track a valid signal = actuator.",
+      "Use JADE CHECKOUT > DAMPER OPEN / DAMPER CLOSE to drive full stroke and time it."
     ],
     "safety": [
-      "Keep hands out of the blades and linkage when power or signal is applied.",
-      "Spring-return actuators store energy. Release slowly."
+      "Keep hands out of blades and linkage when power or signal is applied.",
+      "Never turn the actuator motor shaft by hand or with a wrench. It can destroy the motor (31-00141M-03).",
+      "Spring return drives the damper closed in under 25 s when power drops. Expect it to move when you lock out."
     ]
   },
   "thresholds": {
@@ -100,9 +106,10 @@
         19.2,
         28.8
       ],
-      "verified": false,
-      "basis": "rule-of-thumb",
-      "note": "24 VAC ±20%. Confirm with datasheet."
+      "verified": true,
+      "basis": "manual",
+      "source": "docs/manuals/honeywell-ms7103-ms7503-specdata.pdf (Honeywell 31-00141M-03, MS7103/MS7503 3 Nm spring return DCA) p.1",
+      "note": "24 VAC ±20%, Class 2. The JADE ACT ERROR guidance for Sylk actuators uses 21.6-26.4 V (63-2700-11 p.24)."
     },
     "trackTolPct": {
       "value": 10,
@@ -112,8 +119,9 @@
     "strokeSecondsMax": {
       "value": 150,
       "verified": false,
-      "basis": "generic",
-      "note": "Placeholder. Use rated stroke time from the datasheet."
+      "basis": "rule-of-thumb",
+      "source": "docs/manuals/honeywell-ms7103-ms7503-specdata.pdf (Honeywell 31-00141M-03, MS7103/MS7503 3 Nm spring return DCA) p.1",
+      "note": "Rated drive time is 90 s (manual). Treating >150 s as worn is an app rule of thumb."
     }
   },
   "symptoms": {
@@ -123,7 +131,8 @@
   "confusedWith": [
     "Bound damper blades / seized jackshaft bearings",
     "Slipped shaft coupling (actuator turns, blades don't)",
-    "Missing 2-10 signal (controller, wiring, or no OCC/fan input)"
+    "Missing 2-10 signal (controller, wiring, or no OCC/fan input)",
+    "JADE ACTUATOR SLIPPAGE ALARM (PC MOD tool, enabled by default) can flag a slipped coupling from the air-temperature check"
   ],
   "labCases": [
     {

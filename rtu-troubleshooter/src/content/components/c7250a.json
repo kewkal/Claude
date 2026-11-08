@@ -3,7 +3,7 @@
   "name": "Honeywell C7250A 20k NTC dry-bulb sensor (mixed air / outdoor air)",
   "kind": "ntc-sensor",
   "domain": "components",
-  "function": "Wired analog thermistor into the JADE (MAT or OAT terminals). Resistance falls as temperature rises. JADE uses MAT to modulate the damper to MAT SET during free cooling and for freeze protection (MA LO SET).",
+  "function": "Wired 20k NTC thermistor into the JADE MAT (required) or OAT terminals (63-2700-11 p.2-3). Resistance falls as temperature rises. JADE uses MAT to modulate free cooling to MAT SET and for freeze protection (MA LO SET).",
   "perUnit": {
     "lennox-lch240": {
       "availability": {
@@ -58,13 +58,13 @@
     {
       "id": "open",
       "name": "Open",
-      "goodVsBad": "OL on the ohmmeter. JADE flags a MAT sensor error.",
+      "goodVsBad": "OL on the ohmmeter. JADE shows MA TEMP --.- and alarm MA T SENS ERR (63-2700-11 p.19, p.24).",
       "symptoms": "Economizer won't free cool (or behaves per the JADE's fallback), compressors carry the load."
     },
     {
       "id": "shorted",
       "name": "Shorted",
-      "goodVsBad": "Near 0 Ω. JADE reads an impossibly hot MAT and flags an error.",
+      "goodVsBad": "Near 0 Ω. JADE reads it as out of range: MA TEMP --.- and MA T SENS ERR.",
       "symptoms": "Same as open: free cooling lost."
     },
     {
@@ -91,7 +91,8 @@
     "goodTolF": {
       "value": 2,
       "verified": false,
-      "basis": "rule-of-thumb"
+      "basis": "rule-of-thumb",
+      "note": "Honeywell lists C7250A accuracy as -0/+2°F (63-2700-11 p.2). The app uses ±2°F against your reference probe."
     },
     "marginalTolF": {
       "value": 5,

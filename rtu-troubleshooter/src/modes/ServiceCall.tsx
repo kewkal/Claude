@@ -66,7 +66,8 @@ export function ServiceCallGame({ id, onExit, onOpenComponent }: { id: string; o
     if (n('vdc_act_cmd') !== undefined) v['DAMPER OUT'] = n('vdc_act_cmd')!;
     if (n('t_oat') !== undefined) v['ECON AVAIL'] = n('t_oat')! < Number(v['DRYBLB SET']) ? 'YES' : 'NO';
     v['COOL Y1-IN'] = v['COOL Y1-OUT'] = sc.state.callForCooling ? 'ON' : 'OFF';
-    v['MECH COOLING'] = ['running', 'short-cycling'].includes(sc.state.compressor1) ? 'ON' : 'OFF';
+    v['MECH COOL ON'] = ['running', 'short-cycling'].includes(sc.state.compressor1) ? 1 : 0;
+    v['OCCUPIED'] = 'YES';
     return { ...v, ...(sc.jade?.values ?? {}) };
   }, [sc, all]);
 

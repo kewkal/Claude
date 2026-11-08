@@ -4,7 +4,7 @@
   "unitId": "lennox-lch240",
   "climate": "Chicago, IL: cold winters, mixed summers. Freeze protection matters.",
   "spec": [
-    "Differential dry bulb (OA and RA temperature sensors).",
+    "Differential dry bulb: 20k sensor on OA plus a C7400S Sylk sensor in the return air (DIP switch set to RA).",
     "Occupied minimum position 30% (4.4 V). No DCV.",
     "Mixed air low limit 42°F, damper to MIN on freeze protection per the engineer.",
     "Compressor low-temp lockout 45°F.",
@@ -12,12 +12,28 @@
   ],
   "strategy": "differential dry bulb",
   "targets": {
-    "MIN POS": { "value": 4.4, "tol": 0.1 },
-    "MA LO SET": { "value": 42, "tol": 0 },
-    "FREEZE POS": { "value": "MIN" },
-    "LOW T LOCK": { "value": 45, "tol": 0 }
+    "MIN POS": {
+      "value": 4.4,
+      "tol": 0.1
+    },
+    "MA LO SET": {
+      "value": 42,
+      "tol": 0
+    },
+    "FREEZE POS": {
+      "value": "MIN"
+    },
+    "LOW T LOCK": {
+      "value": 45,
+      "tol": 0
+    }
   },
-  "checkout": ["DAMPER OPEN", "DAMPER CLOSE", "CONNECT Y1-O", "CONNECT Y2-O"],
+  "checkout": [
+    "DAMPER OPEN",
+    "DAMPER CLOSE",
+    "CONNECT Y1-O",
+    "CONNECT Y2-O"
+  ],
   "parSeconds": 270,
   "consequences": {
     "strategy": "30 days later: one sensor short of the spec. Free cooling decisions are made on OA alone. The engineer's commissioning report flags it.",

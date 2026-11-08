@@ -73,12 +73,12 @@
       "IN CO2": 1450,
       "DCV STATUS": "ON",
       "DAMPER OUT": 5.2,
-      "ACT POS": "--",
-      "MECH COOLING": "ON",
+      "ACT POS": "n/a",
       "DCV SET": 1100,
       "VENTMIN": 3.6,
       "VENTMAX": 6.0,
-      "DRYBLB SET": 63
+      "DRYBLB SET": 63,
+      "MECH COOL ON": 1
     },
     "alarms": []
   },

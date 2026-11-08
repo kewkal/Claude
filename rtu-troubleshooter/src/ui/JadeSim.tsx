@@ -125,7 +125,7 @@ export function JadeSim({ values, alarms, editable, visible = () => true, onChan
       <div className="rounded-lg bg-slate-800/60 p-3 text-xs text-slate-300">
         {level !== 'menus' && item.help ? <p>{item.help}</p> : <p>▲▼ scroll · ↵ open/edit/save · MENU back.{editable ? '' : ' View only on service calls. Changes go through Repair.'}</p>}
         <div className="mt-1">
-          <SourceTag s={{ verified: false, note: jadeMenu.note }} /> <span className="text-slate-500">Menu labels & defaults pending 63-2700 check</span>
+          <SourceTag s={{ verified: true, basis: 'manual', source: 'Honeywell 63-2700-11 Table 5' }} /> <span className="text-slate-500">Menus, defaults & ranges per the JADE manual</span>
         </div>
       </div>
     </div>
