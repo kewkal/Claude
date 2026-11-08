@@ -63,12 +63,14 @@ export interface Dataset {
   center: LatLng | null;
   errors: string[];
   fetchedAt: string;
+  /** Per-person USD prices YOU entered for items no source priced (ref -> usd; 0 = free). Not fetched data. */
+  userPrices?: Record<string, number>;
 }
 
-export type CostBasis = "sourced" | "estimate" | "calculated";
+export type CostBasis = "sourced" | "estimate" | "calculated" | "entered";
 
 export interface CostLine {
-  key: "flights" | "lodging" | "activities" | "food" | "transport" | "buffer";
+  key: "flights" | "lodging" | "activities" | "activities_user" | "food" | "transport" | "buffer";
   label: string;
   amount: number;
   basis: CostBasis;
@@ -173,7 +175,9 @@ export type TripEdit =
   | { op: "set_flight"; version: VersionKey; ref: string }
   | { op: "set_hotel"; version: VersionKey; ref: string }
   | { op: "swap_days"; version: VersionKey; a: string; b: string }
-  | { op: "reorder_day"; version: VersionKey; date: string; order: string[] };
+  | { op: "reorder_day"; version: VersionKey; date: string; order: string[] }
+  /** Applies to every version: your own price for an item no source priced (null clears it). */
+  | { op: "set_price"; ref: string; usd: number | null };
 
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 /** An edit as the trip view issues it; the active version is added when sent. */

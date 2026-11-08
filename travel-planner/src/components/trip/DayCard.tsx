@@ -21,6 +21,36 @@ interface Live {
   mode: string;
 }
 
+/**
+ * Sourced price when there is one. Otherwise "Price not listed" — tap to enter your own (0 = free).
+ * Yours shows as "· yours" and is counted on its own budget line.
+ */
+function PriceChip({ p, mine, readOnly, onSet }: { p: RefPlace; mine: number | undefined; readOnly: boolean; onSet: (usd: number | null) => void }) {
+  const sourced = p.price.minUsd !== null || p.price.maxUsd !== null;
+  if (sourced || p.price.level !== null) {
+    // Real USD amount, or a Google price level like "$$" (restaurants are covered by the food estimate).
+    return <span className="chip shrink-0 bg-surface-2 text-text">{priceLabel(p)}</span>;
+  }
+  const label = mine === undefined ? (p.price.display ?? "Price not listed") : mine === 0 ? "Free · yours" : `$${mine} · yours`;
+  const tone = mine === undefined ? "bg-warn-soft text-warn" : "bg-accent-soft text-accent";
+  if (readOnly) return <span className={`chip shrink-0 ${tone}`}>{label}</span>;
+  function ask() {
+    const hint = p.price.display ? `\nSource shows: ${p.price.display}` : "";
+    const v = window.prompt(`Price per person (USD) for ${p.name}?\nEnter 0 if it's free. Leave blank to clear.${hint}`, mine === undefined ? "" : String(mine));
+    if (v === null) return;
+    const t = v.trim().replace(/[$,\s]/g, "");
+    if (t === "") return onSet(null);
+    const n = Number(t);
+    if (!Number.isFinite(n) || n < 0) return window.alert("Enter a number like 25, or 0 for free.");
+    onSet(n);
+  }
+  return (
+    <button type="button" onClick={ask} className={`chip shrink-0 ${tone}`} title="Tap to enter the price yourself">
+      {mine === undefined ? `${label} ＋` : label}
+    </button>
+  );
+}
+
 /** Small inline marker for Claude-written text — present but quieter than sourced facts. */
 export function AiNote({ children }: { children: React.ReactNode }) {
   return (
@@ -203,7 +233,7 @@ export function DayCard({
                               <button type="button" className="text-left text-[0.95rem] font-semibold leading-snug hover:underline disabled:no-underline" onClick={() => onOpenPlace(p)} disabled={readOnly}>
                                 {p.name}
                               </button>
-                              <span className={`chip shrink-0 ${p.price.display ? "bg-surface-2 text-text" : "bg-warn-soft text-warn"}`}>{priceLabel(p)}</span>
+                              <PriceChip p={p} mine={ds.userPrices?.[p.ref]} readOnly={readOnly} onSet={(usd) => onEdit({ op: "set_price", ref: p.ref, usd })} />
                             </div>
                             <p className="mt-0.5 text-xs text-muted">
                               <span className="capitalize">{p.types[0] ?? p.category}</span>

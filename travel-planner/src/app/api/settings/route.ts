@@ -26,6 +26,7 @@ export const PUT = withApi(async (req) => {
     if (!/^[A-Z]{3}$/.test(code)) throw badInput("Default origin must be a 3-letter airport code, e.g. DFW.");
     patch.defaultOrigin = code;
   }
+  if (body.searchSaver !== undefined) patch.searchSaver = !!body.searchSaver;
   for (const k of ["serpOverrideUntil", "claudeOverrideUntil"] as const) {
     if (body[k] !== undefined) {
       const v = body[k];

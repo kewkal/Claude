@@ -123,6 +123,7 @@ export default function SettingsPage() {
           Source: {serpapi.source === "serpapi-account" ? "SerpApi's own count + searches since last sync" : "this app's log (calendar month)"}
           {serpapi.account && ` · last synced ${fmtTimestamp(serpapi.account.fetchedAt)}`}
           {serpapi.account?.planName && ` · plan: ${serpapi.account.planName}`}
+          {serpapi.account?.searchesPerMonth ? ` · limit ${serpapi.account.searchesPerMonth}/month from SerpApi` : " · limit from SERPAPI_MONTHLY_QUOTA (sync to use SerpApi's)"}
         </p>
         <button className="btn btn-ghost" onClick={sync} disabled={syncing}>
           {syncing ? "Syncing…" : "Sync with SerpApi (free)"}
@@ -206,6 +207,13 @@ function SettingsForm({ settings, onSave, saving }: { settings: AppSettings; onS
       }}
     >
       <h2 className="font-bold">Preferences</h2>
+      <label className="flex items-start justify-between gap-3 rounded-xl bg-surface-2 p-3 text-sm">
+        <span>
+          <span className="block font-semibold">Search Saver</span>
+          <span className="block text-xs text-muted">Trips skip Tripadvisor ratings and fetch 3 place categories instead of up to 5: about 6 SerpApi searches per trip instead of about 10. Explore is unaffected.</span>
+        </span>
+        <input type="checkbox" className="mt-1 h-5 w-5 shrink-0" checked={s.searchSaver} onChange={(e) => setS({ ...s, searchSaver: e.target.checked })} />
+      </label>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
           <label className="label" htmlFor="vt">Verified badge: min reviews (any one source)</label>

@@ -86,6 +86,22 @@ export const US_AIRPORTS: { code: string; city: string; name: string }[] = [
   { code: "SJU", city: "San Juan, PR", name: "Luis Muñoz Marín" },
 ];
 
+/**
+ * "San Juan" -> "SJU", "Chicago" -> "ORD,MDW", "Dallas, TX" -> "DFW,DAL". Free, no API call.
+ * Matches the city name (or either half of "Dallas/Fort Worth"), with or without the state.
+ * Returns null when the text isn't a city in the list, so the caller falls back to Google's lookup.
+ */
+export function airportsForCity(text: string): string | null {
+  const t = text.trim().toLowerCase().replace(/\s+/g, " ").replace(/\.$/, "");
+  if (!t || /^[a-z]{3}$/.test(t)) return null;
+  const codes = US_AIRPORTS.filter((a) => {
+    const [cityPart, state = ""] = a.city.toLowerCase().split(", ");
+    const names = [cityPart, ...cityPart.split("/")];
+    return names.some((n) => t === n || t === `${n}, ${state}` || t === `${n} ${state}`);
+  }).map((a) => a.code);
+  return codes.length ? [...new Set(codes)].slice(0, 3).join(",") : null;
+}
+
 export function airportLabel(code: string): string | null {
   const a = US_AIRPORTS.find((x) => x.code === code.trim().toUpperCase());
   return a ? `${a.city} · ${a.name}` : null;

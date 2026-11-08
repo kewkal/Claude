@@ -142,6 +142,13 @@ describe("quota gate", () => {
     await expect(serpSearch("google_maps", { q: "x" })).rejects.toMatchObject({ code: "SERPAPI_QUOTA" });
   });
 
+  it("uses SerpApi's own plan limit once synced, so a mistyped SERPAPI_MONTHLY_QUOTA can't skew the meter", async () => {
+    process.env.SERPAPI_MONTHLY_QUOTA = "25";
+    await getDb().setSetting("serpapi_account_snapshot", { thisMonthUsage: 21, searchesPerMonth: 250, planName: "Free Plan", totalSearchesLeft: 229, fetchedAt: new Date().toISOString() });
+    const s = (await getUsageSummary()).serpapi;
+    expect(s).toMatchObject({ used: 21, limit: 250, state: "ok" });
+  });
+
   it("counts uncached requests for cost previews", async () => {
     liveMode();
     mockSerpApi();

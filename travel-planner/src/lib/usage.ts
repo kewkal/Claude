@@ -66,13 +66,25 @@ export async function serpUsedThisMonth(): Promise<{ used: number; source: "serp
   return { used: local, source: "local-log", account: snap };
 }
 
+/** Plan limit: SerpApi's own number once synced (can't be mistyped), else SERPAPI_MONTHLY_QUOTA. */
+export function serpLimit(account: SerpAccountSnapshot | null): number {
+  return account?.searchesPerMonth && account.searchesPerMonth > 0 ? account.searchesPerMonth : env.serpApiMonthlyQuota;
+}
+
+/** Refresh SerpApi's own usage numbers when the snapshot is missing or older than 6 hours (free call). */
+export async function syncSerpAccountIfStale(): Promise<void> {
+  const snap = await getDb().getSetting<SerpAccountSnapshot>(ACCOUNT_KEY);
+  if (snap && Date.now() - Date.parse(snap.fetchedAt) < 6 * 60 * 60 * 1000) return;
+  await syncSerpAccount().catch((e) => console.warn("[usage] SerpApi account sync failed", (e as Error).message));
+}
+
 export async function getUsageSummary(): Promise<UsageSummary> {
   const settings = await getSettings();
   const serp = await serpUsedThisMonth();
   const spent = await getDb().sumCostSince("claude", monthStartIso());
   const budget = env.claudeMonthlyBudgetUsd;
   return {
-    serpapi: { ...meter(serp.used, env.serpApiMonthlyQuota, settings.serpOverrideUntil), source: serp.source, account: serp.account },
+    serpapi: { ...meter(serp.used, serpLimit(serp.account), settings.serpOverrideUntil), source: serp.source, account: serp.account },
     claude: { ...meter(spent, budget, settings.claudeOverrideUntil), spentUsd: spent, budgetUsd: budget },
     periodStart: monthStartIso(),
   };
@@ -81,8 +93,8 @@ export async function getUsageSummary(): Promise<UsageSummary> {
 /** Throws unless a new SerpApi search is allowed right now. */
 export async function assertSerpQuota(): Promise<void> {
   const settings = await getSettings();
-  const { used } = await serpUsedThisMonth();
-  const m = meter(used, env.serpApiMonthlyQuota, settings.serpOverrideUntil);
+  const { used, account } = await serpUsedThisMonth();
+  const m = meter(used, serpLimit(account), settings.serpOverrideUntil);
   if (m.state === "blocked") {
     throw new AppError(
       "SERPAPI_QUOTA",

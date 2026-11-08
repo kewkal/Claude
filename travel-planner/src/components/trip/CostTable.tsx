@@ -4,7 +4,8 @@ import { fmtUsd } from "@/lib/format";
 import type { CostBreakdown, CostBasis } from "@/lib/planner/types";
 import { Badge, InfoTip } from "@/components/ui";
 
-const BASIS: Record<CostBasis, { label: string; tone: "ok" | "warn" | "neutral" }> = {
+const BASIS: Record<CostBasis, { label: string; tone: "ok" | "warn" | "neutral" | "accent" }> = {
+  entered: { label: "You entered", tone: "accent" },
   sourced: { label: "Sourced", tone: "ok" },
   estimate: { label: "Estimate", tone: "warn" },
   calculated: { label: "Calculated", tone: "neutral" },
@@ -14,6 +15,7 @@ const BAR_COLOR: Record<string, string> = {
   flights: "#0f766e",
   lodging: "#2563eb",
   activities: "#7c3aed",
+  activities_user: "#a78bfa",
   food: "#d97706",
   transport: "#64748b",
   buffer: "#cbd5e1",

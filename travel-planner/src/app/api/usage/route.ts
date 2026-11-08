@@ -1,10 +1,11 @@
 import { withApi } from "@/lib/api";
 import { getDb } from "@/lib/db";
-import { getUsageSummary, syncSerpAccount } from "@/lib/usage";
+import { getUsageSummary, syncSerpAccount, syncSerpAccountIfStale } from "@/lib/usage";
 
 export const dynamic = "force-dynamic";
 
 export const GET = withApi(async () => {
+  await syncSerpAccountIfStale();
   const [summary, recent] = await Promise.all([getUsageSummary(), getDb().recentUsage(25)]);
   return { summary, recent, dbKind: getDb().kind };
 });
