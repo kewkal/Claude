@@ -109,6 +109,8 @@ const mutations: { scenario: string; why: string; patch: (s: Scenario) => void }
   { scenario: 'lx-adv-pitted-contactor', why: 'overload trip with cool shell', patch: (s) => { s.readings.t_comp1_shell = 110; } },
   { scenario: 'lx-med-jade-mat-open', why: 'failed MAT sensor reading on-chart', patch: (s) => { s.readings.ohm_mat_sensor = 24445; } },
   { scenario: 'lx-med-jade-mat-open', why: 'negative superheat', patch: (s) => { s.readings.t_suction1 = 30; } },
+  { scenario: 'lx-med-jade-mat-open', why: '460 V compressor drawing the 208/230 V RLA', patch: (s) => { Object.assign(s.readings, { a_comp1_l1: 13.2, a_comp1_l2: 13.5, a_comp1_l3: 13.1 }); } },
+  { scenario: 'lx-adv-pitted-contactor', why: 'single-phased legs above LRA', patch: (s) => { Object.assign(s.readings, { a_comp1_l2: 68, a_comp1_l3: 68 }); } },
 ];
 for (const m of mutations) {
   const src = scenarios.find((s) => s.data.id === m.scenario);

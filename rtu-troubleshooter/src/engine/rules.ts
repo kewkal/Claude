@@ -33,6 +33,7 @@ export const RULES_OF_THUMB = {
   lowChargeSubcoolF: { value: 5, note: 'Subcooling ≤5°F on a TXV system indicates short charge.' },
   highHeadApproachF: { value: 30, note: 'Condensing temp more than ~30°F over OA indicates a condenser heat-rejection problem.' },
   coolingDeltaTMinF: { value: 8, note: 'Running compressor should drop air temperature at least 8°F across the coil.' },
+  runningAmpsMaxOfRla: { value: 1.15, note: 'A running compressor/fan leg should stay at or under ~115% of nameplate RLA/FLA; anything higher is a fault, not a baseline.' },
 } as const;
 
 // ---------- Generic physics checks ----------
@@ -104,6 +105,20 @@ export function genericChecks(r: Readings, s: ScenarioState, faultTypes: Set<str
       if (Math.max(...a.map((x) => Math.abs(x - avg))) / avg > 0.1) e.push('compressor running with >10% current imbalance and no fault declared');
     }
   }
+
+  // Amps vs nameplate ratings (only when the unit file carries them).
+  const rla = unit.ratings?.comp1RlaA?.value;
+  const lra = unit.ratings?.comp1LraA?.value;
+  if (amps.every((a) => a !== undefined)) {
+    const a = amps as number[];
+    if (rla && comp === 'running' && a.some((x) => x > rla * RULES_OF_THUMB.runningAmpsMaxOfRla.value))
+      e.push(`compressor running at ${Math.max(...a)} A, over ${RULES_OF_THUMB.runningAmpsMaxOfRla.value}x RLA ${rla} A`);
+    if (lra && a.some((x) => x > lra)) e.push(`compressor leg ${Math.max(...a)} A exceeds LRA ${lra} A`);
+  }
+  const fla = unit.ratings?.cfm1FlaA?.value;
+  const fanA = num(r, 'a_cfm1');
+  if (fla && fanA !== undefined && s.condFan1 === 'running' && fanA > fla * RULES_OF_THUMB.runningAmpsMaxOfRla.value)
+    e.push(`condenser fan running at ${fanA} A, over FLA ${fla} A`);
 
   // Contactor logic.
   const coilV = num(r, 'v_cc1_coil');

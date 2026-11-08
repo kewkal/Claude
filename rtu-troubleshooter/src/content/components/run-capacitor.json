@@ -8,22 +8,24 @@
     "lennox-lch240": {
       "availability": {
         "value": "factory-standard",
-        "verified": false,
-        "basis": "sister-model",
-        "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
-        "note": "LGH lists C1 on three-phase belt-drive units. Confirm in the LCH240 manual."
+        "verified": true,
+        "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.29",
+        "basis": "manual",
+        "note": "C1, C2, C18 on all units; C19-C21 on 180-300. Not used on 180U/240U/300U."
       },
       "designation": {
-        "value": "C1",
-        "verified": false,
-        "basis": "sister-model",
-        "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
-        "note": "Fan capacitor C1 (three phase, belt drive units) assists condenser fan B4 start-up; rating on the capacitor or fan nameplate. Confirm in the LCH240 manual."
+        "value": "C1 (fan B4); C2, C18-C21 for the other fans",
+        "verified": true,
+        "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.29",
+        "basis": "manual",
+        "note": "370 V / 10 µF."
       },
       "location": {
-        "value": "Control panel or at the fan motor. On the diagram: across the motor's run and start leads.",
-        "verified": false,
-        "basis": "generic"
+        "value": "Control box, upper compressor compartment",
+        "verified": true,
+        "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.28",
+        "basis": "manual",
+        "note": "Control box location p.28."
       },
       "sequenceRole": "Fan starts when its contactor/relay closes. No cap = no start.",
       "partNumber": {
@@ -125,7 +127,7 @@
       "designation": "C1",
       "context": "PM visit, testing caps as a matter of course.",
       "rating": {
-        "uf": 5,
+        "uf": 10,
         "tolerancePct": 6,
         "vac": 370
       },
@@ -138,7 +140,7 @@
           "minutes": 3,
           "power": "off",
           "readings": {
-            "uf": 4.9
+            "uf": 9.8
           }
         },
         {
@@ -152,7 +154,7 @@
           }
         }
       ],
-      "explanation": "4.9 µF on a 5 µF ±6% cap = 2% low, well inside tolerance."
+      "explanation": "9.8 µF on a 10 µF ±6% cap = 2% low, well inside tolerance."
     },
     {
       "id": "cap-lx-weak",
@@ -160,7 +162,7 @@
       "designation": "C1",
       "context": "Fan 1 slow to come up to speed.",
       "rating": {
-        "uf": 5,
+        "uf": 10,
         "tolerancePct": 6,
         "vac": 370
       },
@@ -174,11 +176,11 @@
           "minutes": 3,
           "power": "off",
           "readings": {
-            "uf": 3.1
+            "uf": 6.2
           }
         }
       ],
-      "explanation": "3.1 on a 5 = 38% low. Way out of tolerance. Replace."
+      "explanation": "6.2 on a 10 = 38% low. Way out of tolerance. Replace."
     },
     {
       "id": "cap-tr-open",

@@ -8,22 +8,25 @@
     "lennox-lch240": {
       "availability": {
         "value": "factory-standard",
-        "verified": false,
-        "basis": "generic"
+        "verified": true,
+        "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.29",
+        "basis": "manual",
+        "note": "K1, K2, K14 on all units; K146 on 180/240/300."
       },
       "designation": {
         "value": "K1 (compressor 1)",
-        "verified": false,
-        "basis": "sister-model",
-        "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
-        "note": "K1 energizes B1 in response to Unit Controller demand; 3-pole double-break, 24 V coil on 3-phase units. Confirm in the LCH240 manual."
+        "verified": true,
+        "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.29",
+        "basis": "manual",
+        "note": "3-pole double-break, 24 VAC coil."
       },
       "location": {
-        "value": "Main control panel, line-voltage section. On the wiring diagram: coil in the 24V ladder fed from the M2 compressor 1 output; poles in the line-voltage section feeding B1.",
-        "verified": false,
-        "basis": "generic"
+        "value": "Control box, upper portion of the compressor compartment. Coil 24 VAC from contactor transformer T18; poles feed compressor B1.",
+        "verified": true,
+        "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.28",
+        "basis": "manual"
       },
-      "sequenceRole": "A55 energizes K1 on a cooling demand once S4, S87 and S49 are closed.",
+      "sequenceRole": "On Y1, A55 proves S87/S88, S49/S50 and S4/S7, then energizes K1 and K2 together (p.105).",
       "partNumber": {
         "value": "—",
         "verified": false,

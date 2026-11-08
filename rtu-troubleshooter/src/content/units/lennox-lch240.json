@@ -15,190 +15,215 @@
   },
   "nominalTons": {
     "value": 20,
-    "verified": false,
-    "source": "project brief / model digits 240 = 240 MBH",
-    "note": "Confirm on nameplate."
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.11",
+    "basis": "manual",
+    "note": "LCH240H4B: 20 ton, 238,000 Btuh gross / 230,000 net, 6,400 cfm AHRI airflow, EER 12.0."
   },
   "refrigerant": {
     "value": "R-410A",
-    "verified": false,
-    "basis": "sister-model",
-    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.6",
-    "note": "All LGH036-074 models are R-410A. Confirm in the LCH240 manual."
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.11",
+    "basis": "manual"
   },
   "voltage": {
     "value": "460V-3ph-60Hz",
-    "verified": false,
-    "basis": "sister-model",
-    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
-    "note": "Lennox voltage letter G = 460 V (Y = 208/230, J = 575) per the LGH transformer section. Model LCH240H4BN4G ends in G. Confirm in the LCH240 manual."
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.29",
+    "basis": "manual",
+    "note": "Manual's transformer section uses Y = 208/230, G = 460, J = 575; the model ends in G. Electrical data for the LCH240H4 460 V column is on p.20. Confirm on the nameplate."
   },
   "controller": {
-    "value": "Lennox Unit Controller A55",
-    "verified": false,
-    "basis": "sister-model",
-    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
-    "note": "LGH manual calls it 'Unit Controller A55' with thermostat wires on J297. Project brief names it M2; the LGH doc doesn't use that name. Confirm in the LCH240 manual."
+    "value": "Lennox Unit Controller A55 (M3) + A59 compressor 3 & 4 controller",
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.29",
+    "basis": "manual",
+    "note": "This 05/2020 revision documents the M3 unit controller (p.30). The project brief says M2: check the board label on your unit, since an older build may differ."
   },
   "compressorCount": {
     "value": 4,
-    "verified": false,
-    "basis": "generic",
-    "note": "Compressor count and circuiting not confirmed. Scenarios only reference compressor 1 / circuit 1."
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.1",
+    "basis": "manual",
+    "note": "LCH240 uses four scroll compressors (B1, B2, B13, B20), each on its own refrigerant circuit (p.36)."
   },
   "compressorType": {
     "value": "scroll",
-    "verified": false,
-    "basis": "generic"
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.11",
+    "basis": "manual"
   },
   "blowerDrive": {
-    "value": "belt drive, VFD optional",
-    "verified": false,
-    "basis": "generic"
+    "value": "Belt drive CAV (model digit B); 5, 7.5 or 10 hp motor with drive kits 3-11",
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.11",
+    "basis": "manual",
+    "note": "LCH240H4B = CAV. Motor size isn't in the model string; check the motor nameplate."
   },
   "chargeLbsCircuit1": {
-    "value": null,
-    "verified": false,
-    "note": "Factory charge not available without the unit manual / nameplate."
+    "value": {
+      "environCoilStandard": "C1 6 lb 4 oz · C2 6 lb 2 oz · C3 5 lb 14 oz · C4 5 lb 6 oz",
+      "finTubeOption": "C1-C3 10 lb 0 oz · C4 8 lb 12 oz"
+    },
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.11",
+    "basis": "manual",
+    "note": "Environ coil system is standard; conventional fin/tube is a factory option (p.2). Use the unit rating plate to confirm which coil is installed."
   },
   "hpsCutoutPsig": {
     "value": 640,
-    "verified": false,
-    "basis": "sister-model",
-    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
-    "note": "S4: auto-reset SPST N.C., opens at 640 ±10 psig on pressure rise, resets at 475 +10 psig, wired to A55. Economizer can keep running when S4 trips. Confirm in the LCH240 manual. Corroborated by LGM092-150 p.20 (640 ±10 psig)."
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.36",
+    "basis": "manual",
+    "note": "S4/S7/S28/S96 auto-reset SPST N.C., opens at 640 ±10 psig, wired in series with each contactor coil through A55/A59. The economizer can keep running."
   },
   "lpsCutoutPsig": {
     "value": 40,
-    "verified": false,
-    "basis": "sister-model",
-    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
-    "note": "S87 loss-of-charge switch on the suction line: opens at 40 +5 psig. Confirm in the LCH240 manual. Corroborated by LGM092-150 p.21 (40 +5 / 90 +5 psig)."
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.37",
+    "basis": "manual",
+    "note": "S87/S88/S98/S97 open at 40 +5 psig."
   },
   "lpsCutinPsig": {
     "value": 90,
-    "verified": false,
-    "basis": "sister-model",
-    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
-    "note": "S87 auto-resets at 90 +5 psig. Confirm in the LCH240 manual."
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.37",
+    "basis": "manual",
+    "note": "Auto-reset at 90 +5 psig."
   },
   "factoryEconomizer": {
-    "value": "Lennox economizer accessory, controlled by M2 (factory option)",
-    "verified": false,
-    "basis": "generic",
-    "note": "Confirm whether economizer is factory-installed option or field accessory and which controller drives it."
+    "value": "High Performance Economizer E1ECON17C-2: factory-installed or field-installed option, controlled by A55. Sensible control standard; single or differential enthalpy (C1SNSR64FF1) optional.",
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.4",
+    "basis": "manual",
+    "note": "Whether this unit has one isn't in the model string; check the unit."
   },
   "honeywellJade": {
     "value": "field-installed retrofit",
     "verified": false,
     "basis": "generic",
-    "note": "Per brief: treat as retrofit unless /docs says factory."
+    "note": "Per project brief. LCH240 offers its own A55-controlled economizer (p.4); a JADE would replace that control."
   },
   "designations": {
     "cc1": {
       "value": "K1",
-      "verified": false,
-      "basis": "sister-model",
-      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
-      "note": "K1 energizes compressor B1 on Unit Controller demand; 3-phase = 3-pole double-break, 24 V coil. Confirm in the LCH240 manual."
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.29",
+      "basis": "manual",
+      "note": "K1 and K2 are energized by A55 on Y1; K14/K146 by A59 on Y2."
     },
     "comp1": {
       "value": "B1",
-      "verified": false,
-      "basis": "sister-model",
-      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
-      "note": "Compressor B1. Confirm in the LCH240 manual."
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.36",
+      "basis": "manual"
     },
     "cfm1": {
       "value": "B4",
-      "verified": false,
-      "basis": "sister-model",
-      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
-      "note": "Condenser fan B4. Confirm in the LCH240 manual."
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.29",
+      "basis": "manual"
     },
     "cfm1cap": {
       "value": "C1",
-      "verified": false,
-      "basis": "sister-model",
-      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
-      "note": "Fan capacitor C1 (three phase, belt drive) assists condenser fan B4 start. Confirm in the LCH240 manual."
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.29",
+      "basis": "manual"
     },
     "blower": {
       "value": "B3",
-      "verified": false,
-      "basis": "sister-model",
-      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
-      "note": "Indoor blower B3 via K3 (and K37 on two-speed). Confirm in the LCH240 manual."
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.28",
+      "basis": "manual"
     },
     "lps1": {
       "value": "S87",
-      "verified": false,
-      "basis": "sister-model",
-      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
-      "note": "Low pressure switch S87. Confirm in the LCH240 manual."
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.37",
+      "basis": "manual"
     },
     "hps1": {
       "value": "S4",
-      "verified": false,
-      "basis": "sister-model",
-      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
-      "note": "High pressure switch S4. Confirm in the LCH240 manual."
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.36",
+      "basis": "manual"
     },
     "xfmr": {
-      "value": "T1",
-      "verified": false,
-      "basis": "sister-model",
-      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
-      "note": "Control transformer T1. Confirm in the LCH240 manual."
+      "value": "T18",
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.28",
+      "basis": "manual",
+      "note": "Contactor transformer: feeds the 24 VAC that pulls in the compressor contactors. T1 (70 VA) feeds the controls."
     },
     "controller": {
       "value": "A55",
-      "verified": false,
-      "basis": "sister-model",
-      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
-      "note": "Unit Controller A55. Confirm in the LCH240 manual."
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.29",
+      "basis": "manual"
     },
     "freezestat": {
       "value": "S49",
-      "verified": false,
-      "basis": "sister-model",
-      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
-      "note": "Freezestat S49. Confirm in the LCH240 manual."
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.37",
+      "basis": "manual"
     },
     "lowAmbient": {
       "value": "S11",
-      "verified": false,
-      "basis": "sister-model",
-      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
-      "note": "Low ambient switch S11. Confirm in the LCH240 manual."
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.37",
+      "basis": "manual"
     }
   },
   "ratings": {
     "cfm1CapUf": {
-      "value": 5,
-      "verified": false,
-      "basis": "generic",
-      "note": "Condenser fan run capacitor rating not confirmed; read the capacitor label / parts list."
+      "value": 10,
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.29",
+      "basis": "manual",
+      "note": "370 V / 10 µF."
+    },
+    "comp1RlaA": {
+      "value": 6.3,
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.20",
+      "basis": "manual",
+      "note": "460 V column. 208/230 V = 13.2 A, 575 V = 4.9 A."
+    },
+    "comp1LraA": {
+      "value": 60,
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.20",
+      "basis": "manual",
+      "note": "460 V column."
+    },
+    "cfm1FlaA": {
+      "value": 1.3,
+      "verified": true,
+      "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.20",
+      "basis": "manual",
+      "note": "Each of six outdoor fans, 460 V column."
     }
   },
   "sequenceOfOperation": {
-    "verified": false,
-    "basis": "generic",
-    "note": "Generic packaged-RTU cooling sequence. Replace with the M2 sequence from the manual.",
     "value": [
-      "Thermostat/BAS closes G: M2 energizes the blower contactor (or VFD run), blower starts.",
-      "Y1 call: if outdoor conditions allow, economizer modulates to hold mixed/discharge air setpoint (free cooling) before any compressor runs.",
-      "If free cooling can't satisfy or is locked out: M2 checks safeties (HPS, LPS, freezestat) and minimum-off timers, then energizes compressor 1 contactor.",
-      "Condenser fans cycle on head pressure or with the compressor contactor.",
-      "Y2 call: next compressor stage after the inter-stage delay.",
-      "A safety opening drops the compressor; repeated trips within the M2's count window lock the stage out and post an alarm."
-    ]
+      "Disconnect closed: T1 and T18 supply 24 VAC to the controls; TB13 feeds line voltage to crankcase heaters, compressors, blower and fan motors.",
+      "G: A55 energizes blower contactor K3; K3-1 closes and runs blower B3.",
+      "Economizer (if equipped): A55 energizes power exhaust relay K65 at 50% outside-air damper travel (adjustable); exhaust fans B10/B11 run.",
+      "Y1: A55 proves N.C. low pressure switches S87/S88, freezestats S49/S50 and high pressure switches S4/S7, then energizes K1 and K2. Compressors B1 and B2 start.",
+      "Condenser fans: A55 cycles fan relays K10/K68 (and others) from the low ambient switches and outdoor temperature. Fan-relay N.C. contacts drop out the crankcase heaters while the fans run.",
+      "Y2: 24 VAC to A59, which proves S98/S97, S53/S95 and S28/S96, then energizes K14 and K146. Compressors B13 and B20 start; A59 runs fan contactors K150/K152/K153 from S85/S94.",
+      "A safety opening drops that compressor. Three HPS trips per demand, or three LPS strikes after the start-up shunt, lock it out until the demand is broken or the control is reset."
+    ],
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.105",
+    "basis": "manual",
+    "note": "LCH240H/300S cooling sequence, steps 1-19."
   },
   "baselines": {
     "cooling-95F": {
       "verified": false,
       "basis": "generic",
-      "note": "Normal-operation readings are representative values for a healthy R-410A RTU at 95°F OA / 75°F RA, not manufacturer charging-chart values.",
+      "note": "Pressures fit LCH240H Table 17 at 95°F (p.51: suction 113-163, discharge 383-393 psig), liquid temp matches the circuit 1 charging curve (p.67: ~97°F at 130 psig). Amps sit under the 460 V RLA of 6.3 A and fan FLA of 1.3 A (p.20). Superheat, return/supply temps, and blower amps are still representative values.",
       "readings": {
         "v_l1_l2": 468,
         "v_l2_l3": 471,
@@ -209,22 +234,22 @@
         "v_cc1_drop_p1": 0.1,
         "v_cc1_drop_p2": 0.1,
         "v_cc1_drop_p3": 0.1,
-        "a_comp1_l1": 13.2,
-        "a_comp1_l2": 13.5,
-        "a_comp1_l3": 13.1,
+        "a_comp1_l1": 5.6,
+        "a_comp1_l2": 5.7,
+        "a_comp1_l3": 5.5,
         "ohm_comp1_t1t2": 1.9,
         "ohm_comp1_t2t3": 1.9,
         "ohm_comp1_t1t3": 1.9,
         "meg_comp1_gnd": 2000,
         "t_comp1_shell": 165,
-        "a_cfm1": 1.6,
+        "a_cfm1": 1.1,
         "v_cfm1": 468,
-        "uf_cfm1_cap": 5.1,
-        "a_blower": 11.0,
+        "uf_cfm1_cap": 10.1,
+        "a_blower": 9.8,
         "p_suction1": 130,
         "t_suction1": 55,
-        "p_liquid1": 408,
-        "t_liquid1": 107,
+        "p_liquid1": 380,
+        "t_liquid1": 97,
         "t_oat": 95,
         "t_rat": 75,
         "t_mat": 79,
@@ -241,7 +266,7 @@
         "v_lps1": 0,
         "ohm_lps1": 0.2,
         "txt_tstat": "BAS shows occupied, G on, Y1 and Y2 called. Space 76°F, setpoint 72°F.",
-        "txt_controller": "No active alarms. Compressor 1 and 2 outputs on, blower on.",
+        "txt_controller": "A55 status: blower on, Y1 and Y2 demand, compressors 1-4 on. No active alarms.",
         "txt_look_unit": "Unit running. Compressors humming steady, condenser fans spinning, blower running. No odd noises.",
         "txt_look_condenser": "Condenser coil reasonably clean. All fans turning, warm air off the top.",
         "txt_look_evap": "Filters moderately loaded. Coil clean and sweating evenly. Belt tension good.",
@@ -254,44 +279,147 @@
   },
   "hpsResetPsig": {
     "value": 475,
-    "verified": false,
-    "basis": "sister-model",
-    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
-    "note": "S4 auto-reset point. Confirm in the LCH240 manual. LGM092-150 (p.20) lists the S4 reset as 475 ±20 psig instead."
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.36",
+    "basis": "manual",
+    "note": "Closes at 475 ±20 psig."
   },
   "freezestat": {
-    "value": "S49: opens 29 ±3°F, closes 58 ±4°F, auto-reset, on an evaporator return bend, wired to A55",
-    "verified": false,
-    "basis": "sister-model",
-    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
-    "note": "Opens during compressor operation to disable that compressor until the coil warms. Confirm in the LCH240 manual."
+    "value": "S49/S50/S53/S95 on each evaporator return bend: SPST N.C. auto-reset, opens 29 +3°F, closes 58 +4°F, in series with the contactor coil through A55",
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.37",
+    "basis": "manual",
+    "note": "Frequent trips: check charge, airflow, and filters."
   },
   "lowAmbientSwitch": {
-    "value": "S11: liquid-line, opens below 240 ±10 psig, closes at 450 ±10 psig; A55 uses it to cycle the outdoor fan below 62°F until 65°F",
-    "verified": false,
-    "basis": "sister-model",
-    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
-    "note": "Standard on LGH. Confirm in the LCH240 manual."
+    "value": "S11/S84/S85/S94 in each liquid line: SPST N.O. auto-reset, closes at 450 ±10 psig, opens at 240 ±10 psig; A55/A59 cycle the condenser fan relays from these inputs",
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.37",
+    "basis": "manual"
   },
   "controlTransformer": {
-    "value": "T1: 70 VA, line to 24 VAC, protected by 3.5 A circuit breaker CB8",
-    "verified": false,
-    "basis": "sister-model",
-    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
-    "note": " Confirm in the LCH240 manual."
+    "value": "T1: 70 VA line-to-24 VAC, 3.5 A breaker CB8 (controls). T18: identical transformer, 3.5 A breaker CB18, supplies 24 VAC to the contactors.",
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.28",
+    "basis": "manual",
+    "note": "T18 on p.28, T1 on p.29."
   },
   "condenserFanRelay": {
-    "value": "K10: optional DPDT relay, 24 VAC coil, energizes condenser fan B4",
-    "verified": false,
-    "basis": "sister-model",
-    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
-    "note": " Confirm in the LCH240 manual."
+    "value": "K10, K68, K149, K150, K152, K153: DPDT relays with 24 VAC coils, one per condenser fan",
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.29",
+    "basis": "manual"
   },
   "controllerLockoutLogic": {
-    "value": "S4 HPS: 3 trips per thermostat demand, then lockout. S87 LPS: shunted at start-up until pressure stabilizes, then a 3-strike counter during the first demand, then lockout. Reset by breaking and remaking the thermostat demand or manually resetting the controller.",
-    "verified": false,
-    "basis": "sister-model",
-    "source": "docs/manuals/lennox-lgm092-150.pdf (Lennox LGM092-150 Service Literature 100036) p.20-21",
-    "note": "LGM calls A55 the M3 (Prodigy) unit controller; LCH240 per the brief uses M2, whose counts may differ. Confirm in the LCH/M2 docs."
+    "value": "HPS: three trips per thermostat demand, then lockout. LPS: shunted at start-up until pressure stabilizes, then a three-strike counter during the first demand, then lockout. Reset by breaking and remaking the demand or manually resetting the control.",
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.36",
+    "basis": "manual",
+    "note": "HPS on p.36, LPS on p.37."
+  },
+  "meteringDevice": {
+    "value": "Balance-port TXV, removable head",
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.11",
+    "basis": "manual"
+  },
+  "condenserFans": {
+    "value": "Six 1/3 hp single-phase fans (B4, B5, B21-B24), 24 in., 20,000 cfm total; each with a 370 V / 10 µF capacitor (C1, C2, C18-C21)",
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.29",
+    "basis": "manual",
+    "note": "Fan specs p.11; capacitors and relays p.29."
+  },
+  "crankcaseHeaters": {
+    "value": "Insertion heaters HR1, HR2, HR5, HR11 on compressors B1, B2, B13, B20",
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.36",
+    "basis": "manual",
+    "note": "De-energized through fan-relay N.C. contacts when condenser fans run (p.105)."
+  },
+  "compressorHighTempLimits": {
+    "value": "S5, S8, S31 (and S180 on U models): N.C., in series with the compressor contactors",
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.37",
+    "basis": "manual"
+  },
+  "normalOperatingPressures95F": {
+    "value": {
+      "circuit1": {
+        "suctionPsig": [
+          113,
+          163
+        ],
+        "dischargePsig": [
+          383,
+          393
+        ]
+      },
+      "circuit2": {
+        "suctionPsig": [
+          112,
+          161
+        ],
+        "dischargePsig": [
+          372,
+          377
+        ]
+      },
+      "circuit3": {
+        "suctionPsig": [
+          115,
+          166
+        ],
+        "dischargePsig": [
+          384,
+          399
+        ]
+      },
+      "circuit4": {
+        "suctionPsig": [
+          110,
+          157
+        ],
+        "dischargePsig": [
+          371,
+          387
+        ]
+      }
+    },
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.51",
+    "basis": "manual",
+    "note": "Table 17, LGH/LCH240H CAV aluminum coil, 95°F outdoor coil entering air. Each circuit lists four suction/discharge rows; the table doesn't label what distinguishes them, so only the range is used."
+  },
+  "chargingTarget95F": {
+    "value": "Circuit 1 at 95°F outdoor: about 97°F target liquid temperature at 130 psig suction, rising to about 102°F at 161 psig",
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.67",
+    "basis": "manual",
+    "note": "Read off the LGH/LCH240 CAV charging curve (±1°F). Liquid hotter than target = add charge; colder = recover."
+  },
+  "sensorTable": {
+    "value": {
+      "sensors": "RT6 discharge, RT16 return, RT17 outdoor: two-wire thermistors, ±2%",
+      "ohmsAtF": {
+        "-40": 335671,
+        "0": 85323,
+        "20": 46218,
+        "30": 34566,
+        "40": 26106,
+        "50": 19904,
+        "60": 15313,
+        "70": 11884,
+        "80": 9298,
+        "90": 7332,
+        "100": 5826,
+        "120": 3756,
+        "130": 3047
+      }
+    },
+    "verified": true,
+    "source": "docs/manuals/lennox-1014d.pdf (Lennox LCH Series 13-25 ton Service Literature, Corp. 1014-L8, rev 05/2020) p.30",
+    "basis": "manual",
+    "note": "Lennox unit sensors (not the Honeywell C7250A)."
   }
 }
