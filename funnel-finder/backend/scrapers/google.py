@@ -1,156 +1,172 @@
 """
-Google Ads Transparency Center scraper.
-Public endpoint — no API key required but subject to rate limits.
+Google Ads Transparency Center scraper using Playwright.
+Browses https://adstransparency.google.com directly — no API key needed.
 """
 import asyncio
-import json
 import re
 from datetime import datetime
-import httpx
+from playwright.async_api import async_playwright, TimeoutError as PWTimeout
+
+TRANSPARENCY_URL = "https://adstransparency.google.com"
+
+CHROMIUM_PATH = "/opt/pw-browsers/chromium-1243/chrome-linux64/chrome"
 
 
-TRANSPARENCY_SEARCH = "https://adstransparency.google.com/api/trpc/creative.list"
-USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-]
-_ua_index = 0
-
-
-def _next_ua() -> str:
-    global _ua_index
-    ua = USER_AGENTS[_ua_index % len(USER_AGENTS)]
-    _ua_index += 1
-    return ua
-
-
-def _build_input(query: str, query_type: str, token: str | None = None) -> dict:
-    inp: dict = {
-        "region": "US",
-        "searchQuery": query if query_type != "domain" else None,
-        "advertiserQuery": query if query_type == "advertiser" else None,
-        "domainQuery": query if query_type == "domain" else None,
-        "pageSize": 50,
-    }
-    if token:
-        inp["pageToken"] = token
-    # Remove None values
-    return {k: v for k, v in inp.items() if v is not None}
-
-
-def _parse_creative(item: dict) -> dict | None:
+def _days_active(text: str) -> int:
+    """Extract days active from date strings like 'Nov 1, 2024'."""
     try:
-        advertiser = item.get("advertiser", {})
-        creative = item.get("creative", {})
-        dates = item.get("dateRange", {})
-
-        first_str = dates.get("startDate", {})
-        last_str = dates.get("endDate", {})
-
-        def _parse_date(d: dict) -> datetime | None:
-            if not d:
-                return None
-            try:
-                return datetime(int(d["year"]), int(d["month"]), int(d["day"]))
-            except Exception:
-                return None
-
-        first_seen = _parse_date(first_str)
-        last_seen = _parse_date(last_str) or datetime.utcnow()
-        days_active = (last_seen - first_seen).days if first_seen else 0
-
-        image_url = None
-        for media in creative.get("renderedCreatives", []):
-            if media.get("screenshotUrl"):
-                image_url = media["screenshotUrl"]
-                break
-
-        return {
-            "external_id": item.get("creativeId"),
-            "platform": "google",
-            "advertiser_name": advertiser.get("advertiserName", "Unknown"),
-            "page_id": advertiser.get("advertiserId"),
-            "creative_text": creative.get("adText"),
-            "creative_image_url": image_url,
-            "ad_snapshot_url": f"https://adstransparency.google.com/advertiser/{advertiser.get('advertiserId')}/creative/{item.get('creativeId')}",
-            "landing_page_url": creative.get("destinationUrl"),
-            "days_active": days_active,
-            "first_seen": first_seen,
-            "last_seen": last_seen,
-            "raw_data": item,
-        }
+        match = re.search(r'(\w{3} \d+, \d{4})', text)
+        if match:
+            dt = datetime.strptime(match.group(1), "%b %d, %Y")
+            return max(0, (datetime.utcnow() - dt).days)
     except Exception:
-        return None
+        pass
+    return 0
 
 
-async def _trpc_search(client: httpx.AsyncClient, query: str, query_type: str, token: str | None = None) -> dict:
-    input_data = _build_input(query, query_type, token)
-    params = {"input": json.dumps({"0": input_data})}
-    headers = {
-        "User-Agent": _next_ua(),
-        "Accept": "application/json",
-        "Referer": "https://adstransparency.google.com/",
-    }
-    resp = await client.get(TRANSPARENCY_SEARCH, params=params, headers=headers, timeout=20)
-    resp.raise_for_status()
-    return resp.json()
+def _first_seen(text: str) -> datetime | None:
+    try:
+        match = re.search(r'(\w{3} \d+, \d{4})', text)
+        if match:
+            return datetime.strptime(match.group(1), "%b %d, %Y")
+    except Exception:
+        pass
+    return None
 
 
-async def _search(query: str, query_type: str, max_results: int = 50) -> list[dict]:
+async def _launch_browser(pw):
+    import platform
+    is_windows = platform.system() == "Windows"
+    if is_windows:
+        # Use system Playwright install on Windows
+        return await pw.chromium.launch(
+            headless=True,
+            args=["--no-sandbox", "--disable-dev-shm-usage"],
+        )
+    return await pw.chromium.launch(
+        headless=True,
+        executable_path=CHROMIUM_PATH,
+        args=["--no-sandbox", "--disable-dev-shm-usage"],
+    )
+
+
+async def _scrape(query: str, query_type: str, max_results: int = 30) -> list[dict]:
     ads: list[dict] = []
-    next_token: str | None = None
-    delay = 2.0
 
-    async with httpx.AsyncClient(follow_redirects=True) as client:
-        for _ in range(5):
-            try:
-                raw = await _trpc_search(client, query, query_type, next_token)
-                result = raw[0].get("result", {}).get("data", {})
-                items = result.get("creatives", [])
-                for item in items:
-                    parsed = _parse_creative(item)
-                    if parsed and parsed["days_active"] >= 7:
-                        ads.append(parsed)
+    # Build search URL
+    if query_type == "keyword":
+        url = f"{TRANSPARENCY_URL}/?region=US&query={query.replace(' ', '+')}"
+    elif query_type == "domain":
+        url = f"{TRANSPARENCY_URL}/?region=US&domain={query}"
+    elif query_type == "advertiser":
+        url = f"{TRANSPARENCY_URL}/?region=US&query={query.replace(' ', '+')}"
+    else:
+        url = f"{TRANSPARENCY_URL}/?region=US&query=shop+now"
 
-                next_token = result.get("nextPageToken")
-                if not next_token or len(ads) >= max_results:
-                    break
-                await asyncio.sleep(delay)
-                delay = min(delay * 1.5, 8.0)
-            except httpx.HTTPStatusError as e:
-                if e.response.status_code == 429:
-                    await asyncio.sleep(delay * 2)
-                    delay *= 2
-                else:
-                    break
-            except Exception:
-                break
+    async with async_playwright() as pw:
+        browser = await _launch_browser(pw)
+        ctx = await browser.new_context(
+            viewport={"width": 1280, "height": 900},
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            locale="en-US",
+        )
+        page = await ctx.new_page()
+        await page.route("**/*.{woff,woff2,ttf,otf}", lambda r: r.abort())
 
-    return ads[:max_results]
+        try:
+            await page.goto(url, wait_until="domcontentloaded", timeout=25000)
+            await asyncio.sleep(4)
+
+            # Scroll to load more
+            for _ in range(3):
+                await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                await asyncio.sleep(2)
+
+            # Get all ad cards — Google Transparency uses material cards
+            cards = await page.query_selector_all(
+                "mat-card, "
+                "[class*='creative-card'], "
+                "[class*='ad-card'], "
+                "div[role='listitem']"
+            )
+
+            if not cards:
+                # Fallback: grab all substantial text blocks
+                cards = await page.query_selector_all("article, section > div")
+
+            for card in cards[:max_results]:
+                try:
+                    text = await card.inner_text()
+                    lines = [l.strip() for l in text.split('\n') if l.strip()]
+                    if not lines or len(text) < 20:
+                        continue
+
+                    advertiser = lines[0]
+                    creative_text = next(
+                        (l for l in lines[1:] if len(l) > 30 and not re.search(r'\d{4}', l)),
+                        None
+                    )
+
+                    date_line = next((l for l in lines if re.search(r'\w{3} \d+, \d{4}', l)), "")
+                    days = _days_active(date_line)
+                    seen = _first_seen(date_line)
+
+                    img = await card.query_selector("img")
+                    img_url = await img.get_attribute("src") if img else None
+
+                    link = await card.query_selector("a[href]")
+                    link_url = await link.get_attribute("href") if link else None
+
+                    if advertiser:
+                        ads.append({
+                            "external_id": None,
+                            "platform": "google",
+                            "advertiser_name": advertiser,
+                            "page_id": None,
+                            "creative_text": creative_text,
+                            "creative_image_url": img_url,
+                            "ad_snapshot_url": url,
+                            "landing_page_url": link_url,
+                            "days_active": days,
+                            "variation_count": 1,
+                            "first_seen": seen,
+                            "last_seen": datetime.utcnow(),
+                            "raw_data": {"scraped_text": text[:500]},
+                        })
+                except Exception:
+                    continue
+
+        except PWTimeout:
+            pass
+        except Exception:
+            pass
+        finally:
+            await browser.close()
+
+    return ads
 
 
-async def search_by_keyword(query: str, max_results: int = 50) -> list[dict]:
-    return await _search(query, "keyword", max_results)
+async def search_by_keyword(query: str, max_results: int = 30) -> list[dict]:
+    return await _scrape(query, "keyword", max_results)
 
 
-async def search_by_advertiser(name: str, max_results: int = 50) -> list[dict]:
-    return await _search(name, "advertiser", max_results)
+async def search_by_advertiser(name: str, max_results: int = 30) -> list[dict]:
+    return await _scrape(name, "advertiser", max_results)
 
 
-async def search_by_domain(domain: str, max_results: int = 50) -> list[dict]:
-    return await _search(domain, "domain", max_results)
+async def search_by_domain(domain: str, max_results: int = 30) -> list[dict]:
+    return await _scrape(domain, "domain", max_results)
 
 
-async def get_trending(max_results: int = 50) -> list[dict]:
-    keywords = ["sale", "offer", "free", "download", "subscribe"]
+async def get_trending(max_results: int = 30) -> list[dict]:
+    keywords = ["shop now", "limited offer", "free trial"]
     all_ads: list[dict] = []
     per_kw = max(5, max_results // len(keywords))
     for kw in keywords:
         try:
-            ads = await search_by_keyword(kw, per_kw)
+            ads = await _scrape(kw, "keyword", per_kw)
             all_ads.extend(ads)
-            await asyncio.sleep(2)
+            await asyncio.sleep(3)
         except Exception:
             continue
     return all_ads[:max_results]

@@ -1,19 +1,20 @@
+"""Quick test — opens Google Ads Transparency and prints what it finds."""
 import asyncio
-import httpx
-import json
+from backend.scrapers import google, facebook
 
-async def test():
-    url = "https://adstransparency.google.com/api/trpc/creative.list"
-    input_data = {"region": "US", "searchQuery": "weight loss", "pageSize": 5}
-    params = {"input": json.dumps({"0": input_data})}
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Referer": "https://adstransparency.google.com/",
-        "Accept": "application/json",
-    }
-    async with httpx.AsyncClient(follow_redirects=True) as client:
-        r = await client.get(url, params=params, headers=headers, timeout=15)
-        print("Status:", r.status_code)
-        print("Response:", r.text[:500])
 
-asyncio.run(test())
+async def main():
+    print("Testing Google scraper...")
+    results = await google.search_by_keyword("weight loss", max_results=5)
+    print(f"Google results: {len(results)}")
+    for r in results:
+        print(f"  - {r['advertiser_name']} | {r['days_active']}d | {r['creative_text'][:60] if r['creative_text'] else 'no copy'}")
+
+    print("\nTesting Facebook scraper...")
+    fb_results = await facebook.search_by_keyword("weight loss", max_results=5)
+    print(f"Facebook results: {len(fb_results)}")
+    for r in fb_results:
+        print(f"  - {r['advertiser_name']} | {r['days_active']}d")
+
+
+asyncio.run(main())
