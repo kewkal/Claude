@@ -10,6 +10,45 @@ const BASIS: Record<CostBasis, { label: string; tone: "ok" | "warn" | "neutral" 
   calculated: { label: "Calculated", tone: "neutral" },
 };
 
+const BAR_COLOR: Record<string, string> = {
+  flights: "#0f766e",
+  lodging: "#2563eb",
+  activities: "#7c3aed",
+  food: "#d97706",
+  transport: "#64748b",
+  buffer: "#cbd5e1",
+};
+
+/** Stacked bar of where the money goes, against the budget line. */
+export function BudgetBar({ costs }: { costs: CostBreakdown }) {
+  const scale = Math.max(costs.total, costs.budget) || 1;
+  const budgetPct = (costs.budget / scale) * 100;
+  return (
+    <div>
+      <div className="relative h-3 w-full overflow-hidden rounded-full bg-surface-2" role="img" aria-label={`Total ${fmtUsd(costs.total)} of ${fmtUsd(costs.budget)} budget`}>
+        <div className="flex h-full">
+          {costs.lines
+            .filter((l) => l.amount > 0)
+            .map((l) => (
+              <div key={l.key} style={{ width: `${(l.amount / scale) * 100}%`, background: BAR_COLOR[l.key] }} title={`${l.label}: ${fmtUsd(l.amount)}`} />
+            ))}
+        </div>
+        {costs.overBudget && <div className="absolute inset-y-0 w-0.5 bg-danger" style={{ left: `${budgetPct}%` }} aria-hidden />}
+      </div>
+      <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[0.72rem] text-muted">
+        {costs.lines
+          .filter((l) => l.amount > 0)
+          .map((l) => (
+            <li key={l.key} className="flex items-center gap-1">
+              <span className="inline-block h-2 w-2 rounded-full" style={{ background: BAR_COLOR[l.key] }} aria-hidden />
+              {l.label.replace(" (10%)", "")} {fmtUsd(l.amount)}
+            </li>
+          ))}
+      </ul>
+    </div>
+  );
+}
+
 export function CostTable({ costs }: { costs: CostBreakdown }) {
   return (
     <div className="card overflow-hidden">

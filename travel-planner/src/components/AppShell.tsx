@@ -23,8 +23,15 @@ export function AppShell({ children, fixtureMode = false }: { children: ReactNod
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
       <header className="no-print sticky top-0 z-40 flex items-center justify-between border-b border-border bg-bg/90 px-4 py-3 backdrop-blur">
-        <Link href="/" className="text-lg font-extrabold tracking-tight">
-          Roam<span className="text-accent">io</span>
+        <Link href="/" className="flex items-center gap-2 text-lg font-extrabold tracking-tight" aria-label="Roamio home">
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent text-accent-contrast shadow-sm" aria-hidden>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M21 15.5l-8-4.5V5.5a1.5 1.5 0 00-3 0V11l-8 4.5v2l8-2.5v4l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-4l8 2.5z" />
+            </svg>
+          </span>
+          <span>
+            Roam<span className="text-accent">io</span>
+          </span>
         </Link>
         <Link
           href="/settings"
@@ -42,7 +49,7 @@ export function AppShell({ children, fixtureMode = false }: { children: ReactNod
         </p>
       )}
       <UsageBanner />
-      <main className="flex-1 px-4 pb-28 pt-4">{children}</main>
+      <main className="flex-1 px-4 pb-28 pt-5">{children}</main>
       <nav
         aria-label="Primary"
         className="no-print fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
@@ -55,11 +62,13 @@ export function AppShell({ children, fixtureMode = false }: { children: ReactNod
                 <Link
                   href={n.href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex flex-col items-center gap-0.5 py-2 text-[0.7rem] font-semibold ${active ? "text-accent" : "text-muted"}`}
+                  className={`flex flex-col items-center gap-0.5 py-1.5 text-[0.7rem] font-semibold ${active ? "text-accent" : "text-muted"}`}
                 >
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden>
-                    <path d={n.icon} />
-                  </svg>
+                  <span className={`flex h-7 w-12 items-center justify-center rounded-full transition-colors ${active ? "bg-accent-soft" : ""}`}>
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden>
+                      <path d={n.icon} />
+                    </svg>
+                  </span>
                   {n.label}
                 </Link>
               </li>
