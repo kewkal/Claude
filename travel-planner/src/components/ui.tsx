@@ -22,6 +22,8 @@ const ERROR_HINTS: Record<string, string> = {
   SERPAPI_NOT_CONFIGURED: "Add SERPAPI_API_KEY in your environment variables.",
   CLAUDE_BUDGET: "Raise CLAUDE_MONTHLY_BUDGET_USD or enable the override in Settings.",
   CLAUDE_NOT_CONFIGURED: "Add ANTHROPIC_API_KEY in your environment variables.",
+  DB_NOT_CONFIGURED: "In Vercel: Settings → Environment Variables, fix the value, then Deployments → ⋯ → Redeploy.",
+  DB_ERROR: "Check SUPABASE_URL / SUPABASE_SECRET_KEY in Vercel, and that supabase/schema.sql was run. Redeploy after changing env vars.",
 };
 
 export function ErrorState({

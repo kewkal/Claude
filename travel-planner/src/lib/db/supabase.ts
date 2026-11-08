@@ -1,4 +1,20 @@
+import { AppError } from "@/lib/errors";
 import type { CacheRow, Db, TripRow, TripSummary, UsageRow } from "./types";
+
+/** Turn a Supabase failure into a message that says what to fix. Never includes the key. */
+export function explainSupabaseError(status: number, body: string, what: string): AppError {
+  const detail = body.slice(0, 200);
+  if (status === 401 || status === 403 || /invalid api key|jwt|apikey/i.test(body)) {
+    return new AppError("DB_ERROR", `Database rejected the key (${status}). Check SUPABASE_SECRET_KEY is the secret key (sb_secret_...), not the publishable/anon key. ${detail}`);
+  }
+  if (status === 404 || /relation .* does not exist|could not find the table|PGRST205/i.test(body)) {
+    return new AppError("DB_ERROR", `Database table missing (${status}) during ${what}. Run supabase/schema.sql in the Supabase SQL Editor. ${detail}`);
+  }
+  if (/permission denied/i.test(body)) {
+    return new AppError("DB_ERROR", `Database permission denied during ${what}: the key isn't the secret/service key, or table grants are missing. ${detail}`);
+  }
+  return new AppError("DB_ERROR", `Database error ${status} during ${what}: ${detail}`);
+}
 
 // Talks to Supabase's PostgREST endpoint directly with fetch — no client library needed.
 export function createSupabaseDb(baseUrl: string, secretKey: string): Db {
@@ -14,11 +30,14 @@ export function createSupabaseDb(baseUrl: string, secretKey: string): Db {
   async function call<T>(path: string, init: RequestInit & { prefer?: string } = {}): Promise<T> {
     const h: Record<string, string> = { ...headers };
     if (init.prefer) h.Prefer = init.prefer;
-    const res = await fetch(`${rest}${path}`, { ...init, headers: h, cache: "no-store" });
-    if (!res.ok) {
-      const body = await res.text().catch(() => "");
-      throw new Error(`Supabase ${init.method ?? "GET"} ${path.split("?")[0]} failed: ${res.status} ${body.slice(0, 300)}`);
+    const what = `${init.method ?? "GET"} ${path.split("?")[0]}`;
+    let res: Response;
+    try {
+      res = await fetch(`${rest}${path}`, { ...init, headers: h, cache: "no-store" });
+    } catch (e) {
+      throw new AppError("DB_ERROR", `Couldn't reach the database at ${baseUrl} (${(e as Error).message}). Check SUPABASE_URL, and that the Supabase project isn't paused.`);
     }
+    if (!res.ok) throw explainSupabaseError(res.status, await res.text().catch(() => ""), what);
     if (res.status === 204) return undefined as T;
     const text = await res.text();
     return (text ? JSON.parse(text) : undefined) as T;
@@ -48,7 +67,7 @@ export function createSupabaseDb(baseUrl: string, secretKey: string): Db {
         headers: { ...headers, Prefer: "count=exact" },
         cache: "no-store",
       });
-      if (!res.ok) throw new Error(`Supabase count failed: ${res.status}`);
+      if (!res.ok) throw explainSupabaseError(res.status, await res.text().catch(() => ""), "usage count");
       const range = res.headers.get("content-range") ?? "*/0";
       return Number(range.split("/")[1]) || 0;
     },

@@ -24,7 +24,9 @@ export function withApi<C = unknown>(handler: Handler<C>) {
         return NextResponse.json({ error: e.message, code: e.code, details: e.details ?? null }, { status: e.status });
       }
       console.error("[api] unhandled", e);
-      return NextResponse.json({ error: "Something went wrong on the server.", code: "UPSTREAM_ERROR" }, { status: 500 });
+      // Single-user, password-gated app: show the real reason so problems can be fixed from the screen.
+      const reason = e instanceof Error ? e.message.slice(0, 300) : String(e).slice(0, 300);
+      return NextResponse.json({ error: `Server error: ${reason}`, code: "UPSTREAM_ERROR" }, { status: 500 });
     }
   };
 }
