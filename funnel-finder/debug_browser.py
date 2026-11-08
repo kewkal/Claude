@@ -12,26 +12,19 @@ async def main():
         )
         page = await ctx.new_page()
 
-        print("Loading Google Ads Transparency...")
-        await page.goto(
-            "https://adstransparency.google.com/",
-            wait_until="domcontentloaded",
-            timeout=30000,
-        )
-        await asyncio.sleep(3)
+        search_url = "https://adstransparency.google.com/?region=US&query=weight+loss+supplement"
+        print(f"Loading search URL directly: {search_url}")
+        await page.goto(search_url, wait_until="domcontentloaded", timeout=30000)
+        print("Waiting for results to load...")
+        await asyncio.sleep(5)
 
-        # Type into the search box using the known class
-        search_input = await page.query_selector("input.input-area")
-        if search_input:
-            print("Found search input, typing...")
-            await search_input.click()
-            await page.keyboard.type("weight loss supplement", delay=80)
-            await page.keyboard.press("Enter")
-            print("Typed and submitted, waiting for results...")
-            await asyncio.sleep(6)
-        else:
-            print("Search input NOT found")
-        await asyncio.sleep(2)
+        # Scroll to trigger lazy-loading
+        for _ in range(3):
+            await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+            await asyncio.sleep(2)
+
+        print(f"Final URL: {page.url}")
+        await asyncio.sleep(1)
         await page.screenshot(path="debug_google.png", full_page=False)
 
         # Look for ad cards deep inside the Angular root
