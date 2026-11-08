@@ -76,7 +76,7 @@ export function Badge({ tone = "neutral", children, title }: { tone?: Tone; chil
 export function AiText({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div className={`rounded-lg border-l-4 border-ai bg-ai-soft/60 px-3 py-2 text-sm ${className}`}>
-      <span className="mr-1 text-[0.7rem] font-bold uppercase tracking-wide text-ai">AI suggestion</span>
+      <span className="mr-1 text-xs font-bold uppercase tracking-wide text-ai">AI suggestion</span>
       <span>{children}</span>
     </div>
   );
@@ -101,7 +101,7 @@ export function InfoTip({ children, label = "How is this calculated?" }: { child
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
         onBlur={() => setOpen(false)}
-        className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full border border-border text-[0.7rem] font-bold text-muted"
+        className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full border border-border text-xs font-bold text-muted"
       >
         i
       </button>
@@ -130,7 +130,7 @@ export function Rating({ rating, reviews, source }: { rating: number | null; rev
 
 export function FetchedAt({ iso, source }: { iso: string; source?: string }) {
   return (
-    <span className="text-[0.7rem] text-muted">
+    <span className="text-xs text-muted">
       {source ? `${source} · ` : ""}fetched {fmtTimestamp(iso)}
     </span>
   );

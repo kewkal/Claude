@@ -326,7 +326,7 @@ function PriceBlock({ h, nights, rooms }: { h: HotelOption; nights: number; room
       <p className="text-xl font-extrabold">{fmtUsd(h.ratePerNight)}</p>
       <p className="text-xs text-muted">per night{rooms > 1 ? ", per room" : ""}</p>
       <p className="text-sm font-semibold">{fmtUsd(total)} total</p>
-      <p className="text-[0.7rem] text-muted">
+      <p className="text-xs text-muted">
         {h.totalRate !== null ? "incl. taxes & fees" : "nightly × nights"}
         {rooms > 1 ? ` × ${rooms} rooms (calculated)` : ""}
       </p>
@@ -500,7 +500,7 @@ function HotelDetails({
           {!reviews && !revErr && h.propertyToken && <CardSkeletons count={2} height="h-16" />}
           {!h.propertyToken && <p className="text-sm text-muted">Reviews unavailable for this listing.</p>}
           {reviews && <ReviewList reviews={reviews.reviews.slice(0, 8)} fetchedAt={reviews.fetchedAt} />}
-          <p className="mt-1 text-[0.7rem] text-muted">Rating summary: {h.rating ?? "—"} from {fmtCount(h.reviews)} Google reviews.</p>
+          <p className="mt-1 text-xs text-muted">Rating summary: {h.rating ?? "—"} from {fmtCount(h.reviews)} Google reviews.</p>
         </section>
       </div>
     </Sheet>

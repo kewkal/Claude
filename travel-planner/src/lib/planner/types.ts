@@ -3,6 +3,7 @@ import type { Cabin, FlightOption, FlightSearchInput, PriceInsights, Travelers }
 import type { LatLng, TravelEstimate } from "@/lib/geo";
 import type { HotelOption } from "@/lib/hotels/types";
 import type { PlaceCategory, PlaceItem } from "@/lib/places/types";
+import type { SavingsTips } from "@/lib/savings/types";
 import type { DayWeather } from "@/lib/weather-shared";
 
 export const TRIP_STYLES = ["cinematic", "cultural", "adventure", "luxury", "relaxation", "foodie", "nightlife", "romantic"] as const;
@@ -31,6 +32,8 @@ export interface PlanInput {
   budgetUsd: number;
   styles: TripStyle[];
   pace: Pace;
+  /** Also search airports within ~100 mi of the origin. Default on. */
+  nearbyOrigin?: boolean;
 }
 
 /** Items from the dataset, each with a short reference id ("F1", "H3", "P12") that Claude must use. */
@@ -126,6 +129,8 @@ export interface PlanVersion {
 
 export interface TripPlan {
   versions: Record<VersionKey, PlanVersion>;
+  /** Web-sourced money-saving tips (fetched on demand, cross-checked). */
+  savings?: SavingsTips;
   model: string;
   generatedAt: string;
 }

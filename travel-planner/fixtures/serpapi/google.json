@@ -1,0 +1,43 @@
+{
+ "search_metadata": {
+  "id": "fixture-google",
+  "status": "Success"
+ },
+ "discussions_and_forums": [
+  {
+   "title": "Fixture: best cheap eats in the city?",
+   "link": "https://www.reddit.com/r/travel/comments/fixture1/",
+   "source": "Reddit \u00b7 r/travel",
+   "extensions": [
+    "Locals say the fixture market lunch counters run about $12 a plate."
+   ]
+  }
+ ],
+ "organic_results": [
+  {
+   "position": 1,
+   "title": "Fixture: airport to downtown on a budget",
+   "link": "https://www.reddit.com/r/solotravel/comments/fixture2/",
+   "snippet": "Skip the taxi ($99 quoted to us). The fixture airport bus is $2.75 and runs every 20 minutes.",
+   "date": "Mar 3, 2026"
+  },
+  {
+   "position": 2,
+   "title": "Fixture forum: money-saving thread",
+   "link": "https://www.flyertalk.com/forum/fixture-thread.html",
+   "snippet": "Eat lunch at the fixture market; plates are about $12, half the dinner price downtown."
+  },
+  {
+   "position": 3,
+   "title": "Fixture blog: 15 ways to save",
+   "link": "https://example-travel-blog.com/fixture-save-money",
+   "snippet": "Book hotels with free cancellation and recheck prices a week before; we saved on our stay."
+  },
+  {
+   "position": 4,
+   "title": "Fixture result without snippet",
+   "link": "https://example.org/no-snippet",
+   "snippet": ""
+  }
+ ]
+}

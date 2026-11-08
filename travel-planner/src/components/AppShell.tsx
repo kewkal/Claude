@@ -22,7 +22,7 @@ export function AppShell({ children, fixtureMode = false }: { children: ReactNod
   const pathname = usePathname();
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
-      <header className="no-print sticky top-0 z-40 flex items-center justify-between border-b border-border bg-bg/90 px-4 py-3 backdrop-blur">
+      <header className="no-print sticky top-0 z-40 flex items-center justify-between border-b border-border/70 bg-bg/75 px-4 py-2.5 backdrop-blur-xl backdrop-saturate-150">
         <Link href="/" className="flex items-center gap-2 text-lg font-extrabold tracking-tight" aria-label="Roamio home">
           <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent text-accent-contrast shadow-sm" aria-hidden>
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
@@ -52,7 +52,7 @@ export function AppShell({ children, fixtureMode = false }: { children: ReactNod
       <main className="flex-1 px-4 pb-28 pt-5">{children}</main>
       <nav
         aria-label="Primary"
-        className="no-print fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
+        className="no-print fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-surface/80 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl backdrop-saturate-150"
       >
         <ul className="mx-auto flex max-w-5xl">
           {NAV.map((n) => {
@@ -62,7 +62,7 @@ export function AppShell({ children, fixtureMode = false }: { children: ReactNod
                 <Link
                   href={n.href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex flex-col items-center gap-0.5 py-1.5 text-[0.7rem] font-semibold ${active ? "text-accent" : "text-muted"}`}
+                  className={`flex flex-col items-center gap-0.5 py-1.5 text-[0.66rem] font-medium ${active ? "text-accent" : "text-muted"}`}
                 >
                   <span className={`flex h-7 w-12 items-center justify-center rounded-full transition-colors ${active ? "bg-accent-soft" : ""}`}>
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden>

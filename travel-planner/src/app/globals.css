@@ -1,46 +1,48 @@
 @import "tailwindcss";
 
+/* Apple-style system: iOS grouped background, white inset cards, iOS label grays, SF type scale. */
 :root {
-  --bg: #f4f6f8;
+  --bg: #f2f2f7; /* iOS systemGroupedBackground */
   --surface: #ffffff;
-  --surface-2: #f1f4f7;
-  --text: #0f172a;
-  --muted: #5b6577;
-  --border: #e3e8ee;
+  --surface-2: #e9e9ee; /* fills: chips, segmented controls, input fields */
+  --text: #1c1c1e;
+  --muted: #6c6c70; /* iOS secondary label, darkened for contrast */
+  --border: #e3e3e8; /* separators */
   --accent: #0f766e;
   --accent-contrast: #ffffff;
-  --accent-soft: #e2f4f1;
-  --ok: #15803d;
-  --ok-soft: #e4f6ea;
-  --warn: #a16207;
-  --warn-soft: #fdf3dc;
-  --danger: #b91c1c;
-  --danger-soft: #fdecec;
+  --accent-soft: #dff2ef;
+  --ok: #1e7f3a;
+  --ok-soft: #e3f5e8;
+  --warn: #9a5b00;
+  --warn-soft: #fff3d6;
+  --danger: #c4261d;
+  --danger-soft: #fde9e7;
   --ai: #6d28d9;
-  --ai-soft: #f3edfd;
-  --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 2px 8px rgba(15, 23, 42, 0.05);
+  --ai-soft: #f1eafd;
+  --shadow: 0 1px 1px rgba(0, 0, 0, 0.03);
+  --radius-card: 1.1rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0b1016;
-    --surface: #141b23;
-    --surface-2: #1b2430;
-    --text: #e8eef5;
-    --muted: #97a3b4;
-    --border: #263241;
-    --accent: #2dd4bf;
-    --accent-contrast: #062925;
-    --accent-soft: #10302c;
-    --ok: #4ade80;
+    --bg: #000000;
+    --surface: #1c1c1e;
+    --surface-2: #2c2c2e;
+    --text: #f5f5f7;
+    --muted: #a1a1a6;
+    --border: #38383a;
+    --accent: #3fd1bd;
+    --accent-contrast: #002a25;
+    --accent-soft: #0f2f2b;
+    --ok: #5ad97b;
     --ok-soft: #13291b;
-    --warn: #fbbf24;
-    --warn-soft: #2e2510;
-    --danger: #f87171;
-    --danger-soft: #331717;
-    --ai: #c4b5fd;
-    --ai-soft: #231c38;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --warn: #ffc24a;
+    --warn-soft: #2f2610;
+    --danger: #ff6b61;
+    --danger-soft: #351716;
+    --ai: #c7b6ff;
+    --ai-soft: #241d3a;
+    --shadow: none;
   }
 }
 
@@ -62,106 +64,131 @@
   --color-danger-soft: var(--danger-soft);
   --color-ai: var(--ai);
   --color-ai-soft: var(--ai-soft);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* SF Pro on Apple devices; the closest system font elsewhere. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 html {
   -webkit-text-size-adjust: 100%;
+  font-size: 106.25%; /* 17px: iOS body size; every rem in the app scales from this */
 }
 
 body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
-  line-height: 1.5;
+  line-height: 1.47;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
 }
 h1,
 h2,
 h3 {
-  letter-spacing: -0.015em;
+  letter-spacing: -0.022em;
+  line-height: 1.2;
+}
+/* Page titles use iOS "Large Title" (34pt bold). */
+main h1.text-2xl {
+  font-size: 2rem;
+  font-weight: 700;
 }
 
-/* Form controls share one look. */
+/* iOS filled text field */
 .input {
   width: 100%;
-  border: 1px solid var(--border);
-  background: var(--surface);
+  border: 1px solid transparent;
+  background: var(--surface-2);
   color: var(--text);
-  border-radius: 0.6rem;
-  padding: 0.55rem 0.7rem;
-  font-size: 1rem; /* 16px avoids iOS zoom-on-focus */
-  min-height: 2.6rem;
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  font-size: 1rem; /* 17px, also avoids iOS zoom-on-focus */
+  min-height: 2.9rem;
+  transition: border-color 0.15s, background 0.15s;
+}
+.input::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
 }
 .input:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
+  outline: none;
+  border-color: var(--accent);
+  background: var(--surface);
 }
+/* iOS large filled button */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  border-radius: 0.6rem;
-  padding: 0.55rem 1rem;
+  border-radius: 0.85rem;
+  padding: 0.7rem 1.1rem;
   font-weight: 600;
-  min-height: 2.6rem;
+  min-height: 3rem;
   background: var(--accent);
   color: var(--accent-contrast);
-  transition: opacity 0.15s;
+  transition: opacity 0.15s, transform 0.1s;
 }
 .btn:active {
-  transform: translateY(1px);
+  transform: scale(0.98);
+  opacity: 0.85;
 }
 .btn:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
+/* iOS tinted button (secondary) */
 .btn-ghost {
-  background: transparent;
+  background: var(--accent-soft);
   color: var(--accent);
-  border: 1px solid var(--border);
+  border: none;
 }
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.3rem;
   border-radius: 999px;
-  padding: 0.15rem 0.55rem;
-  font-size: 0.75rem;
+  padding: 0.22rem 0.65rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.35;
   white-space: nowrap;
 }
+/* iOS inset-grouped card: no outline, generous radius */
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-card);
   box-shadow: var(--shadow);
 }
+/* iOS section header (footnote, uppercase, secondary) */
 .eyebrow {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--muted);
 }
+/* iOS Title 2 */
 .section-title {
-  font-size: 1.1rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 .btn-sm {
-  min-height: 2rem;
-  padding: 0.3rem 0.7rem;
-  font-size: 0.8rem;
-  border-radius: 0.5rem;
+  min-height: 2.2rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.88rem;
+  border-radius: 0.7rem;
 }
 .label {
   display: block;
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.85rem;
+  font-weight: 500;
   color: var(--muted);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
+  padding-left: 0.15rem;
 }
 
 .skeleton {

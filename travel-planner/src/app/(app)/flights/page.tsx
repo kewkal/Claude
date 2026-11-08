@@ -7,7 +7,7 @@ import { fmtDayShort, fmtTimestamp, fmtUsd } from "@/lib/format";
 import { DEFAULT_FLIGHT_FILTERS, emptyHint, filterFlights, sortFlights, VALUE_FORMULA, type FlightFilters, type FlightSort } from "@/lib/flights/sort";
 import type { BookingOption, Cabin, FlightOption, FlightSearchInput, FlightSearchResult, TripType } from "@/lib/flights/types";
 import { FlightCard, PriceInsightBar } from "@/components/FlightCard";
-import { AirportInput, AirportSuggestions, HourRange, todayPlus, TravelersInput } from "@/components/inputs";
+import { AirportInput, AirportSuggestions, HourRange, NearbyAirportsToggle, todayPlus, TravelersInput } from "@/components/inputs";
 import { CardSkeletons, EmptyState, ErrorState, InfoTip, Segmented, Sheet } from "@/components/ui";
 
 interface FlexDay {
@@ -26,6 +26,7 @@ const DEFAULT_INPUT: FlightSearchInput = {
   returnDate: todayPlus(35),
   travelers: { adults: 1, children: 0, infantsInSeat: 0, infantsOnLap: 0 },
   cabin: "economy",
+  nearbyOrigin: true,
   stops: "any",
   bags: 0,
   legs: [
@@ -156,6 +157,7 @@ export default function FlightsPage() {
         {input.tripType !== "multi_city" ? (
           <>
             <AirportInput id="origin" label="From" value={input.origin} onChange={(v) => setInput({ ...input, origin: v })} required />
+            <NearbyAirportsToggle origin={input.origin} checked={!!input.nearbyOrigin} onChange={(v) => setInput({ ...input, nearbyOrigin: v })} />
             <div>
               <label className="label" htmlFor="dest">
                 To (airport code or city)
@@ -342,6 +344,7 @@ export default function FlightsPage() {
                 <FlightCard
                   key={o.id}
                   o={o}
+                  homeOrigin={searched?.tripType !== "multi_city" ? searched?.origin : undefined}
                   paying={current.result.travelersPaying}
                   onSelect={!isLastLeg && o.departureToken ? () => chooseLeg(o) : undefined}
                   selectLabel={totalLegs === 2 ? "Select & see returns (1 search)" : "Select & see next leg (1 search)"}

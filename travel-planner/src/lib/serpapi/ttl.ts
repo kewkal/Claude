@@ -17,6 +17,7 @@ export const TTL_SECONDS: Record<string, number> = {
   tripadvisor_reviews: 7 * DAY,
   google_events: 24 * HOUR,
   youtube: 7 * DAY,
+  google: 30 * DAY,
 };
 
 export function ttlFor(engine: string): number {
