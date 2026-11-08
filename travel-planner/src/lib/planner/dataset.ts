@@ -91,6 +91,19 @@ export function flexCandidates(input: PlanInput): string[] {
   return [...out].filter((d) => d >= today);
 }
 
+/** Airport id for cost estimates: codes as-is; city names only if their lookup is already cached (else adds the lookup to `reqs`). */
+async function resolveIfCached(raw: string, reqs: { engine: string; params: SerpParams }[]): Promise<string> {
+  const t = raw.trim();
+  if (/^[A-Za-z]{3}$/.test(t)) return t.toUpperCase();
+  const lookup = { engine: "google_flights_autocomplete", params: { q: t, hl: "en", gl: "us" } };
+  reqs.push(lookup);
+  try {
+    return (await countUncached([lookup])) ? "" : (await resolvePlace(t)).id;
+  } catch {
+    return "";
+  }
+}
+
 /** Paid searches a plan would use right now (cache hits are free). Approximate when airports still need resolving. */
 export async function estimateSearches(input: PlanInput): Promise<{ perDestination: { destination: string; total: number; uncached: number }[]; flexDates: number }> {
   validatePlanInput(input);
@@ -114,7 +127,8 @@ export async function estimateSearches(input: PlanInput): Promise<{ perDestinati
         dest = "";
       }
     }
-    if (dest) reqs.push({ engine: "google_flights", params: buildFlightParams({ ...flightInput(input, dest, start, end), origin: input.origin.toUpperCase() }) });
+    const origin = await resolveIfCached(input.origin, reqs);
+    if (dest && origin) reqs.push({ engine: "google_flights", params: buildFlightParams({ ...flightInput(input, dest, start, end), origin }) });
     else extra += 1;
     reqs.push({ engine: "google_hotels", params: buildHotelParams(hotelInput(input, raw, start, end)) });
     for (const c of cats) reqs.push(...exploreRequests(raw, c));
@@ -226,7 +240,7 @@ export async function buildDataset(input: PlanInput, destination: string, valueO
   const n = daysBetween(startDate, endDate) + 1;
   return {
     destination,
-    origin: input.origin.toUpperCase(),
+    origin: /^[A-Za-z]{3}$/.test(input.origin.trim()) ? input.origin.trim().toUpperCase() : input.origin.trim(),
     startDate,
     endDate,
     dates: Array.from({ length: n }, (_, i) => addDays(startDate, i)),

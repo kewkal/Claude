@@ -9,7 +9,8 @@ export interface AppSettings {
   mealCostByPriceLevel: { 1: number; 2: number; 3: number; 4: number };
   /** Group-level local transport ESTIMATE per day (rideshare/transit). */
   localTransportUsdPerDay: number;
-  defaultOrigin: "IAH" | "HOU";
+  /** IATA code prefilled as "From" (any airport). */
+  defaultOrigin: string;
   /** When set and in the future, SerpApi calls past 100% of quota are allowed (each one confirmed). */
   serpOverrideUntil: string | null;
   /** Same, for the Claude monthly budget. */

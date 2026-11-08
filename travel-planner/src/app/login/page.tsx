@@ -30,7 +30,7 @@ export default function LoginPage() {
     <main className="flex min-h-dvh items-center justify-center px-4">
       <form onSubmit={submit} className="card w-full max-w-sm space-y-4 p-6">
         <h1 className="text-2xl font-extrabold">
-          Trip<span className="text-accent">Planner</span>
+          Roam<span className="text-accent">io</span>
         </h1>
         <div>
           <label htmlFor="pw" className="label">

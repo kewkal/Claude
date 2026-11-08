@@ -7,7 +7,7 @@ import { loadSession, saveSession, useSettings } from "@/lib/client/useSettings"
 import { fmtDate, fmtUsd } from "@/lib/format";
 import type { ComparisonRow } from "@/lib/planner/compare";
 import { TRIP_STYLES, type Pace, type PlanInput, type TripStyle } from "@/lib/planner/types";
-import { Stepper, todayPlus, TravelersInput } from "@/components/inputs";
+import { AirportInput, AirportSuggestions, Stepper, todayPlus, TravelersInput } from "@/components/inputs";
 import { ErrorState, Segmented } from "@/components/ui";
 
 const DEFAULT: PlanInput = {
@@ -202,16 +202,8 @@ export default function PlanPage() {
 
       {(phase === "form" || phase === "estimating") && (
         <form onSubmit={submit} className="card space-y-4 p-4">
-          <div>
-            <span className="label">From</span>
-            <div className="flex gap-2">
-              {(["IAH", "HOU"] as const).map((c) => (
-                <button key={c} type="button" aria-pressed={input.origin === c} onClick={() => setInput({ ...input, origin: c })} className={`btn flex-1 ${input.origin === c ? "" : "btn-ghost"}`}>
-                  {c}
-                </button>
-              ))}
-            </div>
-          </div>
+          <AirportSuggestions />
+          <AirportInput id="porigin" label="From" value={input.origin} onChange={(v) => setInput({ ...input, origin: v })} required />
 
           <div className="space-y-2">
             <span className="label">Destination{input.destinations.length > 1 ? "s to compare" : ""}</span>

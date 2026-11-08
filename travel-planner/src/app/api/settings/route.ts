@@ -22,8 +22,9 @@ export const PUT = withApi(async (req) => {
     patch.mealCostByPriceLevel = { 1: posNum(m[1], "$ meal"), 2: posNum(m[2], "$$ meal"), 3: posNum(m[3], "$$$ meal"), 4: posNum(m[4], "$$$$ meal") };
   }
   if (body.defaultOrigin !== undefined) {
-    if (body.defaultOrigin !== "IAH" && body.defaultOrigin !== "HOU") throw badInput("Default origin must be IAH or HOU.");
-    patch.defaultOrigin = body.defaultOrigin;
+    const code = String(body.defaultOrigin).trim().toUpperCase();
+    if (!/^[A-Z]{3}$/.test(code)) throw badInput("Default origin must be a 3-letter airport code, e.g. DFW.");
+    patch.defaultOrigin = code;
   }
   for (const k of ["serpOverrideUntil", "claudeOverrideUntil"] as const) {
     if (body[k] !== undefined) {

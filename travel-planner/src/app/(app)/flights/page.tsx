@@ -7,7 +7,7 @@ import { fmtDayShort, fmtTimestamp, fmtUsd } from "@/lib/format";
 import { DEFAULT_FLIGHT_FILTERS, emptyHint, filterFlights, sortFlights, VALUE_FORMULA, type FlightFilters, type FlightSort } from "@/lib/flights/sort";
 import type { BookingOption, Cabin, FlightOption, FlightSearchInput, FlightSearchResult, TripType } from "@/lib/flights/types";
 import { FlightCard, PriceInsightBar } from "@/components/FlightCard";
-import { HourRange, todayPlus, TravelersInput } from "@/components/inputs";
+import { AirportInput, AirportSuggestions, HourRange, todayPlus, TravelersInput } from "@/components/inputs";
 import { CardSkeletons, EmptyState, ErrorState, InfoTip, Segmented, Sheet } from "@/components/ui";
 
 interface FlexDay {
@@ -29,7 +29,7 @@ const DEFAULT_INPUT: FlightSearchInput = {
   stops: "any",
   bags: 0,
   legs: [
-    { from: "IAH", to: "", date: todayPlus(30) },
+    { from: "", to: "", date: todayPlus(30) },
     { from: "", to: "", date: todayPlus(35) },
   ],
 };
@@ -141,6 +141,7 @@ export default function FlightsPage() {
       <h1 className="text-2xl font-extrabold">Flights</h1>
 
       <form onSubmit={search} className="card space-y-3 p-4">
+        <AirportSuggestions />
         <Segmented<TripType>
           ariaLabel="Trip type"
           value={input.tripType}
@@ -154,34 +155,12 @@ export default function FlightsPage() {
 
         {input.tripType !== "multi_city" ? (
           <>
-            <div>
-              <span className="label">From</span>
-              <div className="flex gap-2">
-                {(["IAH", "HOU"] as const).map((code) => (
-                  <button
-                    key={code}
-                    type="button"
-                    onClick={() => setInput({ ...input, origin: code })}
-                    className={`btn flex-1 ${input.origin === code ? "" : "btn-ghost"}`}
-                    aria-pressed={input.origin === code}
-                  >
-                    {code}
-                  </button>
-                ))}
-                <input
-                  aria-label="Other origin"
-                  className="input flex-[2]"
-                  placeholder="Other"
-                  value={input.origin === "IAH" || input.origin === "HOU" ? "" : input.origin}
-                  onChange={(e) => setInput({ ...input, origin: e.target.value || settings.defaultOrigin })}
-                />
-              </div>
-            </div>
+            <AirportInput id="origin" label="From" value={input.origin} onChange={(v) => setInput({ ...input, origin: v })} required />
             <div>
               <label className="label" htmlFor="dest">
                 To (airport code or city)
               </label>
-              <input id="dest" className="input" placeholder="e.g. LIS or Lisbon" value={input.destination} onChange={(e) => setInput({ ...input, destination: e.target.value })} required />
+              <input id="dest" className="input" list="us-airports" autoComplete="off" placeholder="e.g. LIS or Lisbon" value={input.destination} onChange={(e) => setInput({ ...input, destination: e.target.value })} required />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
@@ -204,8 +183,8 @@ export default function FlightsPage() {
           <div className="space-y-2">
             {(input.legs ?? []).map((l, i) => (
               <div key={i} className="grid grid-cols-[1fr_1fr_1.3fr] gap-2">
-                <input aria-label={`Leg ${i + 1} from`} className="input" placeholder="From" value={l.from} onChange={(e) => setInput({ ...input, legs: input.legs!.map((x, j) => (j === i ? { ...x, from: e.target.value } : x)) })} required />
-                <input aria-label={`Leg ${i + 1} to`} className="input" placeholder="To" value={l.to} onChange={(e) => setInput({ ...input, legs: input.legs!.map((x, j) => (j === i ? { ...x, to: e.target.value } : x)) })} required />
+                <input aria-label={`Leg ${i + 1} from`} className="input" list="us-airports" autoComplete="off" placeholder="From" value={l.from} onChange={(e) => setInput({ ...input, legs: input.legs!.map((x, j) => (j === i ? { ...x, from: e.target.value } : x)) })} required />
+                <input aria-label={`Leg ${i + 1} to`} className="input" list="us-airports" autoComplete="off" placeholder="To" value={l.to} onChange={(e) => setInput({ ...input, legs: input.legs!.map((x, j) => (j === i ? { ...x, to: e.target.value } : x)) })} required />
                 <input aria-label={`Leg ${i + 1} date`} type="date" className="input" value={l.date} onChange={(e) => setInput({ ...input, legs: input.legs!.map((x, j) => (j === i ? { ...x, date: e.target.value } : x)) })} required />
               </div>
             ))}

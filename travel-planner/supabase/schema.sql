@@ -1,4 +1,4 @@
--- Travel Planner schema. Paste into Supabase -> SQL Editor -> Run. Safe to re-run.
+-- Roamio schema. Paste into Supabase -> SQL Editor -> Run. Safe to re-run.
 -- Row Level Security is ON with no policies: the public anon key can read/write nothing.
 -- The app talks to these tables only from the server using the secret key.
 

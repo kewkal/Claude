@@ -24,7 +24,7 @@ export function AppShell({ children, fixtureMode = false }: { children: ReactNod
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
       <header className="no-print sticky top-0 z-40 flex items-center justify-between border-b border-border bg-bg/90 px-4 py-3 backdrop-blur">
         <Link href="/" className="text-lg font-extrabold tracking-tight">
-          Trip<span className="text-accent">Planner</span>
+          Roam<span className="text-accent">io</span>
         </Link>
         <Link
           href="/settings"
