@@ -1,4 +1,5 @@
 import "server-only";
+import { airportsForCity } from "@/lib/airports";
 import { AppError, badInput } from "@/lib/errors";
 import { buildFlightParams, flexSearch, resolvePlace, searchFlights } from "@/lib/flights/service";
 import { valueScore } from "@/lib/flights/sort";
@@ -30,10 +31,16 @@ const STYLE_CATEGORIES: Record<TripStyle, PlaceCategory[]> = {
   romantic: ["photo", "food"],
 };
 
-/** Google Maps categories to fetch for these styles (sights + food always; max 5 to bound cost) + events. */
-export function categoriesFor(styles: TripStyle[]): PlaceCategory[] {
+export interface DatasetOptions {
+  /** Search Saver: no Tripadvisor, at most 3 Google Maps categories (about 6 searches instead of 10). */
+  saver?: boolean;
+}
+
+/** Google Maps categories to fetch for these styles (sights + food always; max 5, or 3 in Search Saver) + events. */
+export function categoriesFor(styles: TripStyle[], saver = false): PlaceCategory[] {
+  const max = saver ? 3 : 5;
   const out: PlaceCategory[] = ["sights", "food"];
-  for (const s of styles) for (const c of STYLE_CATEGORIES[s] ?? []) if (!out.includes(c) && out.length < 5) out.push(c);
+  for (const s of styles) for (const c of STYLE_CATEGORIES[s] ?? []) if (!out.includes(c) && out.length < max) out.push(c);
   return [...out, "events"];
 }
 
@@ -95,6 +102,8 @@ export function flexCandidates(input: PlanInput): string[] {
 async function resolveIfCached(raw: string, reqs: { engine: string; params: SerpParams }[]): Promise<string> {
   const t = raw.trim();
   if (/^[A-Za-z]{3}$/.test(t)) return t.toUpperCase();
+  const local = airportsForCity(t);
+  if (local) return local;
   const lookup = { engine: "google_flights_autocomplete", params: { q: t, hl: "en", gl: "us" } };
   reqs.push(lookup);
   try {
@@ -105,9 +114,12 @@ async function resolveIfCached(raw: string, reqs: { engine: string; params: Serp
 }
 
 /** Paid searches a plan would use right now (cache hits are free). Approximate when airports still need resolving. */
-export async function estimateSearches(input: PlanInput): Promise<{ perDestination: { destination: string; total: number; uncached: number }[]; flexDates: number }> {
+export async function estimateSearches(
+  input: PlanInput,
+  opts: DatasetOptions = {},
+): Promise<{ perDestination: { destination: string; total: number; uncached: number }[]; flexDates: number }> {
   validatePlanInput(input);
-  const cats = categoriesFor(input.styles);
+  const cats = categoriesFor(input.styles, opts.saver);
   const flexDates = input.dateMode === "flexible" ? flexCandidates(input).length : 0;
   const start = input.dateMode === "fixed" ? input.startDate : input.windowStart!;
   const end = input.dateMode === "fixed" ? input.endDate : addDays(input.windowStart!, input.days! - 1);
@@ -115,9 +127,10 @@ export async function estimateSearches(input: PlanInput): Promise<{ perDestinati
   for (const raw of input.destinations.map((d) => d.trim()).filter(Boolean)) {
     const reqs: { engine: string; params: SerpParams }[] = [];
     let extra = 0;
-    const isCode = /^[A-Za-z]{3}$/.test(raw);
+    const local = airportsForCity(raw);
+    const isCode = /^[A-Za-z]{3}$/.test(raw) || !!local;
     if (!isCode) reqs.push({ engine: "google_flights_autocomplete", params: { q: raw, hl: "en", gl: "us" } });
-    let dest = raw.toUpperCase();
+    let dest = local ?? raw.toUpperCase();
     if (!isCode) {
       try {
         // Only free when the autocomplete is already cached; otherwise count the flight search as one more.
@@ -131,7 +144,7 @@ export async function estimateSearches(input: PlanInput): Promise<{ perDestinati
     if (dest && origin) reqs.push({ engine: "google_flights", params: buildFlightParams({ ...flightInput(input, dest, start, end), origin }) });
     else extra += 1;
     reqs.push({ engine: "google_hotels", params: buildHotelParams(hotelInput(input, raw, start, end)) });
-    for (const c of cats) reqs.push(...exploreRequests(raw, c));
+    for (const c of cats) reqs.push(...exploreRequests(raw, c, !opts.saver));
     extra += 1; // events (query includes month label; treat as uncached)
     // Several categories share one Tripadvisor search; count each distinct request once.
     const unique = [...new Map(reqs.map((r) => [`${r.engine}:${JSON.stringify(normalizeParams(r.params))}`, r])).values()];
@@ -177,11 +190,17 @@ const rethrowQuota = (e: unknown) => {
 };
 
 /** Fetch everything a plan needs for one destination. Each source fails independently (errors recorded). */
-export async function buildDataset(input: PlanInput, destination: string, valueOfTime: number, dates?: { startDate: string; endDate: string }): Promise<Dataset> {
+export async function buildDataset(
+  input: PlanInput,
+  destination: string,
+  valueOfTime: number,
+  dates?: { startDate: string; endDate: string },
+  opts: DatasetOptions = {},
+): Promise<Dataset> {
   validatePlanInput(input);
   const { startDate, endDate } = dates ?? (input.dateMode === "fixed" ? { startDate: input.startDate, endDate: input.endDate } : await pickFlexibleDates(input, destination));
   const errors: string[] = [];
-  const cats = categoriesFor(input.styles);
+  const cats = categoriesFor(input.styles, opts.saver);
 
   const [flightRes, hotelRes, ...placeRes] = await Promise.all([
     searchFlights(flightInput(input, destination, startDate, endDate)).catch((e) => {
@@ -195,7 +214,7 @@ export async function buildDataset(input: PlanInput, destination: string, valueO
       return null;
     }),
     ...cats.map((c) =>
-      explore(destination, c, { startDate, endDate }).catch((e) => {
+      explore(destination, c, { startDate, endDate, tripadvisor: !opts.saver }).catch((e) => {
         rethrowQuota(e);
         errors.push(`${c}: ${(e as Error).message}`);
         return null;

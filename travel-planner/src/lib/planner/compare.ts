@@ -29,7 +29,7 @@ export async function compareDestinations(input: PlanInput, settings: AppSetting
   const rows: ComparisonRow[] = [];
   for (const destination of input.destinations.map((d) => d.trim()).filter(Boolean)) {
     try {
-      const ds = await buildDataset(input, destination, settings.valueOfTimeUsdPerHour);
+      const ds = await buildDataset(input, destination, settings.valueOfTimeUsdPerHour, undefined, { saver: settings.searchSaver });
       const fixedCosts = Object.fromEntries(
         VERSION_KEYS.map((k) => {
           const f = chooseFlight(ds, k, settings.valueOfTimeUsdPerHour);

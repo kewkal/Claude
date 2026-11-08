@@ -74,6 +74,19 @@ describe("geo + directions", () => {
   });
 });
 
+describe("airport lookup from US city names (free)", () => {
+  it("maps cities to their airports, including multi-airport cities", async () => {
+    const { airportsForCity } = await import("@/lib/airports");
+    expect(airportsForCity("San Juan")).toBe("SJU");
+    expect(airportsForCity("chicago")).toBe("ORD,MDW");
+    expect(airportsForCity("Dallas, TX")).toBe("DFW,DAL");
+    expect(airportsForCity("Fort Worth")).toBe("DFW");
+    expect(airportsForCity("Houston")).toBe("IAH,HOU");
+    expect(airportsForCity("Lisbon")).toBeNull();
+    expect(airportsForCity("SJU")).toBeNull();
+  });
+});
+
 describe("pins", () => {
   it("adds, dedupes and removes", async () => {
     await addPin({ id: "a", name: "A", lat: 1, lng: 2 });

@@ -17,7 +17,7 @@ export const POST = withApi(async (req) => {
   // Fail fast before spending SerpApi searches if Claude can't run.
   await assertClaudeBudget();
   const settings = await getSettings();
-  const ds = await buildDataset(input, dest, settings.valueOfTimeUsdPerHour, dates);
+  const ds = await buildDataset(input, dest, settings.valueOfTimeUsdPerHour, dates, { saver: settings.searchSaver });
   if (!ds.places.length) throw badInput(`No activities were found for ${dest}. ${ds.errors.join(" ")}`);
   const plan = await generatePlan(input, ds, settings);
   const trip = await createTrip(input, ds, plan);

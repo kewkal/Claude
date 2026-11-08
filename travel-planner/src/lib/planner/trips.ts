@@ -65,6 +65,23 @@ export async function saveUpgrades(trip: TripRecord, upgrades: UpgradeSet): Prom
   return (await getDb().updateTrip(trip.id, { upgrades })) as unknown as TripRecord;
 }
 
+/** Your own per-person price for an item no source priced. Recomputes all three versions. */
+async function setUserPrice(trip: TripRecord, ref: string, usd: number | null): Promise<TripRecord> {
+  const r = findRef(trip.dataset, ref);
+  if (!r || r.kind !== "place") throw badInput("That item isn't in this trip's fetched data.");
+  if (r.item.price.minUsd !== null || r.item.price.maxUsd !== null) throw badInput(`${r.item.name} already has a listed price from its source.`);
+  if (usd !== null && (!Number.isFinite(usd) || usd < 0 || usd > 10000)) throw badInput("Enter a price between $0 and $10,000.");
+  const userPrices = { ...(trip.dataset.userPrices ?? {}) };
+  if (usd === null) delete userPrices[ref];
+  else userPrices[ref] = Math.round(usd * 100) / 100;
+  const dataset = { ...trip.dataset, userPrices };
+  const settings = await getSettings();
+  const versions = Object.fromEntries(
+    VERSION_KEYS.map((k) => [k, recomputeVersion(trip.plan.versions[k], dataset, trip.inputs, settings)]),
+  ) as TripPlan["versions"];
+  return (await getDb().updateTrip(trip.id, { dataset, plan: { ...trip.plan, versions } })) as unknown as TripRecord;
+}
+
 /** Apply one user edit. Every ref is checked against the trip's dataset; costs and travel are recomputed. */
 export async function editTrip(id: string, edit: TripEdit): Promise<TripRecord> {
   const trip = await getTrip(id);
@@ -73,6 +90,7 @@ export async function editTrip(id: string, edit: TripEdit): Promise<TripRecord> 
     if (!name) throw badInput("Name can't be empty.");
     return (await getDb().updateTrip(id, { name })) as unknown as TripRecord;
   }
+  if (edit.op === "set_price") return setUserPrice(trip, edit.ref, edit.usd);
   if (!VERSION_KEYS.includes(edit.version)) throw badInput("Unknown version.");
   const ds = trip.dataset;
   const v: PlanVersion = structuredClone(trip.plan.versions[edit.version]);

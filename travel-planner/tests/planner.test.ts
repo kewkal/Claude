@@ -188,12 +188,21 @@ describe("compare + estimates + flexible dates", () => {
     expect(e.perDestination[0].total).toBe(10);
   });
 
-  it("accepts a city name as origin (adds one cached airport lookup to the estimate)", async () => {
-    const e = await estimateSearches({ ...input, origin: "Dallas" });
-    expect(e.perDestination[0].total).toBe(11);
+  it("accepts a city name as origin: US cities resolve free, others add one airport lookup", async () => {
+    expect((await estimateSearches({ ...input, origin: "Dallas" })).perDestination[0].total).toBe(10);
+    expect((await estimateSearches({ ...input, origin: "Cusco" })).perDestination[0].total).toBe(11);
     const d = await buildDataset({ ...input, origin: "dfw" }, "Lisbon", S.valueOfTimeUsdPerHour);
     expect(d.origin).toBe("DFW");
     expect(d.flights!.searchInput.origin).toBe("dfw");
+  });
+
+  it("Search Saver cuts a trip to about 6 searches (no Tripadvisor, 3 categories)", async () => {
+    expect(categoriesFor(input.styles, true)).toEqual(["sights", "food", "culture", "events"]);
+    // autocomplete (Lisbon) + flights + hotels + 3 maps + events
+    expect((await estimateSearches(input, { saver: true })).perDestination[0].total).toBe(7);
+    expect((await estimateSearches({ ...input, destinations: ["SJU"] }, { saver: true })).perDestination[0].total).toBe(6);
+    const d = await buildDataset(input, "Lisbon", S.valueOfTimeUsdPerHour, undefined, { saver: true });
+    expect(d.places.some((p) => p.sources.some((s) => s.source === "tripadvisor"))).toBe(false);
   });
 
   it("spreads flexible departure candidates across the window", () => {
@@ -201,6 +210,32 @@ describe("compare + estimates + flexible dates", () => {
     expect(c[0]).toBe("2026-12-01");
     expect(c.at(-1)).toBe("2026-12-25");
     expect(c.length).toBe(7);
+  });
+});
+
+describe("prices you enter for unpriced items", () => {
+  it("counts them on their own 'You entered' line, never overriding sourced prices", async () => {
+    const plan = await generatePlan(input, ds, S);
+    const trip = await createTrip(input, ds, plan);
+    const used = refsInDays(trip.plan.versions.balanced.days);
+    const unpriced = ds.places.find((p) => used.includes(p.ref) && p.category !== "food" && p.price.minUsd === null && p.price.maxUsd === null)!;
+    const priced = ds.places.find((p) => p.price.minUsd !== null)!;
+
+    const t = await editTrip(trip.id, { op: "set_price", ref: unpriced.ref, usd: 18 });
+    expect(t.dataset.userPrices).toEqual({ [unpriced.ref]: 18 });
+    const line = t.plan.versions.balanced.costs.lines.find((l) => l.key === "activities_user")!;
+    expect(line).toMatchObject({ amount: 36, basis: "entered" }); // $18 x 2 people
+    expect(t.plan.versions.balanced.costs.unpricedItems).not.toContain(unpriced.name);
+    expect(t.plan.versions.balanced.costs.total).toBe(trip.plan.versions.balanced.costs.total + 36);
+
+    const free = await editTrip(trip.id, { op: "set_price", ref: unpriced.ref, usd: 0 });
+    expect(free.plan.versions.balanced.costs.lines.find((l) => l.key === "activities_user")!.amount).toBe(0);
+    const cleared = await editTrip(trip.id, { op: "set_price", ref: unpriced.ref, usd: null });
+    expect(cleared.plan.versions.balanced.costs.lines.some((l) => l.key === "activities_user")).toBe(false);
+
+    await expect(editTrip(trip.id, { op: "set_price", ref: priced.ref, usd: 5 })).rejects.toMatchObject({ code: "BAD_INPUT" });
+    await expect(editTrip(trip.id, { op: "set_price", ref: unpriced.ref, usd: -1 })).rejects.toMatchObject({ code: "BAD_INPUT" });
+    await expect(editTrip(trip.id, { op: "set_price", ref: "P999", usd: 5 })).rejects.toMatchObject({ code: "BAD_INPUT" });
   });
 });
 

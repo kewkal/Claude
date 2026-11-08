@@ -63,10 +63,19 @@ export function foodEstimate(key: VersionKey, input: Pick<PlanInput, "travelers"
   };
 }
 
-/** Activities with a listed USD price (sourced), × people. Food-category items are covered by the food estimate. */
-export function activitiesCost(days: PlanDay[], ds: Dataset, input: Pick<PlanInput, "travelers">): { amount: number; unpriced: string[]; note: string } {
+/**
+ * Activities with a listed USD price (sourced) × people, plus prices you entered for items no source priced.
+ * Food-category items are covered by the food estimate.
+ */
+export function activitiesCost(
+  days: PlanDay[],
+  ds: Dataset,
+  input: Pick<PlanInput, "travelers">,
+): { amount: number; unpriced: string[]; note: string; userAmount: number; userCount: number } {
   const seen = new Set<string>();
   let amount = 0;
+  let userAmount = 0;
+  let userCount = 0;
   const unpriced: string[] = [];
   const n = people(input);
   for (const d of days)
@@ -78,11 +87,17 @@ export function activitiesCost(days: PlanDay[], ds: Dataset, input: Pick<PlanInp
         if (!r || r.kind !== "place" || r.item.category === "food") continue;
         const price = r.item.price;
         const usd = price.maxUsd ?? price.minUsd;
-        if (usd === null) unpriced.push(r.item.name);
-        else amount += usd * n;
+        const mine = ds.userPrices?.[it.ref];
+        if (usd !== null) amount += usd * n;
+        else if (mine !== undefined) {
+          userAmount += mine * n;
+          userCount += 1;
+        } else unpriced.push(r.item.name);
       }
   return {
     amount,
+    userAmount,
+    userCount,
     unpriced,
     note: `Listed prices × ${n} people (upper end of ranges).${unpriced.length ? ` ${unpriced.length} item${unpriced.length > 1 ? "s" : ""} with no listed USD price counted as $0.` : ""}`,
   };
@@ -117,6 +132,15 @@ export function computeCosts(
   }
   const act = activitiesCost(v.days, ds, input);
   lines.push({ key: "activities", label: "Activities", amount: act.amount, basis: "sourced", note: act.note });
+  if (act.userCount > 0) {
+    lines.push({
+      key: "activities_user",
+      label: "Activities (your prices)",
+      amount: act.userAmount,
+      basis: "entered",
+      note: `Prices you entered for ${act.userCount} item${act.userCount > 1 ? "s" : ""} no source priced, × ${people(input)} people`,
+    });
+  }
   const food = foodEstimate(v.key, input, ds.dates.length, settings);
   lines.push({ key: "food", label: "Food", amount: food.amount, basis: "estimate", note: food.note });
   lines.push({

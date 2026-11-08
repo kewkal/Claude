@@ -1,4 +1,5 @@
 import "server-only";
+import { airportsForCity } from "@/lib/airports";
 import { badInput } from "@/lib/errors";
 import { addDays, daysBetween } from "@/lib/format";
 import { countUncached, serpSearch } from "@/lib/serpapi/client";
@@ -20,6 +21,8 @@ export async function resolvePlace(input: string): Promise<{ id: string; label: 
   if (AIRPORT_RE.test(upper)) return { id: upper, label: upper };
   if (KGMID_RE.test(raw)) return { id: raw, label: raw };
   if (raw.length < 2) throw badInput("Enter an airport code (e.g. CDG) or a city name.");
+  const local = airportsForCity(raw);
+  if (local) return { id: local, label: raw };
   const { data } = await serpSearch<{ suggestions?: Record<string, unknown>[] }>("google_flights_autocomplete", {
     q: raw,
     hl: "en",

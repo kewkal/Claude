@@ -11,6 +11,8 @@ export interface AppSettings {
   localTransportUsdPerDay: number;
   /** IATA code prefilled as "From" (any airport). */
   defaultOrigin: string;
+  /** Search Saver: trips skip Tripadvisor and use 3 Google Maps categories (~6 searches instead of ~10). */
+  searchSaver: boolean;
   /** When set and in the future, SerpApi calls past 100% of quota are allowed (each one confirmed). */
   serpOverrideUntil: string | null;
   /** Same, for the Claude monthly budget. */
@@ -23,6 +25,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   mealCostByPriceLevel: { 1: 15, 2: 30, 3: 60, 4: 110 },
   localTransportUsdPerDay: 35,
   defaultOrigin: "IAH",
+  searchSaver: false,
   serpOverrideUntil: null,
   claudeOverrideUntil: null,
 };
