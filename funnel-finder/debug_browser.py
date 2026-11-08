@@ -12,18 +12,50 @@ async def main():
         )
         page = await ctx.new_page()
 
-        search_url = "https://adstransparency.google.com/?region=US&query=weight+loss+supplement"
-        print(f"Loading search URL directly: {search_url}")
-        await page.goto(search_url, wait_until="domcontentloaded", timeout=30000)
-        print("Waiting for results to load...")
-        await asyncio.sleep(5)
+        base_url = "https://adstransparency.google.com/"
+        print(f"Loading homepage and waiting for full app init...")
+        await page.goto(base_url, wait_until="networkidle", timeout=40000)
+        await asyncio.sleep(3)
 
-        # Scroll to trigger lazy-loading
-        for _ in range(3):
-            await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-            await asyncio.sleep(2)
+        # Find search input, clear it, and type query
+        search_input = await page.query_selector("input.input-area")
+        if search_input:
+            print("Found input, clearing and typing query...")
+            await search_input.triple_click()
+            await search_input.type("weight loss supplement", delay=60)
+            await asyncio.sleep(1)
+            # Look for a search/submit button
+            btn = await page.query_selector(
+                "button[aria-label*='search' i], button[type='submit'], "
+                "mat-icon[aria-label*='search' i], [class*='search-button'], "
+                ".search-submit, button.gm-button"
+            )
+            if btn:
+                print("Found submit button, clicking...")
+                await btn.click()
+            else:
+                print("No submit button found, pressing Enter...")
+                await page.keyboard.press("Enter")
+            print("Waiting for results after submission...")
+            await asyncio.sleep(8)
+        else:
+            print("Search input NOT found")
 
         print(f"Final URL: {page.url}")
+
+        # Dump all buttons and clickable elements to find search button
+        btns = await page.evaluate("""() => {
+            return Array.from(document.querySelectorAll('button, [role="button"], mat-icon')).slice(0, 20).map(el => ({
+                tag: el.tagName,
+                cls: el.className?.toString().slice(0, 80),
+                label: el.getAttribute('aria-label'),
+                text: el.innerText?.slice(0, 40)
+            }));
+        }""")
+        print(f"\nButtons/clickables ({len(btns)}):")
+        for b in btns:
+            print(f"  <{b['tag']}> cls='{b['cls']}' label='{b['label']}' text='{b['text']}'")
+
         await asyncio.sleep(1)
         await page.screenshot(path="debug_google.png", full_page=False)
 
