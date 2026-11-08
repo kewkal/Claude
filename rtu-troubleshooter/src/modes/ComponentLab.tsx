@@ -3,6 +3,7 @@ import { components, unitById } from '../content';
 import type { Component, DisplayKind, LabCase, ReadingValue } from '../engine/types';
 import { update, useProgress } from '../state/progress';
 import { ReadingDisplay } from '../ui/Meters';
+import { SensorChart } from '../ui/SensorChart';
 import { Pill, SourceTag } from '../ui/Tags';
 
 const labDisplay = (k: string): { display: DisplayKind; unit: string } => {
@@ -108,6 +109,7 @@ export function ComponentLab({ onOpenComponent }: { onOpenComponent: (id: string
               <div key={k}>
                 <div className="mb-1 text-[11px] text-slate-400">{labLabel[k] ?? k}</div>
                 <ReadingDisplay def={{ label: k, unit: d.unit, display: d.display, power: 'any' }} value={v as ReadingValue} />
+                {comp.kind === 'ntc-sensor' && k === 'ohm' && (typeof v === 'number' || v === 'OL') && <SensorChart ohms={v as number | 'OL'} defaultOpen />}
               </div>
             );
           })}

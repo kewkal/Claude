@@ -7,6 +7,7 @@ import { update, useProgress } from '../state/progress';
 import { JadeSim, defaultJadeValues } from '../ui/JadeSim';
 import { Ladder, ladderPoints, type TestPoint } from '../ui/Ladder';
 import { ReadingDisplay, derived } from '../ui/Meters';
+import { SensorChart } from '../ui/SensorChart';
 import { Pill, SourceTag, difficultyTone } from '../ui/Tags';
 
 const GROUPS: { id: ActionDef['group']; label: string }[] = [
@@ -364,6 +365,9 @@ export function ServiceCallGame({ id, onExit, onOpenComponent }: { id: string; o
                   <div key={k}>
                     <div className="mb-1 text-[11px] text-slate-400">{readingDefs[k].label}</div>
                     <ReadingDisplay def={readingDefs[k]} value={all[k]} />
+                    {k === 'ohm_mat_sensor' && (typeof all[k] === 'number' || all[k] === 'OL') && (
+                      <SensorChart ohms={all[k] as number | 'OL'} showConversion={sc.difficulty === 'beginner'} defaultOpen={sc.difficulty === 'beginner'} />
+                    )}
                   </div>
                 ))}
               </div>
