@@ -35,7 +35,7 @@ export function ServiceCallList({ onPlay }: { onPlay: (id: string) => void }) {
   const p = useProgress();
   const done = new Set(p.calls.filter((c) => c.correctRoot).map((c) => c.scenarioId));
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0 lg:grid-cols-3">
       {scenarios.map((s) => (
         <button key={s.id} onClick={() => onPlay(s.id)} className="w-full rounded-xl bg-slate-800 p-4 text-left active:bg-slate-700">
           <div className="flex flex-wrap items-center gap-1.5">
@@ -181,7 +181,7 @@ export function ServiceCallGame({ id, onExit, onOpenComponent }: { id: string; o
   // ----- Dispatch
   if (phase === 'dispatch')
     return (
-      <div className="space-y-4">
+      <div className="mx-auto max-w-3xl space-y-4">
         <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
           <div className="text-xs font-semibold uppercase tracking-widest text-amber-400">Dispatch</div>
           <h2 className="mt-1 text-xl font-bold text-white">{sc.title}</h2>
@@ -209,7 +209,7 @@ export function ServiceCallGame({ id, onExit, onOpenComponent }: { id: string; o
   if (phase === 'diagnose' || phase === 'repair') {
     const choices = stableShuffle(phase === 'diagnose' ? sc.diagnosis : sc.repair, sc.id + phase);
     return (
-      <div className="space-y-3">
+      <div className="mx-auto max-w-3xl space-y-3">
         <h2 className="text-xl font-bold text-white">{phase === 'diagnose' ? 'What\'s the root cause?' : 'What\'s the fix?'}</h2>
         {phase === 'repair' && diag && <p className="text-sm text-slate-400">Your call: <span className="text-slate-200">{diag.label}</span></p>}
         {choices.map((c) => (
@@ -228,7 +228,7 @@ export function ServiceCallGame({ id, onExit, onOpenComponent }: { id: string; o
     const did = new Set(log.map((l) => l.action));
     const root = sc.faults.find((f) => f.role === 'root');
     return (
-      <div className="space-y-4">
+      <div className="mx-auto max-w-3xl space-y-4">
         <div className={`rounded-xl p-4 ${score.correctRoot && !score.callback ? 'bg-emerald-600/20' : score.correctRoot ? 'bg-amber-500/15' : 'bg-rose-600/20'}`}>
           <div className="text-sm font-semibold uppercase tracking-wide text-slate-300">{score.correctRoot ? (score.callback ? 'Found it, but…' : 'Nailed it') : 'Missed it'}</div>
           <div className="mt-1 text-3xl font-black text-white">+{score.xp} XP</div>
@@ -314,8 +314,9 @@ export function ServiceCallGame({ id, onExit, onOpenComponent }: { id: string; o
         </div>
       )}
 
-      {tab === 'tools' && (
-        <div className="space-y-2">
+      <div className={tab === 'tools' || tab === 'log' ? 'lg:grid lg:grid-cols-2 lg:items-start lg:gap-4' : ''}>
+      {(tab === 'tools' || tab === 'log') && (
+        <div className={`space-y-2 ${tab === 'tools' ? '' : 'hidden'} lg:block`}>
           {GROUPS.map((g) => {
             const acts = actionDefs.filter((a) => a.group === g.id && a.id !== 'jade' && (g.id !== 'jade' || hasJade) && (g.id !== 'economizer' || sc.dispatch.economizer !== 'none'));
             if (!acts.length) return null;
@@ -341,8 +342,8 @@ export function ServiceCallGame({ id, onExit, onOpenComponent }: { id: string; o
         </div>
       )}
 
-      {tab === 'log' && (
-        <div className="space-y-2">
+      {(tab === 'tools' || tab === 'log') && (
+        <div className={`space-y-2 ${tab === 'log' ? '' : 'hidden'} lg:block lg:sticky lg:top-36`}>
           {der.length > 0 && (
             <div className="grid grid-cols-2 gap-2 rounded-xl border border-sky-500/30 bg-sky-500/5 p-3">
               {der.map((d) => (
@@ -376,6 +377,8 @@ export function ServiceCallGame({ id, onExit, onOpenComponent }: { id: string; o
         </div>
       )}
 
+      </div>
+
       {tab === 'jade' && hasJade && (
         <JadeSim
           values={jadeValues}
@@ -389,14 +392,14 @@ export function ServiceCallGame({ id, onExit, onOpenComponent }: { id: string; o
         />
       )}
 
-      {tab === 'ladder' && <Ladder points={points} measured={ladderMeasured} onTap={tapPoint} />}
+      {tab === 'ladder' && <div className="mx-auto max-w-3xl"><Ladder points={points} measured={ladderMeasured} onTap={tapPoint} /></div>}
 
       {toast && (
-        <div className={`fixed inset-x-4 bottom-24 z-30 mx-auto max-w-md rounded-xl p-3 text-sm font-semibold shadow-xl ${toast.bad ? 'bg-rose-600 text-white' : 'bg-slate-700 text-slate-100'}`}>{toast.text}</div>
+        <div className={`fixed inset-x-4 bottom-24 z-30 mx-auto max-w-md md:max-w-xl rounded-xl p-3 text-sm font-semibold shadow-xl ${toast.bad ? 'bg-rose-600 text-white' : 'bg-slate-700 text-slate-100'}`}>{toast.text}</div>
       )}
 
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-800 bg-slate-950/95 px-4 pb-[max(env(safe-area-inset-bottom),12px)] pt-3 backdrop-blur">
-        <div className="mx-auto flex max-w-md gap-2">
+        <div className="mx-auto flex max-w-md md:max-w-3xl lg:max-w-6xl gap-2 md:px-4">
           <button
             disabled={hintsLeft <= 0 || hintsUsed >= sc.hints.length}
             onClick={() => {

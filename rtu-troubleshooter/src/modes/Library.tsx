@@ -5,14 +5,14 @@ import { Pill, SourceTag, SV } from '../ui/Tags';
 
 export function LibraryList({ onOpen }: { onOpen: (id: string) => void }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 md:grid md:grid-cols-2 md:gap-3 md:space-y-0 lg:grid-cols-3">
       {components.map((c) => (
         <button key={c.id} onClick={() => onOpen(c.id)} className="w-full rounded-xl bg-slate-800 p-4 text-left active:bg-slate-700">
           <div className="font-semibold text-slate-100">{c.name}</div>
           <div className="mt-1 flex gap-1.5"><Pill>{c.domain}</Pill><Pill tone="violet">{c.failureModes.length} failure modes</Pill></div>
         </button>
       ))}
-      <p className="pt-2 text-center text-xs text-slate-500">6 of the full library. The rest fills in after play-test.</p>
+      <p className="pt-2 text-center text-xs text-slate-500 md:col-span-2 lg:col-span-3">6 of the full library. The rest fills in after play-test.</p>
     </div>
   );
 }

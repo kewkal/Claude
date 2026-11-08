@@ -64,7 +64,7 @@ export function ComponentLab({ onOpenComponent }: { onOpenComponent: (id: string
   const tested = lab.tests.filter((t) => run.includes(t.id));
 
   return (
-    <div className="space-y-3 pb-6">
+    <div className="mx-auto max-w-3xl space-y-3 pb-6">
       <div className="flex gap-1.5 overflow-x-auto pb-1">
         {[{ id: null, name: 'All parts' }, ...components.map((c) => ({ id: c.id, name: c.name.split('(')[0].replace('Honeywell ', '').trim() }))].map((c) => (
           <button key={c.id ?? 'all'} onClick={() => { setFilter(c.id); next(c.id); }} className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${filter === c.id ? 'bg-amber-500 text-slate-900' : 'bg-slate-800 text-slate-300'}`}>

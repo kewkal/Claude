@@ -103,7 +103,7 @@ export function JadeSim({ values, alarms, editable, visible = () => true, onChan
 
   const btn = 'flex h-14 items-center justify-center rounded-full bg-slate-700 text-lg font-bold text-slate-100 shadow active:scale-95 active:bg-slate-600 select-none';
   return (
-    <div className="space-y-3">
+    <div className="mx-auto max-w-xl space-y-3">
       <div className="rounded-2xl border border-slate-600 bg-gradient-to-b from-slate-700 to-slate-800 p-4 shadow-xl">
         <div className="mb-2 flex items-center justify-between text-[10px] font-semibold uppercase tracking-widest text-slate-400">
           <span>Economizer module · W7220-style</span>

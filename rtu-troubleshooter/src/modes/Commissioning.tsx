@@ -14,8 +14,8 @@ const PACKAGES = [
 export function CommissioningList({ onPlay }: { onPlay: (id: string) => void }) {
   const p = useProgress();
   return (
-    <div className="space-y-3">
-      <p className="text-sm text-slate-400">Set up a JADE from the job spec. Wrong settings play out 30 days later.</p>
+    <div className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0 lg:grid-cols-3">
+      <p className="text-sm text-slate-400 md:col-span-2 lg:col-span-3">Set up a JADE from the job spec. Wrong settings play out 30 days later.</p>
       {jobs.map((j) => (
         <button key={j.id} onClick={() => onPlay(j.id)} className="w-full rounded-xl bg-slate-800 p-4 text-left active:bg-slate-700">
           <div className="flex items-center gap-1.5">
@@ -95,7 +95,7 @@ export function CommissioningGame({ id, onExit }: { id: string; onExit: () => vo
 
   if (step === 'spec')
     return (
-      <div className="space-y-4">
+      <div className="mx-auto max-w-3xl space-y-4">
         <div className="rounded-xl bg-slate-800 p-4">
           <div className="text-xs font-semibold uppercase tracking-widest text-emerald-400">Job spec</div>
           <h2 className="mt-1 text-xl font-bold text-white">{job.title}</h2>
@@ -110,7 +110,7 @@ export function CommissioningGame({ id, onExit }: { id: string; onExit: () => vo
 
   if (step === 'sensors')
     return (
-      <div className="space-y-3">
+      <div className="mx-auto max-w-3xl space-y-3">
         <div className="flex justify-between text-sm"><span className="font-semibold text-white">1 · Which sensors go in?</span><span className="font-mono text-amber-300">{clock}</span></div>
         <p className="text-xs text-slate-400">The JADE picks its strategy from the sensors it detects.</p>
         {PACKAGES.map((p) => (
@@ -129,7 +129,7 @@ export function CommissioningGame({ id, onExit }: { id: string; onExit: () => vo
 
   if (step === 'jade')
     return (
-      <div className="space-y-3 pb-24">
+      <div className="mx-auto max-w-3xl space-y-3 pb-24">
         <div className="flex justify-between text-sm"><span className="font-semibold text-white">2 · Configure + checkout</span><span className="font-mono text-amber-300">{clock} / par {Math.floor(job.parSeconds / 60)}:{String(job.parSeconds % 60).padStart(2, '0')}</span></div>
         <details className="rounded-lg bg-slate-800 p-3 text-sm text-slate-300">
           <summary className="cursor-pointer font-semibold text-slate-100">Spec</summary>
@@ -148,14 +148,14 @@ export function CommissioningGame({ id, onExit }: { id: string; onExit: () => vo
         />
         {ran.length > 0 && <p className="text-xs text-emerald-300">Checkout done: {ran.join(' · ')}</p>}
         <div className="fixed inset-x-0 bottom-0 border-t border-slate-800 bg-slate-950/95 px-4 pb-[max(env(safe-area-inset-bottom),12px)] pt-3">
-          <button onClick={submit} className="mx-auto block w-full max-w-md rounded-xl bg-emerald-500 py-4 font-bold text-slate-900">Sign off the job ✓</button>
+          <button onClick={submit} className="mx-auto block w-full max-w-md md:max-w-3xl lg:max-w-6xl rounded-xl bg-emerald-500 py-4 font-bold text-slate-900">Sign off the job ✓</button>
         </div>
       </div>
     );
 
   const pct = Math.round((checks.filter((x) => x.ok).length / checks.length) * 100);
   return (
-    <div className="space-y-3">
+    <div className="mx-auto max-w-3xl space-y-3">
       <div className={`rounded-xl p-4 ${pct === 100 ? 'bg-emerald-600/20' : 'bg-amber-500/15'}`}>
         <div className="text-3xl font-black text-white">{pct}%</div>
         <div className="text-sm text-slate-300">Time {clock} (par {job.parSeconds}s){pct === 100 && secs <= job.parSeconds ? ' · speed bonus' : ''}</div>

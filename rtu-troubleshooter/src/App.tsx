@@ -27,7 +27,7 @@ export default function App() {
   const r = rankFor(p.xp);
 
   return (
-    <div className="mx-auto min-h-full max-w-md bg-slate-950 px-4 pb-6 text-slate-100">
+    <div className="mx-auto min-h-full max-w-md md:max-w-3xl lg:max-w-6xl bg-slate-950 px-4 pb-6 text-slate-100 md:px-8">
       <header className="flex items-center gap-3 py-3">
         {stack.length > 1 && <button onClick={back} className="-ml-2 rounded-full px-3 py-2 text-xl text-slate-300 active:bg-slate-800" aria-label="Back">‹</button>}
         <h1 className="flex-1 truncate text-lg font-bold">{TITLES[screen.s]}</h1>
@@ -35,8 +35,8 @@ export default function App() {
       </header>
 
       {screen.s === 'home' && (
-        <div className="space-y-4">
-          <div className="rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 p-4">
+        <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
+          <div className="rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 p-4 md:col-span-2">
             <div className="text-xs uppercase tracking-widest text-slate-400">Rank</div>
             <div className="text-2xl font-black text-white">{r.rank}</div>
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-700"><div className="h-full bg-amber-400" style={{ width: `${Math.round(r.pct * 100)}%` }} /></div>
@@ -58,13 +58,13 @@ export default function App() {
               <span><span className="block font-bold text-white">{t.name}</span><span className="text-sm text-slate-400">{t.sub}</span></span>
             </button>
           ))}
-          <div className="rounded-2xl border border-dashed border-slate-700 p-4 text-sm text-slate-500">
+          <div className="rounded-2xl border border-dashed border-slate-700 p-4 text-sm text-slate-500 md:col-span-2">
             Coming after play-test: Flashcards, Speed Round, Reading Interpreter, Sequence Builder, Wiring Trace, Component ID, badges & daily call.
           </div>
-          <div className="rounded-xl bg-amber-500/10 p-3 text-xs text-amber-200">
+          <div className="rounded-xl bg-amber-500/10 p-3 text-xs text-amber-200 md:col-span-2">
             ⚠ Build preview: unit specs, thresholds, JADE menus, and controller codes are flagged as generic until checked against the manuals in /docs. Look for the ⚠ tags.
           </div>
-          <button onClick={() => confirm('Wipe all XP and progress?') && resetProgress()} className="w-full py-2 text-xs text-slate-600">Reset progress</button>
+          <button onClick={() => confirm('Wipe all XP and progress?') && resetProgress()} className="w-full py-2 text-xs text-slate-600 md:col-span-2">Reset progress</button>
         </div>
       )}
 
@@ -77,7 +77,7 @@ export default function App() {
 
       {sheet && (
         <div className="fixed inset-0 z-40 flex flex-col bg-black/60" onClick={() => setSheet(null)}>
-          <div className="mx-auto mt-10 w-full max-w-md flex-1 overflow-y-auto rounded-t-2xl bg-slate-900 px-4 pt-3" onClick={(e) => e.stopPropagation()}>
+          <div className="mx-auto mt-10 w-full max-w-md md:max-w-2xl flex-1 overflow-y-auto rounded-t-2xl bg-slate-900 px-4 pt-3 md:px-6" onClick={(e) => e.stopPropagation()}>
             <div className="sticky top-0 flex justify-end bg-slate-900 py-1"><button onClick={() => setSheet(null)} className="rounded-full bg-slate-800 px-3 py-1 text-sm">Close</button></div>
             <ComponentDetail id={sheet} />
           </div>
