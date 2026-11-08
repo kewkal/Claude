@@ -10,7 +10,9 @@ export type ErrorCode =
   | "CLAUDE_BUDGET"
   | "CLAUDE_BUDGET_CONFIRM"
   | "CLAUDE_ERROR"
-  | "UPSTREAM_ERROR";
+  | "UPSTREAM_ERROR"
+  | "DB_NOT_CONFIGURED"
+  | "DB_ERROR";
 
 const STATUS: Record<ErrorCode, number> = {
   BAD_INPUT: 400,
@@ -25,6 +27,8 @@ const STATUS: Record<ErrorCode, number> = {
   CLAUDE_BUDGET_CONFIRM: 409,
   CLAUDE_ERROR: 502,
   UPSTREAM_ERROR: 502,
+  DB_NOT_CONFIGURED: 500,
+  DB_ERROR: 502,
 };
 
 export class AppError extends Error {
