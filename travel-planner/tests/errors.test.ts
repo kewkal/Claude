@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { withApi } from "@/lib/api";
-import { getDb, setDbForTests } from "@/lib/db";
+import { getDb, normalizeSupabaseUrl, setDbForTests } from "@/lib/db";
 import { explainSupabaseError } from "@/lib/db/supabase";
 
 describe("database error messages say what to fix", () => {
@@ -11,12 +11,26 @@ describe("database error messages say what to fix", () => {
     expect(explainSupabaseError(500, "boom", "GET /x").message).toContain("Database error 500");
   });
 
-  it("rejects a malformed SUPABASE_URL with a clear message", () => {
+  it("cleans up common SUPABASE_URL paste mistakes", () => {
+    for (const v of [
+      "https://abc123.supabase.co",
+      "https://abc123.supabase.co/",
+      "https://abc123.supabase.co/rest/v1/",
+      ' "https://ABC123.supabase.co" ',
+      "abc123.supabase.co",
+      "https://abc123.supabase.co\n",
+    ]) {
+      expect(normalizeSupabaseUrl(v)).toBe("https://abc123.supabase.co");
+    }
+    expect(normalizeSupabaseUrl("https://example.com")).toBeNull();
+  });
+
+  it("rejects a value with no Supabase project URL in it", () => {
     setDbForTests(undefined);
-    process.env.SUPABASE_URL = "https://abc.supabase.co/rest/v1";
+    process.env.SUPABASE_URL = "sb_secret_oops_wrong_field";
     process.env.SUPABASE_SECRET_KEY = "sb_secret_x";
     try {
-      expect(() => getDb()).toThrow(/nothing after \.co/);
+      expect(() => getDb()).toThrow(/should look like/);
     } finally {
       delete process.env.SUPABASE_URL;
       delete process.env.SUPABASE_SECRET_KEY;
