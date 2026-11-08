@@ -6,6 +6,7 @@ import { fmtTimestamp, fmtUsd } from "@/lib/format";
 import type { AppSettings } from "@/lib/settings-shared";
 import type { UsageRow } from "@/lib/db/types";
 import type { MeterState, UsageSummary } from "@/lib/usage";
+import { AirportSuggestions } from "@/components/inputs";
 import { CardSkeletons, ErrorState, InfoTip } from "@/components/ui";
 
 interface UsageResp {
@@ -219,11 +220,18 @@ function SettingsForm({ settings, onSave, saving }: { settings: AppSettings; onS
           <input id="lt" className="input" type="number" min={0} value={s.localTransportUsdPerDay} onChange={(e) => setS({ ...s, localTransportUsdPerDay: n(e.target.value) })} />
         </div>
         <div>
-          <label className="label" htmlFor="org">Default origin</label>
-          <select id="org" className="input" value={s.defaultOrigin} onChange={(e) => setS({ ...s, defaultOrigin: e.target.value as "IAH" | "HOU" })}>
-            <option value="IAH">IAH — Houston Bush</option>
-            <option value="HOU">HOU — Houston Hobby</option>
-          </select>
+          <AirportSuggestions />
+          <label className="label" htmlFor="org">Default origin (3-letter airport code)</label>
+          <input
+            id="org"
+            className="input"
+            list="us-airports"
+            autoComplete="off"
+            autoCapitalize="characters"
+            maxLength={3}
+            value={s.defaultOrigin}
+            onChange={(e) => setS({ ...s, defaultOrigin: e.target.value.toUpperCase() })}
+          />
         </div>
       </div>
       <fieldset>

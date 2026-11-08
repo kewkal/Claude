@@ -1,5 +1,6 @@
 "use client";
 
+import { airportLabel, US_AIRPORTS } from "@/lib/airports";
 import type { Travelers } from "@/lib/flights/types";
 
 export function Stepper({ label, value, min, max, onChange }: { label: string; value: number; min: number; max: number; onChange: (n: number) => void }) {
@@ -69,6 +70,57 @@ export function HourRange({ label, value, onChange }: { label: string; value: [n
         <input aria-label={`${label} from`} type="range" min={0} max={24} value={value[0]} onChange={(e) => onChange([Math.min(Number(e.target.value), value[1]), value[1]])} className="w-full" />
         <input aria-label={`${label} to`} type="range" min={0} max={24} value={value[1]} onChange={(e) => onChange([value[0], Math.max(Number(e.target.value), value[0])])} className="w-full" />
       </div>
+    </div>
+  );
+}
+
+/** Rendered once per page; airport inputs point at it with list="us-airports". */
+export function AirportSuggestions() {
+  return (
+    <datalist id="us-airports">
+      {US_AIRPORTS.map((a) => (
+        <option key={a.code} value={a.code}>
+          {a.city} · {a.name}
+        </option>
+      ))}
+    </datalist>
+  );
+}
+
+/** Any airport code ("DFW") or city ("Denver"); suggests US airports as you type. */
+export function AirportInput({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder = "City or airport code, e.g. DFW or Denver",
+  required,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  required?: boolean;
+}) {
+  const known = airportLabel(value);
+  return (
+    <div>
+      <label className="label" htmlFor={id}>
+        {label}
+      </label>
+      <input
+        id={id}
+        className="input"
+        list="us-airports"
+        autoComplete="off"
+        autoCapitalize="characters"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        required={required}
+      />
+      {known && <p className="mt-1 text-xs text-muted">{known}</p>}
     </div>
   );
 }

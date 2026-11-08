@@ -188,6 +188,14 @@ describe("compare + estimates + flexible dates", () => {
     expect(e.perDestination[0].total).toBe(10);
   });
 
+  it("accepts a city name as origin (adds one cached airport lookup to the estimate)", async () => {
+    const e = await estimateSearches({ ...input, origin: "Dallas" });
+    expect(e.perDestination[0].total).toBe(11);
+    const d = await buildDataset({ ...input, origin: "dfw" }, "Lisbon", S.valueOfTimeUsdPerHour);
+    expect(d.origin).toBe("DFW");
+    expect(d.flights!.searchInput.origin).toBe("dfw");
+  });
+
   it("spreads flexible departure candidates across the window", () => {
     const c = flexCandidates({ ...input, dateMode: "flexible", windowStart: "2026-12-01", windowEnd: "2026-12-31", days: 7 });
     expect(c[0]).toBe("2026-12-01");
