@@ -24,26 +24,28 @@
     "value": "R-410A",
     "verified": false,
     "basis": "generic",
-    "note": "Manual lists digit 7 E = R-410A and F = microchannel condenser coils, but doesn't state the refrigerant for F explicitly. Confirm on the nameplate."
+    "note": "RT-SVX22V model chart lists digit 7 E = R-410A and F = microchannel condenser coils (p.7) but doesn't name the refrigerant for F. It's printed on the unit nameplate (p.12)."
   },
   "voltage": {
     "value": "208-230V-3ph-60Hz",
-    "verified": false,
-    "basis": "sister-model",
-    "source": "docs/manuals/trane-RT-SVX23R-EN.pdf (Precedent 3-10 ton heat pump, 60 Hz) p.6",
-    "note": "Precedent 60 Hz model chart: digit 8 '3' = 208-230/60/3 (4 = 460, W = 575). Same digit scheme across the Precedent 3-10 ton family; the TSC-specific 60 Hz IOM or nameplate would make it exact."
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.7",
+    "basis": "manual",
+    "note": "Digit 8 = 3 = 208-230/60/3 in the 3-10 ton 60 Hz model chart."
   },
   "controller": {
     "value": "Electromechanical controls (no RTRM / ReliaTel)",
     "verified": true,
-    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.4",
+    "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.7",
     "basis": "manual",
-    "note": "Digit 9 = E = Electromechanical. Model-number digits decoded from the 50 Hz edition's Model Number Description. Confirm against the 60 Hz IOM when available."
+    "note": "Digit 9 = E = Electromechanical. Control wiring diagram for T(S,H)C(072,090)F(3,4,W) electromechanical units is 4366-8347 (p.77)."
   },
   "compressorCount": {
     "value": 1,
-    "verified": false,
-    "basis": "generic"
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.7",
+    "basis": "manual",
+    "note": "072 = 6 ton single compressor; 074 is the 6 ton dual-compressor model."
   },
   "compressorType": {
     "value": "scroll",
@@ -103,13 +105,15 @@
     },
     "comp1": {
       "value": "CPR1",
-      "verified": false,
-      "basis": "generic"
+      "verified": true,
+      "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.56",
+      "basis": "manual"
     },
     "cfm1": {
       "value": "ODM",
-      "verified": false,
-      "basis": "generic"
+      "verified": true,
+      "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.56",
+      "basis": "manual"
     },
     "cfm1cap": {
       "value": "CF",
@@ -119,7 +123,7 @@
     "blower": {
       "value": "IDM",
       "verified": true,
-      "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.38",
+      "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.56",
       "basis": "manual"
     },
     "lps1": {
@@ -140,10 +144,23 @@
       "basis": "generic"
     },
     "controller": {
-      "value": "Thermostat Y1",
-      "verified": false,
-      "basis": "generic",
-      "note": "Electromechanical unit: Y1 from the thermostat drives CC1 through the safeties. Confirm rung order on the unit wiring diagram."
+      "value": "Thermostat Y",
+      "verified": true,
+      "basis": "manual",
+      "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.56",
+      "note": "No unit controller: thermostat Y drives CC1 through LPC1/HPC1/TDL1."
+    },
+    "fanRelay": {
+      "value": "F (indoor fan relay)",
+      "verified": true,
+      "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.56",
+      "basis": "manual"
+    },
+    "dlts": {
+      "value": "TDL1",
+      "verified": true,
+      "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.56",
+      "basis": "manual"
     }
   },
   "ratings": {
@@ -155,15 +172,17 @@
     }
   },
   "sequenceOfOperation": {
-    "verified": false,
-    "basis": "generic",
-    "note": "Electromechanical sequence not detailed in RT-SVX37B-EN (its sequence/troubleshooting sections are ReliaTel). Replace from the unit wiring diagram / 60 Hz IOM.",
     "value": [
-      "Thermostat G: indoor fan contactor energizes the IDM (belt drive).",
-      "Thermostat Y1: 24 V passes through the high-pressure (HPC1) and low-pressure (LPC1) controls to the CC1 coil. CC1 starts the compressor and outdoor fan.",
-      "No microprocessor: no lockout counter, no diagnostics display, no anti-short-cycle logic unless a field thermostat provides it.",
-      "A safety opening drops CC1 directly. When it recloses, the compressor restarts on the next call."
-    ]
+      "Thermostat fan switch in Auto with a call (or On): thermostat energizes indoor fan relay F, which starts the indoor fan motor IDM.",
+      "Cool call, zone above setpoint: thermostat Y closes. Compressor contactor CC1 coil energizes as long as LPC1, HPC1 and discharge line thermostat TDL1 are all closed.",
+      "CC1 contacts close: compressor CPR1 and outdoor fan motor ODM start.",
+      "No microprocessor: any safety opening drops CC1 immediately, and the compressor restarts as soon as that switch recloses. No lockout, no timer, no diagnostics.",
+      "Cool satisfied: Y opens, CC1 drops; fan relay F drops when the call ends (Auto)."
+    ],
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.56",
+    "basis": "manual",
+    "note": "Electromechanical cooling without economizer and cooling-only evaporator fan operation, p.56."
   },
   "baselines": {
     "cooling-95F": {
@@ -226,9 +245,9 @@
   "condenserCoil": {
     "value": "Microchannel condenser coil",
     "verified": true,
-    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.4",
+    "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.7",
     "basis": "manual",
-    "note": "Digit 7 = F. Note 23 (p.5): standard on TSC 6 ton standard efficiency."
+    "note": "Digit 7 = F = microchannel type condenser coils; note 1: standard on T/YSC 6 ton standard efficiency."
   },
   "meteringDevice": {
     "value": "TXV",
@@ -238,11 +257,11 @@
     "note": "Model note 10: standard metering devices are TXVs."
   },
   "highPressureControl": {
-    "value": "Standard (HPC)",
+    "value": "Standard (HPC1). Electromechanical: opening drops the compressor immediately; it restarts when HPC1 closes.",
     "verified": true,
-    "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.5",
+    "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.14",
     "basis": "manual",
-    "note": "Model note 5. Setpoint not in this manual."
+    "note": "Setpoint not in the IOM."
   },
   "refrigerationControls": {
     "value": "None: no Frostat, no crankcase heater",
@@ -264,5 +283,40 @@
     "basis": "manual",
     "value": "Max allowable supply voltage imbalance 2.0%. Over 2% can mean up to 20% current imbalance.",
     "note": "Also p.9: DLTS (discharge line temp switch) in series with HPC/LPC opens over 300°F dome temp where fitted. Applicability to this electromechanical model not stated."
+  },
+  "wiringDiagram": {
+    "value": "Control: 4366-8347 (T(S,H)C(072,090)F(3,4,W), electromechanical)",
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.77",
+    "basis": "manual",
+    "note": "Diagram drawings themselves are on the unit, not in the IOM."
+  },
+  "nameplate": {
+    "value": "Mylar nameplate on the unit corner support next to the filter access panel: model, serial, electrical data, refrigerant charge",
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.12",
+    "basis": "manual",
+    "note": "Charge and refrigerant are on that nameplate; the IOM doesn't list them."
+  },
+  "lowPressureControl": {
+    "value": "LPC1. Electromechanical: opening drops the compressor immediately; it restarts when LPC1 closes.",
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.14",
+    "basis": "manual",
+    "note": "No lockout counter or 3-minute delay on electromechanical units: those are ReliaTel features. Setpoint not in the IOM."
+  },
+  "dischargeLineThermostat": {
+    "value": "TDL1 (DLTS) in series with HPC1 and LPC1; opens over 300°F compressor dome temperature (indoor fan failure in cooling)",
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.16",
+    "basis": "manual",
+    "note": "Designation TDL1 from the cooling sequence, p.56."
+  },
+  "controlTransformer": {
+    "value": "24 VAC control transformer in the control panel; transformers over 50 VA have an internal circuit breaker on the left side of the transformer",
+    "verified": true,
+    "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.37",
+    "basis": "manual",
+    "note": "Turn power off before resetting the breaker."
   }
 }

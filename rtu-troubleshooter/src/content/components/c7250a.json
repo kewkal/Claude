@@ -3,7 +3,7 @@
   "name": "Honeywell C7250A 20k NTC dry-bulb sensor (mixed air / outdoor air)",
   "kind": "ntc-sensor",
   "domain": "components",
-  "function": "Wired 20k NTC thermistor into the JADE MAT (required) or OAT terminals (63-2700-11 p.2-3). Resistance falls as temperature rises. JADE uses MAT to modulate free cooling to MAT SET and for freeze protection (MA LO SET).",
+  "function": "Wired 20k NTC thermistor into the JADE MAT (required) or OAT terminals (63-2700-11 p.2-3). Resistance falls as temperature rises. JADE uses MAT to modulate free cooling to MAT SET and for freeze protection (MA LO SET). C7250A spec data confirms a 20k NTC output, -40 to 150°F range, and OA C7250A + RA C7400S for differential dry bulb (63-1364EF-01 p.1).",
   "perUnit": {
     "lennox-lch240": {
       "availability": {

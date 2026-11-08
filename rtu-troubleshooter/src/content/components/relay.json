@@ -35,20 +35,24 @@
     "trane-tsc072": {
       "availability": {
         "value": "factory-standard",
-        "verified": false,
-        "basis": "generic"
+        "verified": true,
+        "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.56",
+        "basis": "manual"
       },
       "designation": {
-        "value": "K-relay (e.g. fan or heat relay)",
-        "verified": false,
-        "basis": "generic"
+        "value": "F (indoor fan relay)",
+        "verified": true,
+        "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.56",
+        "basis": "manual",
+        "note": "Thermostat G energizes F, which starts IDM."
       },
       "location": {
-        "value": "Control box, 24V section.",
+        "value": "Unit control panel",
         "verified": false,
-        "basis": "generic"
+        "basis": "generic",
+        "note": "IOM names relay F but not its panel position."
       },
-      "sequenceRole": "Controller output drives the coil; contacts switch fan or heat circuits.",
+      "sequenceRole": "Thermostat energizes F on a fan call (Auto with cooling, or On); F starts the IDM. A failed F relay = compressor running with no indoor airflow: frozen-coil call.",
       "partNumber": {
         "value": "—",
         "verified": false

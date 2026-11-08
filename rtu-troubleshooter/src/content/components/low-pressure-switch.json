@@ -34,21 +34,25 @@
     "trane-tsc072": {
       "availability": {
         "value": "factory-standard",
-        "verified": false,
-        "basis": "generic"
+        "verified": true,
+        "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.56",
+        "basis": "manual",
+        "note": "In the CC1 coil circuit in the electromechanical cooling sequence."
       },
       "designation": {
         "value": "LPC1",
         "verified": true,
-        "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.38",
+        "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.56",
         "basis": "manual"
       },
       "location": {
-        "value": "Suction line. On the diagram: in series with the compressor contactor coil circuit / controller safety input.",
-        "verified": false,
-        "basis": "generic"
+        "value": "Suction side; wired in series with HPC1 and TDL1 in the CC1 coil circuit",
+        "verified": true,
+        "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.56",
+        "basis": "manual",
+        "note": "Exact mounting location not described in the IOM."
       },
-      "sequenceRole": "In series with the CC1 coil circuit on this electromechanical unit. Opens on low suction and drops CC1; auto-resets as pressure recovers (no lockout counter: that's ReliaTel-only, p.8).",
+      "sequenceRole": "Opens on low suction and drops CC1 immediately; the compressor restarts when LPC1 recloses. No lockout on electromechanical units (p.14).",
       "partNumber": {
         "value": "—",
         "verified": false

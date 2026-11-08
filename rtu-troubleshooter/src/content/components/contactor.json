@@ -36,8 +36,9 @@
     "trane-tsc072": {
       "availability": {
         "value": "factory-standard",
-        "verified": false,
-        "basis": "generic"
+        "verified": true,
+        "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.56",
+        "basis": "manual"
       },
       "designation": {
         "value": "CC1",
@@ -46,13 +47,13 @@
         "basis": "manual"
       },
       "location": {
-        "value": "Unit control panel. Field power wiring terminates at CC1 (p.23). Coil fed from thermostat Y1 through HPC1/LPC1.",
-        "verified": false,
-        "basis": "generic",
-        "source": "docs/manuals/trane-RT-SVX37B-EN.pdf (Trane RT-SVX37B-EN, 50 Hz edition) p.23",
-        "note": "CC1 power termination verified (p.23); coil circuit path unverified until the wiring diagram is in /docs."
+        "value": "Unit control panel. Field power terminates at CC1; coil circuit runs from thermostat Y through LPC1, HPC1, TDL1.",
+        "verified": true,
+        "source": "docs/manuals/trane-RT-SVX22V-EN.pdf (Trane Precedent Electric/Electric 3-10 ton 60 Hz IOM, RT-SVX22V-EN) p.56",
+        "basis": "manual",
+        "note": "Coil circuit p.56."
       },
-      "sequenceRole": "Thermostat Y1 energizes CC1 through the safeties. CC1 also brings on the outdoor fan. No board, no timer.",
+      "sequenceRole": "Thermostat Y energizes CC1 through LPC1, HPC1 and TDL1; CC1 starts CPR1 and the outdoor fan ODM (p.56).",
       "partNumber": {
         "value": "—",
         "verified": false,
