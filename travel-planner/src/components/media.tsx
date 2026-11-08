@@ -61,7 +61,7 @@ export function ReviewList({ reviews, fetchedAt }: { reviews: Review[]; fetchedA
           <p>{r.text}</p>
         </blockquote>
       ))}
-      {fetchedAt && <p className="text-[0.7rem] text-muted">Reviews fetched {fmtTimestamp(fetchedAt)}. Dates are as the source shows them.</p>}
+      {fetchedAt && <p className="text-xs text-muted">Reviews fetched {fmtTimestamp(fetchedAt)}. Dates are as the source shows them.</p>}
     </div>
   );
 }

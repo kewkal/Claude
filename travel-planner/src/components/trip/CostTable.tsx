@@ -37,7 +37,7 @@ export function BudgetBar({ costs }: { costs: CostBreakdown }) {
         </div>
         {costs.overBudget && <div className="absolute inset-y-0 w-0.5 bg-danger" style={{ left: `${budgetPct}%` }} aria-hidden />}
       </div>
-      <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[0.72rem] text-muted">
+      <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted">
         {costs.lines
           .filter((l) => l.amount > 0)
           .map((l) => (

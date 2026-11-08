@@ -270,11 +270,11 @@ export function TripView({
                     <p className="text-xs text-muted">{firstSeg.from.code}</p>
                   </div>
                   <div className="flex-1 text-center">
-                    <p className="text-[0.7rem] text-muted">{fmtDuration(f.totalDurationMin)}</p>
+                    <p className="text-xs text-muted">{fmtDuration(f.totalDurationMin)}</p>
                     <div className="relative my-0.5 h-px bg-border">
-                      <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface px-1 text-[0.7rem]">✈</span>
+                      <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface px-1 text-xs">✈</span>
                     </div>
-                    <p className="text-[0.7rem] text-muted">{f.stops === 0 ? "Nonstop" : `${f.stops} stop${f.stops > 1 ? "s" : ""} · ${f.layovers.map((l) => l.code).join(", ")}`}</p>
+                    <p className="text-xs text-muted">{f.stops === 0 ? "Nonstop" : `${f.stops} stop${f.stops > 1 ? "s" : ""} · ${f.layovers.map((l) => l.code).join(", ")}`}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-base font-bold tabular-nums">{fmtTime(lastSeg.to.time)}</p>

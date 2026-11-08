@@ -82,7 +82,7 @@ export function UpgradesPanel({ trip, version, onTrip }: { trip: TripRecord; ver
             </div>
             <div className="shrink-0 text-right text-sm font-semibold">
               <Delta usd={u.costDeltaUsd} />
-              <span className="block text-[0.7rem] font-normal text-muted">benefit {u.impact}/5</span>
+              <span className="block text-xs font-normal text-muted">benefit {u.impact}/5</span>
             </div>
           </div>
           <p className="mt-1 text-sm text-muted">{u.why}</p>
