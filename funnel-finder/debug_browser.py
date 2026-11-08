@@ -14,10 +14,26 @@ async def main():
 
         print("Loading Google Ads Transparency...")
         await page.goto(
-            "https://adstransparency.google.com/?region=US&query=weight+loss",
+            "https://adstransparency.google.com/",
             wait_until="domcontentloaded",
             timeout=30000,
         )
+        await asyncio.sleep(3)
+
+        # Type into the search box
+        search_input = await page.query_selector("input[type='search'], input[placeholder*='search' i], input[placeholder*='find' i], [role='searchbox']")
+        if search_input:
+            print("Found search input, typing query...")
+            await search_input.click()
+            await search_input.type("weight loss supplement", delay=80)
+            await page.keyboard.press("Enter")
+        else:
+            print("No search input found, trying URL with search params...")
+            await page.goto(
+                "https://adstransparency.google.com/?region=ANY&query=weight+loss+supplement",
+                wait_until="domcontentloaded",
+                timeout=30000,
+            )
         await asyncio.sleep(5)
         await page.screenshot(path="debug_google.png", full_page=False)
 
