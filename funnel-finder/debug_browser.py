@@ -34,18 +34,68 @@ async def main():
         await asyncio.sleep(2)
         await page.screenshot(path="debug_google.png", full_page=False)
 
-        # Print all tag names and class names of top-level children
-        tags = await page.evaluate("""() => {
-            const all = document.querySelectorAll('body > * > *');
-            return Array.from(all).slice(0, 20).map(el => ({
+        # Look for ad cards deep inside the Angular root
+        cards = await page.evaluate("""() => {
+            // Try many selectors to find ad cards
+            const selectors = [
+                'creative-card',
+                '[class*="creative-card"]',
+                'mat-card',
+                '[class*="card"]',
+                'advertiser-preview',
+                '[class*="advertiser"]',
+                'li[role="listitem"]',
+                '[role="listitem"]',
+                '[role="list"] > *',
+                '[class*="result"]',
+            ];
+            for (const sel of selectors) {
+                const els = document.querySelectorAll(sel);
+                if (els.length > 0) {
+                    return {
+                        selector: sel,
+                        count: els.length,
+                        samples: Array.from(els).slice(0, 3).map(el => ({
+                            tag: el.tagName,
+                            cls: el.className?.toString().slice(0, 100),
+                            text: el.innerText?.slice(0, 120)
+                        }))
+                    };
+                }
+            }
+            // Fallback: dump all custom elements (Angular components)
+            const custom = document.querySelectorAll('*');
+            const angular = Array.from(custom).filter(el =>
+                el.tagName.includes('-') || el.tagName === 'ROOT'
+            ).slice(0, 15);
+            return {
+                selector: 'angular-components',
+                count: angular.length,
+                samples: angular.map(el => ({
+                    tag: el.tagName,
+                    cls: el.className?.toString().slice(0, 100),
+                    text: el.innerText?.slice(0, 120)
+                }))
+            };
+        }""")
+        print(f"\nAd cards via selector '{cards['selector']}' — found {cards['count']}:")
+        for s in cards['samples']:
+            print(f"  <{s['tag']}> cls='{s['cls']}'")
+            print(f"    text: {repr(s['text'])}")
+
+        # Also dump the full inner structure of the ROOT element
+        root_children = await page.evaluate("""() => {
+            const root = document.querySelector('[class*="_nghost"]');
+            if (!root) return [];
+            return Array.from(root.querySelectorAll(':scope > * > *')).slice(0, 20).map(el => ({
                 tag: el.tagName,
-                cls: el.className?.toString().slice(0, 80),
-                text: el.innerText?.slice(0, 60)
+                cls: el.className?.toString().slice(0, 100),
+                text: el.innerText?.slice(0, 80)
             }));
         }""")
-        print("Page elements found:")
-        for t in tags:
-            print(f"  <{t['tag']}> class='{t['cls']}' text='{t['text']}'")
+        print(f"\nChildren of _nghost root ({len(root_children)}):")
+        for r in root_children:
+            print(f"  <{r['tag']}> cls='{r['cls']}' | {repr(r['text'])}")
 
         print("\nSaved screenshot to debug_google.png")
         await browser.close()
