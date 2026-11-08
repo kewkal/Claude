@@ -1,44 +1,46 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #f6f7f9;
+  --bg: #f4f6f8;
   --surface: #ffffff;
-  --surface-2: #f0f2f5;
-  --text: #121826;
-  --muted: #5b6475;
-  --border: #e2e5ea;
-  --accent: #0b6bcb;
+  --surface-2: #f1f4f7;
+  --text: #0f172a;
+  --muted: #5b6577;
+  --border: #e3e8ee;
+  --accent: #0f766e;
   --accent-contrast: #ffffff;
-  --accent-soft: #e6f0fb;
-  --ok: #157f3b;
-  --ok-soft: #e5f5ea;
-  --warn: #9a5b00;
-  --warn-soft: #fff4e0;
-  --danger: #b42318;
-  --danger-soft: #fdecea;
-  --ai: #6b3fc4;
-  --ai-soft: #f1ebfc;
+  --accent-soft: #e2f4f1;
+  --ok: #15803d;
+  --ok-soft: #e4f6ea;
+  --warn: #a16207;
+  --warn-soft: #fdf3dc;
+  --danger: #b91c1c;
+  --danger-soft: #fdecec;
+  --ai: #6d28d9;
+  --ai-soft: #f3edfd;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 2px 8px rgba(15, 23, 42, 0.05);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0d1117;
-    --surface: #161b22;
-    --surface-2: #1f2630;
-    --text: #e8edf3;
-    --muted: #9aa5b4;
-    --border: #2a323d;
-    --accent: #4ea1f3;
-    --accent-contrast: #0d1117;
-    --accent-soft: #15283d;
-    --ok: #4cc27a;
-    --ok-soft: #15291d;
-    --warn: #f0b04a;
-    --warn-soft: #2e2412;
-    --danger: #f2766b;
-    --danger-soft: #331816;
-    --ai: #b49af0;
-    --ai-soft: #251d38;
+    --bg: #0b1016;
+    --surface: #141b23;
+    --surface-2: #1b2430;
+    --text: #e8eef5;
+    --muted: #97a3b4;
+    --border: #263241;
+    --accent: #2dd4bf;
+    --accent-contrast: #062925;
+    --accent-soft: #10302c;
+    --ok: #4ade80;
+    --ok-soft: #13291b;
+    --warn: #fbbf24;
+    --warn-soft: #2e2510;
+    --danger: #f87171;
+    --danger-soft: #331717;
+    --ai: #c4b5fd;
+    --ai-soft: #231c38;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -71,6 +73,12 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
+  line-height: 1.5;
+}
+h1,
+h2,
+h3 {
+  letter-spacing: -0.015em;
 }
 
 /* Form controls share one look. */
@@ -101,6 +109,9 @@ body {
   color: var(--accent-contrast);
   transition: opacity 0.15s;
 }
+.btn:active {
+  transform: translateY(1px);
+}
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -124,7 +135,26 @@ body {
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.9rem;
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+}
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.btn-sm {
+  min-height: 2rem;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  border-radius: 0.5rem;
 }
 .label {
   display: block;
@@ -169,6 +199,7 @@ body {
   .card {
     break-inside: avoid;
     border-color: #ccc;
+    box-shadow: none;
   }
   a {
     color: #000;

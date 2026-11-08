@@ -104,6 +104,8 @@ describe("flight service", () => {
       { departure_id: "IAH", arrival_id: "LIS", date: "2026-11-12" },
       { departure_id: "OPO", arrival_id: "IAH", date: "2026-11-18" },
     ]);
+    const kg = buildFlightParams({ ...input, tripType: "multi_city", legs: [{ from: "iah", to: "/m/0fw4v", date: "2026-11-12" }, { from: "/m/0fw4v", to: "IAH", date: "2026-11-18" }] });
+    expect(JSON.parse(String(kg.multi_city_json))[0].arrival_id).toBe("/m/0fw4v");
   });
 
   it("searches, resolves a city name via autocomplete, and loads return flights (fixtures)", async () => {

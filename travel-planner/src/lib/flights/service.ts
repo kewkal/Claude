@@ -73,7 +73,9 @@ export function buildFlightParams(input: FlightSearchInput): SerpParams {
   const win = (w?: [number, number]) => (w && (w[0] > 0 || w[1] < 23) ? `${w[0]},${Math.min(23, w[1])}` : undefined);
   p.outbound_times = win(input.outboundTimes);
   if (input.tripType === "multi_city") {
-    p.multi_city_json = JSON.stringify(input.legs!.map((l) => ({ departure_id: l.from.toUpperCase(), arrival_id: l.to.toUpperCase(), date: l.date })));
+    // Codes are case-insensitive; Google place ids ("/m/0fw4v") are not, so only codes get uppercased.
+    const id = (v: string) => (/^[a-z]{3}(,[a-z]{3})*$/i.test(v.trim()) ? v.trim().toUpperCase() : v.trim());
+    p.multi_city_json = JSON.stringify(input.legs!.map((l) => ({ departure_id: id(l.from), arrival_id: id(l.to), date: l.date })));
   } else {
     p.departure_id = input.origin;
     p.arrival_id = input.destination;
