@@ -14,10 +14,14 @@ export function getDb(): Db {
   const url = env.supabaseUrl;
   const key = env.supabaseSecretKey;
   if (url && key) {
-    if (!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(url)) {
-      throw new AppError("DB_NOT_CONFIGURED", `SUPABASE_URL should look like https://yourprojectid.supabase.co (nothing after .co). Current value starts with "${url.slice(0, 30)}".`);
+    const base = normalizeSupabaseUrl(url);
+    if (!base) {
+      throw new AppError(
+        "DB_NOT_CONFIGURED",
+        `SUPABASE_URL should look like https://yourprojectid.supabase.co. Current value (${url.length} chars): "${url.slice(0, 60)}".`,
+      );
     }
-    g.__tpDb = createSupabaseDb(url, key);
+    g.__tpDb = createSupabaseDb(base, key);
   } else {
     if (process.env.NODE_ENV === "production" && !env.fixtureMode) {
       throw new AppError("DB_NOT_CONFIGURED", "Database not configured: SUPABASE_URL and SUPABASE_SECRET_KEY must both be set in Vercel, then redeploy.");
@@ -26,6 +30,15 @@ export function getDb(): Db {
     g.__tpDb = createMemoryDb();
   }
   return g.__tpDb;
+}
+
+/**
+ * Accepts what people actually paste — trailing slash, "/rest/v1", quotes, spaces, any case —
+ * and returns "https://<ref>.supabase.co", or null if no project URL is in there at all.
+ */
+export function normalizeSupabaseUrl(raw: string): string | null {
+  const m = /(?:https?:\/\/)?([a-z0-9-]+)\.supabase\.(co|in)\b/i.exec(raw.trim().replace(/^["'\s]+|["'\s]+$/g, ""));
+  return m ? `https://${m[1].toLowerCase()}.supabase.${m[2].toLowerCase()}` : null;
 }
 
 // Tests swap in their own store.
