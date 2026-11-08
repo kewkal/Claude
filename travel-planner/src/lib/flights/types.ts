@@ -33,6 +33,8 @@ export interface FlightSearchInput {
   returnTimes?: [number, number];
   bags?: number; // carry-on bags
   excludeBasic?: boolean;
+  /** Also search airports within ~100 mi of the origin (same single search). Catches low-cost carriers at secondary airports. */
+  nearbyOrigin?: boolean;
 }
 
 export interface FlightSegment {

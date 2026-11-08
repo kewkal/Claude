@@ -2,6 +2,8 @@
 
 import type { FlightOption, PriceInsights } from "@/lib/flights/types";
 import { fmtDuration, fmtTime, fmtUsd } from "@/lib/format";
+import { airportLabel, milesFrom } from "@/lib/airports";
+import { originAirports } from "./inputs";
 import { Badge } from "./ui";
 
 function dayOffset(fromTime: string, toTime: string): number {
@@ -33,6 +35,7 @@ export function FlightCard({
   selectLabel,
   onBook,
   compact = false,
+  homeOrigin,
 }: {
   o: FlightOption;
   paying: number;
@@ -40,17 +43,28 @@ export function FlightCard({
   selectLabel?: string;
   onBook?: () => void;
   compact?: boolean;
+  /** What the user typed as origin; flights leaving from another (nearby) airport get a label. */
+  homeOrigin?: string;
 }) {
   const first = o.segments[0];
   const last = o.segments[o.segments.length - 1];
   if (!first || !last) return null;
   const plusDays = dayOffset(first.from.time, last.to.time);
+  const home = homeOrigin ? originAirports(homeOrigin, false) : [];
+  const nearbyFrom = home.length && !home.includes(first.from.code) ? first.from.code : null;
+  const nearbyMiles = nearbyFrom ? milesFrom(home[0], nearbyFrom) : null;
 
   return (
     <article className="card p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
+            {nearbyFrom && (
+              <Badge tone="accent" title={airportLabel(nearbyFrom) ?? undefined}>
+                📍 From {nearbyFrom}
+                {nearbyMiles !== null ? ` · ${nearbyMiles} mi` : ""}
+              </Badge>
+            )}
             {o.best && <Badge tone="accent">Google &quot;best&quot;</Badge>}
             <span className="truncate text-sm font-semibold">{o.airlines.join(" + ")}</span>
             <Badge tone={o.hasBudgetCarrier ? "warn" : "neutral"}>{o.isBudgetCarrier ? "Budget" : o.hasBudgetCarrier ? "Part budget" : "Full-service"}</Badge>

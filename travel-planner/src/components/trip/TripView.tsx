@@ -8,11 +8,13 @@ import { DEFAULT_SETTINGS } from "@/lib/settings-shared";
 import { fmtDate, fmtDuration, fmtTime, fmtTimestamp, fmtUsd } from "@/lib/format";
 import { findRef, VERSION_KEYS, VERSION_LABEL, type RefPlace, type TripEditClient, type TripRecord, type VersionKey } from "@/lib/planner/types";
 import { refsInDays } from "@/lib/planner/validate";
-import { travelersLabel } from "@/components/inputs";
+import { milesFrom } from "@/lib/airports";
+import { originAirports, travelersLabel } from "@/components/inputs";
 import { PlaceDetailsSheet } from "@/components/PlaceCard";
 import { AiText, Badge, ErrorState, Rating } from "@/components/ui";
 import { BudgetBar, CostTable } from "./CostTable";
 import { DayCard } from "./DayCard";
+import { SavingsPanel } from "./SavingsPanel";
 
 export function TripView({
   initial,
@@ -253,7 +255,15 @@ export function TripView({
             </div>
             {f && firstSeg && lastSeg ? (
               <>
-                <p className="mt-2 text-sm font-semibold">{f.airlines.join(" + ")}</p>
+                <p className="mt-2 text-sm font-semibold">
+                  {f.airlines.join(" + ")}
+                  {!originAirports(trip.inputs.origin, false).includes(firstSeg.from.code) && originAirports(trip.inputs.origin, false).length > 0 && (
+                    <span className="ml-2 font-normal text-accent">
+                      📍 from {firstSeg.from.code}
+                      {milesFrom(originAirports(trip.inputs.origin, false)[0], firstSeg.from.code) !== null ? ` · ${milesFrom(originAirports(trip.inputs.origin, false)[0], firstSeg.from.code)} mi away` : ""}
+                    </span>
+                  )}
+                </p>
                 <div className="mt-1 flex items-center gap-2">
                   <div>
                     <p className="text-base font-bold tabular-nums">{fmtTime(firstSeg.from.time)}</p>
@@ -381,6 +391,8 @@ export function TripView({
           />
         ))}
       </section>
+
+      <SavingsPanel trip={trip} version={vk} readOnly={readOnly} onTrip={setTrip} />
 
       <details className="group" open={printMode}>
         <summary className="section-title cursor-pointer list-none">

@@ -1,5 +1,5 @@
 import "server-only";
-import { airportsForCity } from "@/lib/airports";
+import { airportsForCity, withNearbyAirports } from "@/lib/airports";
 import { badInput } from "@/lib/errors";
 import { addDays, daysBetween } from "@/lib/format";
 import { countUncached, serpSearch } from "@/lib/serpapi/client";
@@ -99,7 +99,7 @@ async function resolveInput(input: FlightSearchInput): Promise<FlightSearchInput
     return { ...input, legs };
   }
   const [o, d] = await Promise.all([resolvePlace(input.origin), resolvePlace(input.destination)]);
-  return { ...input, origin: o.id, destination: d.id };
+  return { ...input, origin: input.nearbyOrigin ? withNearbyAirports(o.id) : o.id, destination: d.id };
 }
 
 async function run(params: SerpParams, paying: number): Promise<FlightSearchResult> {
