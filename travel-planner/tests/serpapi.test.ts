@@ -37,6 +37,12 @@ describe("cache keys", () => {
       q: "museums in paris",
     });
   });
+  it("uppercases airport codes but never Google place ids (case-sensitive)", () => {
+    expect(normalizeParams({ arrival_id: "/m/0fw4v" })).toEqual({ arrival_id: "/m/0fw4v" });
+    expect(normalizeParams({ arrival_id: "/g/11b6x2kq_r" })).toEqual({ arrival_id: "/g/11b6x2kq_r" });
+    expect(normalizeParams({ departure_id: "sju, /m/0fw4v" })).toEqual({ departure_id: "SJU,/m/0fw4v" });
+  });
+
   it("produces the same key for equivalent params", async () => {
     expect(await cacheKey("google_maps", { q: "Paris", hl: "en" })).toBe(await cacheKey("google_maps", { hl: "en", q: " paris " }));
     expect(await cacheKey("google_maps", { q: "Paris" })).not.toBe(await cacheKey("google_hotels", { q: "Paris" }));
