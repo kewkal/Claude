@@ -20,20 +20,17 @@ async def main():
         )
         await asyncio.sleep(3)
 
-        # Dump all inputs on the page
-        inputs = await page.evaluate("""() => {
-            return Array.from(document.querySelectorAll('input, textarea, [role="searchbox"], [role="textbox"]')).map(el => ({
-                tag: el.tagName,
-                type: el.type,
-                placeholder: el.placeholder,
-                role: el.getAttribute('role'),
-                cls: el.className?.toString().slice(0, 80),
-                name: el.name,
-            }));
-        }""")
-        print(f"Inputs found on page: {len(inputs)}")
-        for inp in inputs:
-            print(f"  {inp}")
+        # Type into the search box using the known class
+        search_input = await page.query_selector("input.input-area")
+        if search_input:
+            print("Found search input, typing...")
+            await search_input.click()
+            await page.keyboard.type("weight loss supplement", delay=80)
+            await page.keyboard.press("Enter")
+            print("Typed and submitted, waiting for results...")
+            await asyncio.sleep(6)
+        else:
+            print("Search input NOT found")
         await asyncio.sleep(2)
         await page.screenshot(path="debug_google.png", full_page=False)
 
