@@ -20,21 +20,21 @@ async def main():
         )
         await asyncio.sleep(3)
 
-        # Type into the search box
-        search_input = await page.query_selector("input[type='search'], input[placeholder*='search' i], input[placeholder*='find' i], [role='searchbox']")
-        if search_input:
-            print("Found search input, typing query...")
-            await search_input.click()
-            await search_input.type("weight loss supplement", delay=80)
-            await page.keyboard.press("Enter")
-        else:
-            print("No search input found, trying URL with search params...")
-            await page.goto(
-                "https://adstransparency.google.com/?region=ANY&query=weight+loss+supplement",
-                wait_until="domcontentloaded",
-                timeout=30000,
-            )
-        await asyncio.sleep(5)
+        # Dump all inputs on the page
+        inputs = await page.evaluate("""() => {
+            return Array.from(document.querySelectorAll('input, textarea, [role="searchbox"], [role="textbox"]')).map(el => ({
+                tag: el.tagName,
+                type: el.type,
+                placeholder: el.placeholder,
+                role: el.getAttribute('role'),
+                cls: el.className?.toString().slice(0, 80),
+                name: el.name,
+            }));
+        }""")
+        print(f"Inputs found on page: {len(inputs)}")
+        for inp in inputs:
+            print(f"  {inp}")
+        await asyncio.sleep(2)
         await page.screenshot(path="debug_google.png", full_page=False)
 
         # Print all tag names and class names of top-level children
