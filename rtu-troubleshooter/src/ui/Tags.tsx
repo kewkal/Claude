@@ -4,7 +4,12 @@ export function SourceTag({ s }: { s?: Pick<Sourced<unknown>, 'verified' | 'basi
   if (!s) return null;
   return (
     <span className="inline-flex flex-wrap gap-1 align-middle">
-      {!s.verified && (
+      {!s.verified && s.basis === 'sister-model' && (
+        <span title={`${s.source ?? ''}${s.note ? ` — ${s.note}` : ''}`} className="rounded bg-orange-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-orange-300">
+          ≈ sister-model doc
+        </span>
+      )}
+      {!s.verified && s.basis !== 'sister-model' && (
         <span title={s.note ?? 'Not yet sourced from /docs'} className="rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-300">
           ⚠ generic value
         </span>

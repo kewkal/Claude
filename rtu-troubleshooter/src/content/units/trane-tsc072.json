@@ -29,8 +29,9 @@
   "voltage": {
     "value": "208-230V-3ph-60Hz",
     "verified": false,
-    "basis": "generic",
-    "note": "Digit 8 = '3' is not listed in RT-SVX37B-EN (50 Hz edition lists only D = 380-415/50/3). Needs the 60 Hz IOM or the nameplate."
+    "basis": "sister-model",
+    "source": "docs/manuals/trane-RT-SVX23R-EN.pdf (Precedent 3-10 ton heat pump, 60 Hz) p.6",
+    "note": "Precedent 60 Hz model chart: digit 8 '3' = 208-230/60/3 (4 = 460, W = 575). Same digit scheme across the Precedent 3-10 ton family; the TSC-specific 60 Hz IOM or nameplate would make it exact."
   },
   "controller": {
     "value": "Electromechanical controls (no RTRM / ReliaTel)",

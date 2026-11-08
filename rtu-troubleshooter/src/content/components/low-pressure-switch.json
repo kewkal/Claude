@@ -14,14 +14,16 @@
       "designation": {
         "value": "S87 (circuit 1)",
         "verified": false,
-        "basis": "generic"
+        "basis": "sister-model",
+        "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
+        "note": "Loss-of-charge switch on the suction line, opens 40 +5 psig, auto-resets 90 +5 psig. Confirm in the LCH240 manual."
       },
       "location": {
         "value": "Suction line, compressor section. On the diagram: wired to an M2 safety input; M2 counts trips and locks out after repeated trips.",
         "verified": false,
         "basis": "generic"
       },
-      "sequenceRole": "Must be closed for M2 to energize compressor 1. M2 may bypass it briefly on start (low-ambient start delay). Confirm from manual.",
+      "sequenceRole": "S87 input to A55: opens on low suction and drops that compressor; auto-resets at 90 psig.",
       "partNumber": {
         "value": "—",
         "verified": false
@@ -88,8 +90,9 @@
     "setpointTolPsig": {
       "value": 5,
       "verified": false,
-      "basis": "rule-of-thumb",
-      "note": "Use the switch's printed tolerance."
+      "basis": "sister-model",
+      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature) p.30",
+      "note": "S87 tolerance +5 psig per LGH. Trane LPC tolerance not documented."
     }
   },
   "symptoms": {

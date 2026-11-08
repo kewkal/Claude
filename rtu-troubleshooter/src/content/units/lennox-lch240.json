@@ -22,20 +22,23 @@
   "refrigerant": {
     "value": "R-410A",
     "verified": false,
-    "basis": "generic",
-    "note": "Assumed from vintage. Confirm in the LCH manual before trusting any PT-based reading."
+    "basis": "sister-model",
+    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.6",
+    "note": "All LGH036-074 models are R-410A. Confirm in the LCH240 manual."
   },
   "voltage": {
     "value": "460V-3ph-60Hz",
     "verified": false,
-    "basis": "generic",
-    "note": "Decoded from the trailing 'G' voltage digit by convention only. Confirm against nameplate / manual."
+    "basis": "sister-model",
+    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
+    "note": "Lennox voltage letter G = 460 V (Y = 208/230, J = 575) per the LGH transformer section. Model LCH240H4BN4G ends in G. Confirm in the LCH240 manual."
   },
   "controller": {
-    "value": "Lennox M2 unit controller (A55)",
+    "value": "Lennox Unit Controller A55",
     "verified": false,
-    "source": "project brief names M2; board designation A55 is unconfirmed",
-    "basis": "generic"
+    "basis": "sister-model",
+    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
+    "note": "LGH manual calls it 'Unit Controller A55' with thermostat wires on J297. Project brief names it M2; the LGH doc doesn't use that name. Confirm in the LCH240 manual."
   },
   "compressorCount": {
     "value": 4,
@@ -61,19 +64,23 @@
   "hpsCutoutPsig": {
     "value": 640,
     "verified": false,
-    "basis": "generic",
-    "note": "Typical R-410A HPS range; confirm switch rating from manual."
+    "basis": "sister-model",
+    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
+    "note": "S4: auto-reset SPST N.C., opens at 640 ±10 psig on pressure rise, resets at 475 +10 psig, wired to A55. Economizer can keep running when S4 trips. Confirm in the LCH240 manual."
   },
   "lpsCutoutPsig": {
     "value": 40,
     "verified": false,
-    "basis": "generic",
-    "note": "Typical R-410A LPS open point; confirm from manual."
+    "basis": "sister-model",
+    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
+    "note": "S87 loss-of-charge switch on the suction line: opens at 40 +5 psig. Confirm in the LCH240 manual."
   },
   "lpsCutinPsig": {
     "value": 90,
     "verified": false,
-    "basis": "generic"
+    "basis": "sister-model",
+    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
+    "note": "S87 auto-resets at 90 +5 psig. Confirm in the LCH240 manual."
   },
   "factoryEconomizer": {
     "value": "Lennox economizer accessory, controlled by M2 (factory option)",
@@ -91,47 +98,79 @@
     "cc1": {
       "value": "K1",
       "verified": false,
-      "basis": "generic"
+      "basis": "sister-model",
+      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
+      "note": "K1 energizes compressor B1 on Unit Controller demand; 3-phase = 3-pole double-break, 24 V coil. Confirm in the LCH240 manual."
     },
     "comp1": {
       "value": "B1",
       "verified": false,
-      "basis": "generic"
+      "basis": "sister-model",
+      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
+      "note": "Compressor B1. Confirm in the LCH240 manual."
     },
     "cfm1": {
       "value": "B4",
       "verified": false,
-      "basis": "generic"
+      "basis": "sister-model",
+      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
+      "note": "Condenser fan B4. Confirm in the LCH240 manual."
     },
     "cfm1cap": {
       "value": "C1",
       "verified": false,
-      "basis": "generic"
+      "basis": "sister-model",
+      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
+      "note": "Fan capacitor C1 (three phase, belt drive) assists condenser fan B4 start. Confirm in the LCH240 manual."
     },
     "blower": {
       "value": "B3",
       "verified": false,
-      "basis": "generic"
+      "basis": "sister-model",
+      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
+      "note": "Indoor blower B3 via K3 (and K37 on two-speed). Confirm in the LCH240 manual."
     },
     "lps1": {
       "value": "S87",
       "verified": false,
-      "basis": "generic"
+      "basis": "sister-model",
+      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
+      "note": "Low pressure switch S87. Confirm in the LCH240 manual."
     },
     "hps1": {
       "value": "S4",
       "verified": false,
-      "basis": "generic"
+      "basis": "sister-model",
+      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
+      "note": "High pressure switch S4. Confirm in the LCH240 manual."
     },
     "xfmr": {
       "value": "T1",
       "verified": false,
-      "basis": "generic"
+      "basis": "sister-model",
+      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
+      "note": "Control transformer T1. Confirm in the LCH240 manual."
     },
     "controller": {
       "value": "A55",
       "verified": false,
-      "basis": "generic"
+      "basis": "sister-model",
+      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
+      "note": "Unit Controller A55. Confirm in the LCH240 manual."
+    },
+    "freezestat": {
+      "value": "S49",
+      "verified": false,
+      "basis": "sister-model",
+      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
+      "note": "Freezestat S49. Confirm in the LCH240 manual."
+    },
+    "lowAmbient": {
+      "value": "S11",
+      "verified": false,
+      "basis": "sister-model",
+      "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
+      "note": "Low ambient switch S11. Confirm in the LCH240 manual."
     }
   },
   "ratings": {
@@ -212,5 +251,40 @@
         "txt_jade_checkout": "DAMPER OPEN: actuator drives full open, blades follow. DAMPER CLOSE: drives closed, blades seal."
       }
     }
+  },
+  "hpsResetPsig": {
+    "value": 475,
+    "verified": false,
+    "basis": "sister-model",
+    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
+    "note": "S4 auto-reset point. Confirm in the LCH240 manual."
+  },
+  "freezestat": {
+    "value": "S49: opens 29 ±3°F, closes 58 ±4°F, auto-reset, on an evaporator return bend, wired to A55",
+    "verified": false,
+    "basis": "sister-model",
+    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
+    "note": "Opens during compressor operation to disable that compressor until the coil warms. Confirm in the LCH240 manual."
+  },
+  "lowAmbientSwitch": {
+    "value": "S11: liquid-line, opens below 240 ±10 psig, closes at 450 ±10 psig; A55 uses it to cycle the outdoor fan below 62°F until 65°F",
+    "verified": false,
+    "basis": "sister-model",
+    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
+    "note": "Standard on LGH. Confirm in the LCH240 manual."
+  },
+  "controlTransformer": {
+    "value": "T1: 70 VA, line to 24 VAC, protected by 3.5 A circuit breaker CB8",
+    "verified": false,
+    "basis": "sister-model",
+    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
+    "note": " Confirm in the LCH240 manual."
+  },
+  "condenserFanRelay": {
+    "value": "K10: optional DPDT relay, 24 VAC coil, energizes condenser fan B4",
+    "verified": false,
+    "basis": "sister-model",
+    "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
+    "note": " Confirm in the LCH240 manual."
   }
 }

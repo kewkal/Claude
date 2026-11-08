@@ -1,7 +1,8 @@
 // Core content schema. Documented for authors in docs/SCENARIO_SCHEMA.md and docs/COMPONENT_SCHEMA.md.
 
 /** Where a value came from. Anything not from /docs is verified:false and shows a "⚠ generic value" tag. */
-export type Basis = 'manual' | 'rating-label' | 'rule-of-thumb' | 'generic' | 'physics';
+/** sister-model = taken from a manual for a related model (cited), still verified:false until the exact model's doc confirms it. */
+export type Basis = 'manual' | 'rating-label' | 'rule-of-thumb' | 'generic' | 'physics' | 'sister-model';
 
 /** A spec, threshold, setting, or status that must be traceable to a source. */
 export interface Sourced<T> {
