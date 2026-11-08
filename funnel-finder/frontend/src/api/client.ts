@@ -23,6 +23,7 @@ export interface LandingPage {
   url: string
   final_url: string | null
   screenshot_path: string | null
+  html_path: string | null
   headline: string | null
   subheadline: string | null
   ctas: string[] | null
