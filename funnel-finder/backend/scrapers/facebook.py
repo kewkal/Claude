@@ -1,148 +1,185 @@
 """
-Facebook Ad Library API client.
-Docs: https://developers.facebook.com/docs/marketing-api/reference/ads_archive/
-Requires a Facebook Graph API token with ads_read permission.
+Facebook Ad Library public website scraper using Playwright.
+No API token required — scrapes the publicly accessible search at
+https://www.facebook.com/ads/library/
 """
 import asyncio
-from datetime import datetime, timedelta
-import httpx
-from backend.config import settings
+import re
+from datetime import datetime
+from playwright.async_api import async_playwright, TimeoutError as PWTimeout
 
 
-FB_API_BASE = "https://graph.facebook.com/v19.0/ads_archive"
+FB_LIBRARY_URL = "https://www.facebook.com/ads/library/"
 
-AD_FIELDS = ",".join([
-    "id",
-    "page_name",
-    "page_id",
-    "ad_creative_bodies",
-    "ad_creative_link_captions",
-    "ad_creative_link_descriptions",
-    "ad_creative_link_titles",
-    "ad_snapshot_url",
-    "ad_delivery_start_time",
-    "ad_delivery_stop_time",
-    "impressions",
-    "spend",
-    "currency",
-    "languages",
-    "publisher_platforms",
-])
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+]
+_ua_index = 0
 
 
-async def _fetch_page(client: httpx.AsyncClient, params: dict) -> dict:
-    resp = await client.get(FB_API_BASE, params=params, timeout=30)
-    resp.raise_for_status()
-    return resp.json()
+def _next_ua() -> str:
+    global _ua_index
+    ua = USER_AGENTS[_ua_index % len(USER_AGENTS)]
+    _ua_index += 1
+    return ua
 
 
-def _parse_ad(raw: dict) -> dict:
-    start_str = raw.get("ad_delivery_start_time")
-    stop_str = raw.get("ad_delivery_stop_time")
-    first_seen = datetime.fromisoformat(start_str) if start_str else None
-    last_seen = datetime.fromisoformat(stop_str) if stop_str else datetime.utcnow()
-    days_active = (last_seen - first_seen).days if first_seen else 0
-
-    bodies = raw.get("ad_creative_bodies") or []
-    creative_text = bodies[0] if bodies else None
-
-    # Extract landing page from link captions or descriptions
-    captions = raw.get("ad_creative_link_captions") or []
-    landing_page_url = captions[0] if captions else None
-
-    return {
-        "external_id": raw.get("id"),
-        "platform": "facebook",
-        "advertiser_name": raw.get("page_name", "Unknown"),
-        "page_id": raw.get("page_id"),
-        "creative_text": creative_text,
-        "ad_snapshot_url": raw.get("ad_snapshot_url"),
-        "landing_page_url": landing_page_url,
-        "days_active": days_active,
-        "first_seen": first_seen,
-        "last_seen": last_seen,
-        "raw_data": raw,
-    }
+def _parse_date_text(text: str) -> datetime | None:
+    """Parse strings like 'Started running on Nov 1, 2024'."""
+    try:
+        match = re.search(r'(\w+ \d+, \d{4})', text)
+        if match:
+            return datetime.strptime(match.group(1), "%b %d, %Y")
+    except Exception:
+        pass
+    return None
 
 
-async def search_by_keyword(query: str, country: str = "US", max_results: int = 50) -> list[dict]:
-    if not settings.fb_access_token:
-        raise ValueError("FB_ACCESS_TOKEN not set. Copy .env.example to .env and add your token.")
+async def _scrape_library(query: str, query_type: str, max_results: int = 30) -> list[dict]:
+    """Scrape Facebook Ad Library search results page."""
+    ads: list[dict] = []
 
+    # Build URL params
     params = {
-        "access_token": settings.fb_access_token,
-        "search_terms": query,
-        "ad_type": "ALL",
-        "ad_reached_countries": f'["{country}"]',
-        "fields": AD_FIELDS,
-        "limit": min(max_results, 50),
+        "active_status": "active",
+        "ad_type": "all",
+        "country": "US",
+        "media_type": "all",
     }
+    if query_type == "keyword":
+        params["q"] = query
+        params["search_type"] = "keyword_unordered"
+    elif query_type in ("domain", "advertiser"):
+        params["q"] = query
+        params["search_type"] = "page"
+    else:
+        params["q"] = "shop now"
+        params["search_type"] = "keyword_unordered"
 
-    ads = []
-    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+    qs = "&".join(f"{k}={v}" for k, v in params.items())
+    url = f"{FB_LIBRARY_URL}?{qs}"
 
-    async with httpx.AsyncClient() as client:
-        while len(ads) < max_results:
-            data = await _fetch_page(client, params)
-            for raw in data.get("data", []):
-                parsed = _parse_ad(raw)
-                # Only include ads active for 30+ days
-                if parsed["days_active"] >= 30:
-                    ads.append(parsed)
+    async with async_playwright() as pw:
+        browser = await pw.chromium.launch(headless=True)
+        ctx = await browser.new_context(
+            viewport={"width": 1280, "height": 900},
+            user_agent=_next_ua(),
+            locale="en-US",
+        )
+        page = await ctx.new_page()
 
-            paging = data.get("paging", {})
-            next_cursor = paging.get("cursors", {}).get("after")
-            if not next_cursor or not paging.get("next"):
-                break
-            params["after"] = next_cursor
-            await asyncio.sleep(0.5)
+        # Block images/fonts to speed up load
+        await page.route("**/*.{png,jpg,jpeg,gif,svg,woff,woff2,ttf}", lambda r: r.abort())
 
-    return ads[:max_results]
-
-
-async def search_by_advertiser(page_name: str, country: str = "US", max_results: int = 50) -> list[dict]:
-    if not settings.fb_access_token:
-        raise ValueError("FB_ACCESS_TOKEN not set.")
-
-    params = {
-        "access_token": settings.fb_access_token,
-        "search_page_ids": page_name,
-        "ad_type": "ALL",
-        "ad_reached_countries": f'["{country}"]',
-        "fields": AD_FIELDS,
-        "limit": min(max_results, 50),
-    }
-
-    # Try by page name search first
-    params_name = dict(params)
-    params_name.pop("search_page_ids")
-    params_name["search_terms"] = page_name
-
-    ads = []
-    async with httpx.AsyncClient() as client:
-        data = await _fetch_page(client, params_name)
-        for raw in data.get("data", []):
-            if page_name.lower() in raw.get("page_name", "").lower():
-                parsed = _parse_ad(raw)
-                ads.append(parsed)
-
-    return ads[:max_results]
-
-
-async def search_by_domain(domain: str, country: str = "US", max_results: int = 50) -> list[dict]:
-    """Search for ads linking to a specific domain."""
-    return await search_by_keyword(domain, country, max_results)
-
-
-async def get_trending(country: str = "US", max_results: int = 50) -> list[dict]:
-    """Fetch broadly trending ads — uses popular keywords across niches."""
-    trending_keywords = ["buy now", "limited offer", "free trial", "get started", "shop now"]
-    all_ads: list[dict] = []
-    per_kw = max(5, max_results // len(trending_keywords))
-    for kw in trending_keywords:
         try:
-            ads = await search_by_keyword(kw, country, per_kw)
+            await page.goto(url, wait_until="domcontentloaded", timeout=20000)
+            await asyncio.sleep(3)
+
+            # Scroll to load more ads
+            for _ in range(4):
+                await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                await asyncio.sleep(2)
+                if len(await page.query_selector_all('[data-testid="ad-archive-renderer"], [class*="xh8yej3"]')) >= max_results:
+                    break
+
+            # Try multiple selectors Facebook uses
+            ad_elements = await page.query_selector_all(
+                '[data-testid="ad-archive-renderer"], '
+                'div[class*="x1yztbdb"]:has(div[class*="x1lliihq"])'
+            )
+
+            if not ad_elements:
+                # Fallback: look for any card-like containers with ad content
+                ad_elements = await page.query_selector_all('div:has(> div > div[role="img"])')
+
+            for el in ad_elements[:max_results]:
+                try:
+                    text_content = await el.inner_text()
+                    lines = [l.strip() for l in text_content.split('\n') if l.strip()]
+
+                    # Try to find advertiser name (usually the first bold/prominent line)
+                    advertiser = lines[0] if lines else "Unknown"
+
+                    # Find date info
+                    first_seen = None
+                    days_active = 0
+                    for line in lines:
+                        if "started running" in line.lower() or "ran from" in line.lower():
+                            first_seen = _parse_date_text(line)
+                            if first_seen:
+                                days_active = (datetime.utcnow() - first_seen).days
+                            break
+
+                    # Get ad body text (longest line that isn't a date/CTA)
+                    creative_text = None
+                    for line in lines[1:]:
+                        if len(line) > 50 and "started running" not in line.lower():
+                            creative_text = line[:500]
+                            break
+
+                    # Get image URL
+                    img = await el.query_selector("img[src*='fbcdn'], img[src*='facebook']")
+                    img_url = await img.get_attribute("src") if img else None
+
+                    # Get link URL
+                    link = await el.query_selector("a[href*='http']:not([href*='facebook.com/ads/library'])")
+                    link_url = None
+                    if link:
+                        href = await link.get_attribute("href")
+                        if href and not href.startswith("javascript"):
+                            link_url = href
+
+                    if advertiser and advertiser != "Unknown":
+                        ads.append({
+                            "external_id": None,
+                            "platform": "facebook",
+                            "advertiser_name": advertiser,
+                            "page_id": None,
+                            "creative_text": creative_text,
+                            "creative_image_url": img_url,
+                            "ad_snapshot_url": url,
+                            "landing_page_url": link_url,
+                            "days_active": max(days_active, 0),
+                            "variation_count": 1,
+                            "first_seen": first_seen,
+                            "last_seen": datetime.utcnow(),
+                            "raw_data": {"scraped_text": text_content[:1000]},
+                        })
+                except Exception:
+                    continue
+
+        except PWTimeout:
+            pass
+        except Exception:
+            pass
+        finally:
+            await browser.close()
+
+    return ads
+
+
+async def search_by_keyword(query: str, country: str = "US", max_results: int = 30) -> list[dict]:
+    return await _scrape_library(query, "keyword", max_results)
+
+
+async def search_by_advertiser(page_name: str, country: str = "US", max_results: int = 30) -> list[dict]:
+    return await _scrape_library(page_name, "advertiser", max_results)
+
+
+async def search_by_domain(domain: str, country: str = "US", max_results: int = 30) -> list[dict]:
+    return await _scrape_library(domain, "domain", max_results)
+
+
+async def get_trending(country: str = "US", max_results: int = 30) -> list[dict]:
+    keywords = ["shop now", "limited offer", "free shipping"]
+    all_ads: list[dict] = []
+    per_kw = max(5, max_results // len(keywords))
+    for kw in keywords:
+        try:
+            ads = await _scrape_library(kw, "keyword", per_kw)
             all_ads.extend(ads)
+            await asyncio.sleep(3)
         except Exception:
             continue
     return all_ads[:max_results]

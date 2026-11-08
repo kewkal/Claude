@@ -5,6 +5,7 @@ BASE_DIR = Path(__file__).parent.parent
 
 
 class Settings(BaseSettings):
+    # Facebook token is optional — scraper works without it
     fb_access_token: str = ""
     fb_ad_account_id: str = ""
     google_search_delay_ms: int = 2000
