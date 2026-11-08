@@ -1,4 +1,4 @@
-# TripPlanner
+# Roamio
 
 Personal, single-user, mobile-first trip planner. It pulls real-time flights, hotels, places, events, and weather, then builds Lean / Balanced / Splurge day-by-day plans around your budget.
 

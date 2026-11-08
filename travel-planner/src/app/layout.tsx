@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "TripPlanner",
+  title: "Roamio",
   description: "Personal trip planner grounded in real flight, hotel, and activity data.",
   robots: { index: false, follow: false },
 };
