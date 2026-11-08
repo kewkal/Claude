@@ -66,14 +66,14 @@
     "verified": false,
     "basis": "sister-model",
     "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
-    "note": "S4: auto-reset SPST N.C., opens at 640 ±10 psig on pressure rise, resets at 475 +10 psig, wired to A55. Economizer can keep running when S4 trips. Confirm in the LCH240 manual."
+    "note": "S4: auto-reset SPST N.C., opens at 640 ±10 psig on pressure rise, resets at 475 +10 psig, wired to A55. Economizer can keep running when S4 trips. Confirm in the LCH240 manual. Corroborated by LGM092-150 p.20 (640 ±10 psig)."
   },
   "lpsCutoutPsig": {
     "value": 40,
     "verified": false,
     "basis": "sister-model",
     "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
-    "note": "S87 loss-of-charge switch on the suction line: opens at 40 +5 psig. Confirm in the LCH240 manual."
+    "note": "S87 loss-of-charge switch on the suction line: opens at 40 +5 psig. Confirm in the LCH240 manual. Corroborated by LGM092-150 p.21 (40 +5 / 90 +5 psig)."
   },
   "lpsCutinPsig": {
     "value": 90,
@@ -257,7 +257,7 @@
     "verified": false,
     "basis": "sister-model",
     "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.30",
-    "note": "S4 auto-reset point. Confirm in the LCH240 manual."
+    "note": "S4 auto-reset point. Confirm in the LCH240 manual. LGM092-150 (p.20) lists the S4 reset as 475 ±20 psig instead."
   },
   "freezestat": {
     "value": "S49: opens 29 ±3°F, closes 58 ±4°F, auto-reset, on an evaporator return bend, wired to A55",
@@ -286,5 +286,12 @@
     "basis": "sister-model",
     "source": "docs/manuals/lennox-lgh.pdf (Lennox LGH036-074 Service Literature, Corp. 0924-L11, rev 10-2018) p.27",
     "note": " Confirm in the LCH240 manual."
+  },
+  "controllerLockoutLogic": {
+    "value": "S4 HPS: 3 trips per thermostat demand, then lockout. S87 LPS: shunted at start-up until pressure stabilizes, then a 3-strike counter during the first demand, then lockout. Reset by breaking and remaking the thermostat demand or manually resetting the controller.",
+    "verified": false,
+    "basis": "sister-model",
+    "source": "docs/manuals/lennox-lgm092-150.pdf (Lennox LGM092-150 Service Literature 100036) p.20-21",
+    "note": "LGM calls A55 the M3 (Prodigy) unit controller; LCH240 per the brief uses M2, whose counts may differ. Confirm in the LCH/M2 docs."
   }
 }
