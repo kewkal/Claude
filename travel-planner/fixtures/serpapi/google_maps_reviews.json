@@ -1,0 +1,27 @@
+{
+ "search_metadata": {
+  "id": "fixture-maps-reviews",
+  "status": "Success"
+ },
+ "reviews": [
+  {
+   "user": {
+    "name": "Sample Maps Reviewer 1"
+   },
+   "rating": 5,
+   "date": "a month ago",
+   "iso_date": "2026-09-01T10:00:00Z",
+   "snippet": "Fixture review: worth the climb, go early.",
+   "link": "https://example.com/review1"
+  },
+  {
+   "user": {
+    "name": "Sample Maps Reviewer 2"
+   },
+   "rating": 4,
+   "date": "2 months ago",
+   "iso_date": "2026-08-02T10:00:00Z",
+   "snippet": "Fixture review: crowded mid-day."
+  }
+ ]
+}

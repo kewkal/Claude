@@ -1,0 +1,469 @@
+{
+ "search_metadata": {
+  "id": "fixture-hotels",
+  "status": "Success",
+  "google_hotels_url": "https://www.google.com/travel/search?q=Lisbon&hl=en&gl=us&curr=USD"
+ },
+ "search_parameters": {
+  "engine": "google_hotels",
+  "q": "Lisbon",
+  "check_in_date": "2026-11-13",
+  "check_out_date": "2026-11-18",
+  "adults": 2
+ },
+ "properties": [
+  {
+   "type": "hotel",
+   "name": "Sample Hotel Chiado",
+   "description": "Sample Hotel Chiado \u2014 fixture property for tests.",
+   "link": "https://example.com/fixture-hotel-0",
+   "gps_coordinates": {
+    "latitude": 38.7106,
+    "longitude": -9.1426
+   },
+   "check_in_time": "3:00 PM",
+   "check_out_time": "11:00 AM",
+   "rate_per_night": {
+    "lowest": "$238",
+    "extracted_lowest": 238,
+    "before_taxes_fees": "$214",
+    "extracted_before_taxes_fees": 214
+   },
+   "total_rate": {
+    "lowest": "$1190",
+    "extracted_lowest": 1190,
+    "before_taxes_fees": "$1070",
+    "extracted_before_taxes_fees": 1070
+   },
+   "images": [
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel0a/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel0a/1200/900"
+    },
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel0b/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel0b/1200/900"
+    }
+   ],
+   "overall_rating": 4.6,
+   "reviews": 2140,
+   "location_rating": 4.5,
+   "amenities": [
+    "Free Wi-Fi",
+    "Air conditioning",
+    "Restaurant",
+    "Bar",
+    "Fitness centre"
+   ],
+   "nearby_places": [
+    {
+     "name": "Sample Metro Station",
+     "transportations": [
+      {
+       "type": "Walking",
+       "duration": "4 min"
+      }
+     ]
+    }
+   ],
+   "property_token": "FIXTURE_PROP_0",
+   "hotel_class": "4-star hotel",
+   "extracted_hotel_class": 4,
+   "free_cancellation": true
+  },
+  {
+   "type": "hotel",
+   "name": "Sample Grand Palace Avenida",
+   "description": "Sample Grand Palace Avenida \u2014 fixture property for tests.",
+   "link": "https://example.com/fixture-hotel-1",
+   "gps_coordinates": {
+    "latitude": 38.72,
+    "longitude": -9.146
+   },
+   "check_in_time": "3:00 PM",
+   "check_out_time": "11:00 AM",
+   "rate_per_night": {
+    "lowest": "$512",
+    "extracted_lowest": 512,
+    "before_taxes_fees": "$465",
+    "extracted_before_taxes_fees": 465
+   },
+   "total_rate": {
+    "lowest": "$2560",
+    "extracted_lowest": 2560,
+    "before_taxes_fees": "$2325",
+    "extracted_before_taxes_fees": 2325
+   },
+   "images": [
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel1a/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel1a/1200/900"
+    },
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel1b/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel1b/1200/900"
+    }
+   ],
+   "overall_rating": 4.7,
+   "reviews": 3520,
+   "location_rating": 3.9,
+   "amenities": [
+    "Free Wi-Fi",
+    "Pool",
+    "Spa",
+    "Restaurant",
+    "Bar",
+    "Room service",
+    "Fitness centre"
+   ],
+   "nearby_places": [
+    {
+     "name": "Sample Metro Station",
+     "transportations": [
+      {
+       "type": "Walking",
+       "duration": "4 min"
+      }
+     ]
+    }
+   ],
+   "property_token": "FIXTURE_PROP_1",
+   "hotel_class": "5-star hotel",
+   "extracted_hotel_class": 5
+  },
+  {
+   "type": "hotel",
+   "name": "Sample Alfama Guesthouse",
+   "description": "Sample Alfama Guesthouse \u2014 fixture property for tests.",
+   "link": "https://example.com/fixture-hotel-2",
+   "gps_coordinates": {
+    "latitude": 38.7114,
+    "longitude": -9.13
+   },
+   "check_in_time": "3:00 PM",
+   "check_out_time": "12:00 PM",
+   "rate_per_night": {
+    "lowest": "$96",
+    "extracted_lowest": 96,
+    "before_taxes_fees": "$87",
+    "extracted_before_taxes_fees": 87
+   },
+   "total_rate": {
+    "lowest": "$480",
+    "extracted_lowest": 480,
+    "before_taxes_fees": "$435",
+    "extracted_before_taxes_fees": 435
+   },
+   "images": [
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel2a/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel2a/1200/900"
+    },
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel2b/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel2b/1200/900"
+    }
+   ],
+   "overall_rating": 4.3,
+   "reviews": 610,
+   "location_rating": 3.9,
+   "amenities": [
+    "Free Wi-Fi",
+    "Free breakfast"
+   ],
+   "nearby_places": [
+    {
+     "name": "Sample Metro Station",
+     "transportations": [
+      {
+       "type": "Walking",
+       "duration": "4 min"
+      }
+     ]
+    }
+   ],
+   "property_token": "FIXTURE_PROP_2",
+   "hotel_class": "2-star hotel",
+   "extracted_hotel_class": 2
+  },
+  {
+   "type": "hotel",
+   "name": "Sample Baixa Boutique",
+   "description": "Sample Baixa Boutique \u2014 fixture property for tests.",
+   "link": "https://example.com/fixture-hotel-3",
+   "gps_coordinates": {
+    "latitude": 38.711,
+    "longitude": -9.139
+   },
+   "check_in_time": "3:00 PM",
+   "check_out_time": "11:00 AM",
+   "rate_per_night": {
+    "lowest": "$162",
+    "extracted_lowest": 162,
+    "before_taxes_fees": "$147",
+    "extracted_before_taxes_fees": 147
+   },
+   "total_rate": {
+    "lowest": "$810",
+    "extracted_lowest": 810,
+    "before_taxes_fees": "$735",
+    "extracted_before_taxes_fees": 735
+   },
+   "images": [
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel3a/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel3a/1200/900"
+    },
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel3b/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel3b/1200/900"
+    }
+   ],
+   "overall_rating": 4.4,
+   "reviews": 1288,
+   "location_rating": 4.5,
+   "amenities": [
+    "Free Wi-Fi",
+    "Air conditioning",
+    "Free breakfast"
+   ],
+   "nearby_places": [
+    {
+     "name": "Sample Metro Station",
+     "transportations": [
+      {
+       "type": "Walking",
+       "duration": "4 min"
+      }
+     ]
+    }
+   ],
+   "property_token": "FIXTURE_PROP_3",
+   "hotel_class": "3-star hotel",
+   "extracted_hotel_class": 3,
+   "free_cancellation": true
+  },
+  {
+   "type": "hotel",
+   "name": "Sample Bel\u00e9m Riverside",
+   "description": "Sample Bel\u00e9m Riverside \u2014 fixture property for tests.",
+   "link": "https://example.com/fixture-hotel-4",
+   "gps_coordinates": {
+    "latitude": 38.697,
+    "longitude": -9.206
+   },
+   "check_in_time": "3:00 PM",
+   "check_out_time": "11:00 AM",
+   "rate_per_night": {
+    "lowest": "$189",
+    "extracted_lowest": 189,
+    "before_taxes_fees": "$172",
+    "extracted_before_taxes_fees": 172
+   },
+   "total_rate": {
+    "lowest": "$945",
+    "extracted_lowest": 945,
+    "before_taxes_fees": "$860",
+    "extracted_before_taxes_fees": 860
+   },
+   "images": [
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel4a/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel4a/1200/900"
+    },
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel4b/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel4b/1200/900"
+    }
+   ],
+   "overall_rating": 4.2,
+   "reviews": 980,
+   "location_rating": 3.9,
+   "amenities": [
+    "Free Wi-Fi",
+    "Pool",
+    "Restaurant",
+    "Free parking"
+   ],
+   "nearby_places": [
+    {
+     "name": "Sample Metro Station",
+     "transportations": [
+      {
+       "type": "Walking",
+       "duration": "4 min"
+      }
+     ]
+    }
+   ],
+   "property_token": "FIXTURE_PROP_4",
+   "hotel_class": "4-star hotel",
+   "extracted_hotel_class": 4
+  },
+  {
+   "type": "vacation rental",
+   "name": "Sample Pr\u00edncipe Real Apartment",
+   "description": "Sample Pr\u00edncipe Real Apartment \u2014 fixture property for tests.",
+   "link": "https://example.com/fixture-hotel-5",
+   "gps_coordinates": {
+    "latitude": 38.7166,
+    "longitude": -9.1484
+   },
+   "check_in_time": "3:00 PM",
+   "check_out_time": "11:00 AM",
+   "rate_per_night": {
+    "lowest": "$145",
+    "extracted_lowest": 145,
+    "before_taxes_fees": "$131",
+    "extracted_before_taxes_fees": 131
+   },
+   "total_rate": {
+    "lowest": "$725",
+    "extracted_lowest": 725,
+    "before_taxes_fees": "$655",
+    "extracted_before_taxes_fees": 655
+   },
+   "images": [
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel5a/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel5a/1200/900"
+    },
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel5b/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel5b/1200/900"
+    }
+   ],
+   "overall_rating": 4.8,
+   "reviews": 74,
+   "location_rating": 3.9,
+   "amenities": [
+    "Kitchen",
+    "Washer",
+    "Free Wi-Fi"
+   ],
+   "nearby_places": [
+    {
+     "name": "Sample Metro Station",
+     "transportations": [
+      {
+       "type": "Walking",
+       "duration": "4 min"
+      }
+     ]
+    }
+   ],
+   "property_token": "FIXTURE_PROP_5"
+  },
+  {
+   "type": "hotel",
+   "name": "Sample Parque Na\u00e7\u00f5es Hotel",
+   "description": "Sample Parque Na\u00e7\u00f5es Hotel \u2014 fixture property for tests.",
+   "link": "https://example.com/fixture-hotel-6",
+   "gps_coordinates": {
+    "latitude": 38.768,
+    "longitude": -9.094
+   },
+   "check_in_time": "3:00 PM",
+   "check_out_time": "11:00 AM",
+   "rate_per_night": {
+    "lowest": "$129",
+    "extracted_lowest": 129,
+    "before_taxes_fees": "$117",
+    "extracted_before_taxes_fees": 117
+   },
+   "total_rate": {
+    "lowest": "$645",
+    "extracted_lowest": 645,
+    "before_taxes_fees": "$585",
+    "extracted_before_taxes_fees": 585
+   },
+   "images": [
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel6a/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel6a/1200/900"
+    },
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel6b/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel6b/1200/900"
+    }
+   ],
+   "overall_rating": 4.1,
+   "reviews": 2210,
+   "location_rating": 3.9,
+   "amenities": [
+    "Free Wi-Fi",
+    "Fitness centre",
+    "Restaurant",
+    "Airport shuttle"
+   ],
+   "nearby_places": [
+    {
+     "name": "Sample Metro Station",
+     "transportations": [
+      {
+       "type": "Walking",
+       "duration": "4 min"
+      }
+     ]
+    }
+   ],
+   "property_token": "FIXTURE_PROP_6",
+   "hotel_class": "4-star hotel",
+   "extracted_hotel_class": 4
+  },
+  {
+   "type": "hotel",
+   "name": "Sample Cais do Sodr\u00e9 Hostel",
+   "description": "Sample Cais do Sodr\u00e9 Hostel \u2014 fixture property for tests.",
+   "link": "https://example.com/fixture-hotel-7",
+   "gps_coordinates": {
+    "latitude": 38.706,
+    "longitude": -9.144
+   },
+   "check_in_time": "3:00 PM",
+   "check_out_time": "11:00 AM",
+   "rate_per_night": {
+    "lowest": "$58",
+    "extracted_lowest": 58,
+    "before_taxes_fees": "$53",
+    "extracted_before_taxes_fees": 53
+   },
+   "total_rate": {
+    "lowest": "$290",
+    "extracted_lowest": 290,
+    "before_taxes_fees": "$265",
+    "extracted_before_taxes_fees": 265
+   },
+   "images": [
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel7a/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel7a/1200/900"
+    },
+    {
+     "thumbnail": "https://picsum.photos/seed/tphotel7b/400/300",
+     "original_image": "https://picsum.photos/seed/tphotel7b/1200/900"
+    }
+   ],
+   "overall_rating": 4.5,
+   "reviews": 3900,
+   "location_rating": 3.9,
+   "amenities": [
+    "Free Wi-Fi",
+    "Bar",
+    "Shared kitchen"
+   ],
+   "nearby_places": [
+    {
+     "name": "Sample Metro Station",
+     "transportations": [
+      {
+       "type": "Walking",
+       "duration": "4 min"
+      }
+     ]
+    }
+   ],
+   "property_token": "FIXTURE_PROP_7"
+  }
+ ]
+}

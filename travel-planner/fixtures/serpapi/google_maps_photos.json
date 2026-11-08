@@ -1,0 +1,28 @@
+{
+ "search_metadata": {
+  "id": "fixture-maps-photos",
+  "status": "Success"
+ },
+ "photos": [
+  {
+   "thumbnail": "https://picsum.photos/seed/tpmp0/400/300",
+   "image": "https://picsum.photos/seed/tpmp0/1200/900"
+  },
+  {
+   "thumbnail": "https://picsum.photos/seed/tpmp1/400/300",
+   "image": "https://picsum.photos/seed/tpmp1/1200/900"
+  },
+  {
+   "thumbnail": "https://picsum.photos/seed/tpmp2/400/300",
+   "image": "https://picsum.photos/seed/tpmp2/1200/900"
+  },
+  {
+   "thumbnail": "https://picsum.photos/seed/tpmp3/400/300",
+   "image": "https://picsum.photos/seed/tpmp3/1200/900"
+  },
+  {
+   "thumbnail": "https://picsum.photos/seed/tpmp4/400/300",
+   "image": "https://picsum.photos/seed/tpmp4/1200/900"
+  }
+ ]
+}

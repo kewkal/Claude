@@ -1,0 +1,108 @@
+// Suggestions for the origin field. Convenience only: any airport code or city name typed in
+// still works (the server resolves free text through Google Flights' airport lookup).
+export const US_AIRPORTS: { code: string; city: string; name: string }[] = [
+  { code: "ATL", city: "Atlanta, GA", name: "Hartsfield-Jackson" },
+  { code: "LAX", city: "Los Angeles, CA", name: "Los Angeles Intl" },
+  { code: "ORD", city: "Chicago, IL", name: "O'Hare" },
+  { code: "MDW", city: "Chicago, IL", name: "Midway" },
+  { code: "DFW", city: "Dallas/Fort Worth, TX", name: "DFW Intl" },
+  { code: "DAL", city: "Dallas, TX", name: "Love Field" },
+  { code: "DEN", city: "Denver, CO", name: "Denver Intl" },
+  { code: "JFK", city: "New York, NY", name: "John F. Kennedy" },
+  { code: "LGA", city: "New York, NY", name: "LaGuardia" },
+  { code: "EWR", city: "Newark, NJ", name: "Newark Liberty" },
+  { code: "SFO", city: "San Francisco, CA", name: "San Francisco Intl" },
+  { code: "OAK", city: "Oakland, CA", name: "Oakland Intl" },
+  { code: "SJC", city: "San Jose, CA", name: "San Jose Intl" },
+  { code: "SEA", city: "Seattle, WA", name: "Seattle-Tacoma" },
+  { code: "LAS", city: "Las Vegas, NV", name: "Harry Reid Intl" },
+  { code: "MCO", city: "Orlando, FL", name: "Orlando Intl" },
+  { code: "MIA", city: "Miami, FL", name: "Miami Intl" },
+  { code: "FLL", city: "Fort Lauderdale, FL", name: "Fort Lauderdale-Hollywood" },
+  { code: "CLT", city: "Charlotte, NC", name: "Charlotte Douglas" },
+  { code: "PHX", city: "Phoenix, AZ", name: "Sky Harbor" },
+  { code: "IAH", city: "Houston, TX", name: "George Bush Intercontinental" },
+  { code: "HOU", city: "Houston, TX", name: "Hobby" },
+  { code: "BOS", city: "Boston, MA", name: "Logan" },
+  { code: "MSP", city: "Minneapolis, MN", name: "Minneapolis-St. Paul" },
+  { code: "DTW", city: "Detroit, MI", name: "Detroit Metro" },
+  { code: "PHL", city: "Philadelphia, PA", name: "Philadelphia Intl" },
+  { code: "BWI", city: "Baltimore, MD", name: "Baltimore/Washington" },
+  { code: "DCA", city: "Washington, DC", name: "Reagan National" },
+  { code: "IAD", city: "Washington, DC", name: "Dulles" },
+  { code: "SLC", city: "Salt Lake City, UT", name: "Salt Lake City Intl" },
+  { code: "SAN", city: "San Diego, CA", name: "San Diego Intl" },
+  { code: "TPA", city: "Tampa, FL", name: "Tampa Intl" },
+  { code: "PDX", city: "Portland, OR", name: "Portland Intl" },
+  { code: "BNA", city: "Nashville, TN", name: "Nashville Intl" },
+  { code: "AUS", city: "Austin, TX", name: "Austin-Bergstrom" },
+  { code: "SAT", city: "San Antonio, TX", name: "San Antonio Intl" },
+  { code: "STL", city: "St. Louis, MO", name: "St. Louis Lambert" },
+  { code: "MCI", city: "Kansas City, MO", name: "Kansas City Intl" },
+  { code: "RDU", city: "Raleigh-Durham, NC", name: "Raleigh-Durham Intl" },
+  { code: "SMF", city: "Sacramento, CA", name: "Sacramento Intl" },
+  { code: "MSY", city: "New Orleans, LA", name: "Louis Armstrong" },
+  { code: "IND", city: "Indianapolis, IN", name: "Indianapolis Intl" },
+  { code: "CLE", city: "Cleveland, OH", name: "Cleveland Hopkins" },
+  { code: "CMH", city: "Columbus, OH", name: "John Glenn Columbus" },
+  { code: "PIT", city: "Pittsburgh, PA", name: "Pittsburgh Intl" },
+  { code: "CVG", city: "Cincinnati, OH", name: "Cincinnati/N. Kentucky" },
+  { code: "MKE", city: "Milwaukee, WI", name: "Milwaukee Mitchell" },
+  { code: "JAX", city: "Jacksonville, FL", name: "Jacksonville Intl" },
+  { code: "RSW", city: "Fort Myers, FL", name: "Southwest Florida Intl" },
+  { code: "PBI", city: "West Palm Beach, FL", name: "Palm Beach Intl" },
+  { code: "SNA", city: "Santa Ana, CA", name: "John Wayne (Orange County)" },
+  { code: "BUR", city: "Burbank, CA", name: "Hollywood Burbank" },
+  { code: "ONT", city: "Ontario, CA", name: "Ontario Intl" },
+  { code: "LGB", city: "Long Beach, CA", name: "Long Beach" },
+  { code: "HNL", city: "Honolulu, HI", name: "Daniel K. Inouye" },
+  { code: "OGG", city: "Kahului, HI", name: "Kahului (Maui)" },
+  { code: "KOA", city: "Kona, HI", name: "Ellison Onizuka Kona" },
+  { code: "LIH", city: "Lihue, HI", name: "Lihue (Kauai)" },
+  { code: "ANC", city: "Anchorage, AK", name: "Ted Stevens Anchorage" },
+  { code: "ABQ", city: "Albuquerque, NM", name: "Albuquerque Sunport" },
+  { code: "ELP", city: "El Paso, TX", name: "El Paso Intl" },
+  { code: "TUS", city: "Tucson, AZ", name: "Tucson Intl" },
+  { code: "OKC", city: "Oklahoma City, OK", name: "Will Rogers" },
+  { code: "TUL", city: "Tulsa, OK", name: "Tulsa Intl" },
+  { code: "OMA", city: "Omaha, NE", name: "Eppley Airfield" },
+  { code: "MEM", city: "Memphis, TN", name: "Memphis Intl" },
+  { code: "SDF", city: "Louisville, KY", name: "Louisville Muhammad Ali" },
+  { code: "BHM", city: "Birmingham, AL", name: "Birmingham-Shuttlesworth" },
+  { code: "RIC", city: "Richmond, VA", name: "Richmond Intl" },
+  { code: "ORF", city: "Norfolk, VA", name: "Norfolk Intl" },
+  { code: "CHS", city: "Charleston, SC", name: "Charleston Intl" },
+  { code: "SAV", city: "Savannah, GA", name: "Savannah/Hilton Head" },
+  { code: "GSP", city: "Greenville, SC", name: "Greenville-Spartanburg" },
+  { code: "BDL", city: "Hartford, CT", name: "Bradley Intl" },
+  { code: "PVD", city: "Providence, RI", name: "T.F. Green" },
+  { code: "BUF", city: "Buffalo, NY", name: "Buffalo Niagara" },
+  { code: "ALB", city: "Albany, NY", name: "Albany Intl" },
+  { code: "DSM", city: "Des Moines, IA", name: "Des Moines Intl" },
+  { code: "MSN", city: "Madison, WI", name: "Dane County Regional" },
+  { code: "GRR", city: "Grand Rapids, MI", name: "Gerald R. Ford" },
+  { code: "BOI", city: "Boise, ID", name: "Boise Airport" },
+  { code: "RNO", city: "Reno, NV", name: "Reno-Tahoe" },
+  { code: "SJU", city: "San Juan, PR", name: "Luis Muñoz Marín" },
+];
+
+/**
+ * "San Juan" -> "SJU", "Chicago" -> "ORD,MDW", "Dallas, TX" -> "DFW,DAL". Free, no API call.
+ * Matches the city name (or either half of "Dallas/Fort Worth"), with or without the state.
+ * Returns null when the text isn't a city in the list, so the caller falls back to Google's lookup.
+ */
+export function airportsForCity(text: string): string | null {
+  const t = text.trim().toLowerCase().replace(/\s+/g, " ").replace(/\.$/, "");
+  if (!t || /^[a-z]{3}$/.test(t)) return null;
+  const codes = US_AIRPORTS.filter((a) => {
+    const [cityPart, state = ""] = a.city.toLowerCase().split(", ");
+    const names = [cityPart, ...cityPart.split("/")];
+    return names.some((n) => t === n || t === `${n}, ${state}` || t === `${n} ${state}`);
+  }).map((a) => a.code);
+  return codes.length ? [...new Set(codes)].slice(0, 3).join(",") : null;
+}
+
+export function airportLabel(code: string): string | null {
+  const a = US_AIRPORTS.find((x) => x.code === code.trim().toUpperCase());
+  return a ? `${a.city} · ${a.name}` : null;
+}

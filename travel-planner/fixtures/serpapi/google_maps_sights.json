@@ -1,0 +1,150 @@
+{
+ "search_metadata": {
+  "id": "fixture-maps-sights",
+  "status": "Success"
+ },
+ "local_results": [
+  {
+   "position": 1,
+   "title": "Sample Castle Viewpoint",
+   "place_id": "FIXTURE_PLACE_SAMPLE_CASTLE_VIEWPOINT",
+   "data_id": "0xFIX2f8f2f2:0x0",
+   "gps_coordinates": {
+    "latitude": 38.7139,
+    "longitude": -9.1335
+   },
+   "rating": 4.6,
+   "reviews": 98000,
+   "type": "Castle",
+   "types": [
+    "Castle"
+   ],
+   "address": "100 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace554/400/300",
+   "price": "\u20ac15"
+  },
+  {
+   "position": 2,
+   "title": "Sample Tower by the River",
+   "place_id": "FIXTURE_PLACE_SAMPLE_TOWER_BY_THE_RIVER",
+   "data_id": "0xFIX293dd84:0x1",
+   "gps_coordinates": {
+    "latitude": 38.6916,
+    "longitude": -9.216
+   },
+   "rating": 4.6,
+   "reviews": 120000,
+   "type": "Historical landmark",
+   "types": [
+    "Historical landmark"
+   ],
+   "address": "101 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace932/400/300"
+  },
+  {
+   "position": 3,
+   "title": "Sample Monastery",
+   "place_id": "FIXTURE_PLACE_SAMPLE_MONASTERY",
+   "data_id": "0xFIX1f69460:0x2",
+   "gps_coordinates": {
+    "latitude": 38.6979,
+    "longitude": -9.2068
+   },
+   "rating": 4.7,
+   "reviews": 85000,
+   "type": "Monastery",
+   "types": [
+    "Monastery"
+   ],
+   "address": "102 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace56/400/300",
+   "price": "$12"
+  },
+  {
+   "position": 4,
+   "title": "Sample Arch Square",
+   "place_id": "FIXTURE_PLACE_SAMPLE_ARCH_SQUARE",
+   "data_id": "0xFIX12fc314:0x3",
+   "gps_coordinates": {
+    "latitude": 38.7076,
+    "longitude": -9.1365
+   },
+   "rating": 4.7,
+   "reviews": 150000,
+   "type": "Plaza",
+   "types": [
+    "Plaza"
+   ],
+   "address": "103 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace348/400/300"
+  },
+  {
+   "position": 5,
+   "title": "Sample Tiny Chapel",
+   "place_id": "FIXTURE_PLACE_SAMPLE_TINY_CHAPEL",
+   "data_id": "0xFIX184de4b:0x4",
+   "gps_coordinates": {
+    "latitude": 38.713,
+    "longitude": -9.13
+   },
+   "rating": 4.4,
+   "reviews": 45,
+   "type": "Church",
+   "types": [
+    "Church"
+   ],
+   "address": "104 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace875/400/300"
+  }
+ ]
+}

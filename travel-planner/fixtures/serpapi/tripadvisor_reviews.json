@@ -1,0 +1,18 @@
+{
+ "search_metadata": {
+  "id": "fixture-ta-reviews",
+  "status": "Success"
+ },
+ "reviews": [
+  {
+   "title": "Great views",
+   "snippet": "Fixture Tripadvisor review text.",
+   "rating": 5,
+   "date": "Oct 2026",
+   "author": {
+    "username": "sample_traveler"
+   },
+   "link": "https://example.com/ta-review"
+  }
+ ]
+}

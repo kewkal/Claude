@@ -1,0 +1,94 @@
+{
+ "search_metadata": {
+  "id": "fixture-maps-culture",
+  "status": "Success"
+ },
+ "local_results": [
+  {
+   "position": 1,
+   "title": "Sample Tile Museum",
+   "place_id": "FIXTURE_PLACE_SAMPLE_TILE_MUSEUM",
+   "data_id": "0xFIX50a2f3c:0x0",
+   "gps_coordinates": {
+    "latitude": 38.7253,
+    "longitude": -9.1137
+   },
+   "rating": 4.6,
+   "reviews": 25000,
+   "type": "Museum",
+   "types": [
+    "Museum"
+   ],
+   "address": "100 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace532/400/300",
+   "price": "\u20ac8"
+  },
+  {
+   "position": 2,
+   "title": "Sample Modern Art Center",
+   "place_id": "FIXTURE_PLACE_SAMPLE_MODERN_ART_CENTER",
+   "data_id": "0xFIX2cde971:0x1",
+   "gps_coordinates": {
+    "latitude": 38.737,
+    "longitude": -9.154
+   },
+   "rating": 4.6,
+   "reviews": 31000,
+   "type": "Art museum",
+   "types": [
+    "Art museum"
+   ],
+   "address": "101 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace73/400/300"
+  },
+  {
+   "position": 3,
+   "title": "Sample Fado Museum",
+   "place_id": "FIXTURE_PLACE_SAMPLE_FADO_MUSEUM",
+   "data_id": "0xFIX58ed3c1:0x2",
+   "gps_coordinates": {
+    "latitude": 38.7116,
+    "longitude": -9.129
+   },
+   "rating": 4.3,
+   "reviews": 4100,
+   "type": "Museum",
+   "types": [
+    "Museum"
+   ],
+   "address": "102 Sample Street, Lisbon, Portugal",
+   "open_state": "Open \u00b7 Closes 6 PM",
+   "operating_hours": {
+    "monday": "10 AM\u20136 PM",
+    "tuesday": "10 AM\u20136 PM",
+    "wednesday": "10 AM\u20136 PM",
+    "thursday": "10 AM\u20136 PM",
+    "friday": "10 AM\u20138 PM",
+    "saturday": "9 AM\u20138 PM",
+    "sunday": "9 AM\u20136 PM"
+   },
+   "thumbnail": "https://picsum.photos/seed/tpplace401/400/300",
+   "price": "$6"
+  }
+ ]
+}
