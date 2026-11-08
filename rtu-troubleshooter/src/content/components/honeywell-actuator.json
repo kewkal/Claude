@@ -12,14 +12,17 @@
         "basis": "generic"
       },
       "designation": {
-        "value": "Economizer actuator (JADE ACT terminals)",
-        "verified": false,
-        "basis": "generic"
+        "value": "Economizer actuator on JADE terminals ACT 2-10 (signal), ACT COM, ACT 24V",
+        "verified": true,
+        "basis": "manual",
+        "source": "docs/manuals/honeywell-63-2700-11-jade.pdf (Honeywell JADE W7220 Economizer Module, 63-2700-11) p.6"
       },
       "location": {
-        "value": "Clamped onto the economizer damper jackshaft in the return/OA section.",
-        "verified": false,
-        "basis": "generic"
+        "value": "Direct-coupled onto the economizer damper shaft",
+        "verified": true,
+        "basis": "manual",
+        "source": "docs/manuals/honeywell-ms7103-ms7503-specdata.pdf (Honeywell 31-00141M-03, MS7103/MS7503 3 Nm spring return DCA) p.1",
+        "note": "MS7503 is a direct coupled actuator; damper location depends on the economizer installed."
       },
       "sequenceRole": "Holds minimum position when occupied, modulates for free cooling and DCV, closes when unoccupied / on shutdown.",
       "partNumber": {
@@ -39,14 +42,17 @@
         "note": "Digit 14 = 0 (No Fresh Air): no factory economizer, so all economizer parts are field-installed."
       },
       "designation": {
-        "value": "Economizer actuator (JADE ACT terminals)",
-        "verified": false,
-        "basis": "generic"
+        "value": "Economizer actuator on JADE terminals ACT 2-10 (signal), ACT COM, ACT 24V",
+        "verified": true,
+        "basis": "manual",
+        "source": "docs/manuals/honeywell-63-2700-11-jade.pdf (Honeywell JADE W7220 Economizer Module, 63-2700-11) p.6"
       },
       "location": {
-        "value": "On the economizer damper shaft.",
-        "verified": false,
-        "basis": "generic"
+        "value": "Direct-coupled onto the economizer damper shaft",
+        "verified": true,
+        "basis": "manual",
+        "source": "docs/manuals/honeywell-ms7103-ms7503-specdata.pdf (Honeywell 31-00141M-03, MS7103/MS7503 3 Nm spring return DCA) p.1",
+        "note": "MS7503 is a direct coupled actuator; damper location depends on the economizer installed."
       },
       "sequenceRole": "Same as Lennox.",
       "partNumber": {

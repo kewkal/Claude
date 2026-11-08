@@ -13,14 +13,17 @@
         "note": "Ships with the Honeywell retrofit kit per project brief assumption."
       },
       "designation": {
-        "value": "MAT sensor (JADE MAT terminals)",
-        "verified": false,
-        "basis": "generic"
+        "value": "MAT sensor on the JADE MAT terminals (20k NTC, polarity insensitive)",
+        "verified": true,
+        "basis": "manual",
+        "source": "docs/manuals/honeywell-63-2700-11-jade.pdf (Honeywell JADE W7220 Economizer Module, 63-2700-11) p.6"
       },
       "location": {
-        "value": "Mixed air section, downstream of the OA/RA dampers and upstream of the filters/coil, where the airstreams have actually mixed.",
-        "verified": false,
-        "basis": "generic"
+        "value": "Mixed air section of the RTU, ahead of the DX coil: screwed to the sheet metal or held in the air stream with duct mount kit 50053060-001",
+        "verified": true,
+        "basis": "manual",
+        "source": "docs/manuals/honeywell-63-2700-11-jade.pdf (Honeywell JADE W7220 Economizer Module, 63-2700-11) p.4-5",
+        "note": "The MA sensor is required for every JADE application (p.4); placement relative to the coil per Fig. 4 (p.5)."
       },
       "sequenceRole": "Free cooling modulates to hold MAT SET. MAT below MA LO SET drives the damper to FREEZE POS.",
       "partNumber": {
@@ -38,14 +41,17 @@
         "note": "Digit 14 = 0 (No Fresh Air): no factory economizer, so all economizer parts are field-installed."
       },
       "designation": {
-        "value": "MAT sensor (JADE MAT terminals)",
-        "verified": false,
-        "basis": "generic"
+        "value": "MAT sensor on the JADE MAT terminals (20k NTC, polarity insensitive)",
+        "verified": true,
+        "basis": "manual",
+        "source": "docs/manuals/honeywell-63-2700-11-jade.pdf (Honeywell JADE W7220 Economizer Module, 63-2700-11) p.6"
       },
       "location": {
-        "value": "Mixed air section after the dampers, before the filters.",
-        "verified": false,
-        "basis": "generic"
+        "value": "Mixed air section of the RTU, ahead of the DX coil: screwed to the sheet metal or held in the air stream with duct mount kit 50053060-001",
+        "verified": true,
+        "basis": "manual",
+        "source": "docs/manuals/honeywell-63-2700-11-jade.pdf (Honeywell JADE W7220 Economizer Module, 63-2700-11) p.4-5",
+        "note": "The MA sensor is required for every JADE application (p.4); placement relative to the coil per Fig. 4 (p.5)."
       },
       "sequenceRole": "Same as Lennox: modulation and freeze protection.",
       "partNumber": {

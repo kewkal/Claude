@@ -4,7 +4,7 @@ import type { Component, DisplayKind, LabCase, ReadingValue } from '../engine/ty
 import { update, useProgress } from '../state/progress';
 import { ReadingDisplay } from '../ui/Meters';
 import { SensorChart } from '../ui/SensorChart';
-import { Pill, SourceTag } from '../ui/Tags';
+import { Pill, SourceTag, ThresholdList } from '../ui/Tags';
 
 const labDisplay = (k: string): { display: DisplayKind; unit: string } => {
   if (k.startsWith('drop_') || k === 'vac') return { display: 'dmm-vac', unit: 'VAC' };
@@ -148,9 +148,7 @@ export function ComponentLab({ onOpenComponent }: { onOpenComponent: (id: string
           <p className="text-sm text-slate-200">{lab.explanation}</p>
           <div className="rounded-lg bg-slate-900/50 p-2 text-xs text-slate-300">
             <div className="mb-1 font-semibold text-slate-400">Pass/fail thresholds used</div>
-            {Object.entries(comp.thresholds).map(([k, s]) => (
-              <div key={k}>{k}: <span className="font-mono">{Array.isArray(s.value) ? s.value.join(' – ') : String(s.value)}</span> <SourceTag s={s} /></div>
-            ))}
+            <ThresholdList thresholds={comp.thresholds} />
           </div>
           <div className="flex gap-2 pt-1">
             <button onClick={() => onOpenComponent(comp.id)} className="flex-1 rounded-lg border border-sky-500/40 py-3 text-sm font-semibold text-sky-300">📘 Library</button>

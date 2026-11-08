@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { componentById, components, unitById } from '../content';
 import type { UnitId } from '../engine/types';
-import { Pill, SourceTag, SV } from '../ui/Tags';
+import { Pill, SV, ThresholdList } from '../ui/Tags';
 import { SensorChart } from '../ui/SensorChart';
 
 export function LibraryList({ onOpen }: { onOpen: (id: string) => void }) {
@@ -55,9 +55,7 @@ export function ComponentDetail({ id }: { id: string }) {
       <ol className="mt-1 list-decimal space-y-1 pl-5">{c.test.procedure.map((s) => <li key={s}>{s}</li>)}</ol>
       {c.kind === 'ntc-sensor' && <SensorChart defaultOpen />}
       <H>Pass / fail</H>
-      {Object.entries(c.thresholds).map(([k, s]) => (
-        <div key={k} className="text-xs">{k}: <span className="font-mono">{Array.isArray(s.value) ? s.value.join(' – ') : String(s.value)}</span> <SourceTag s={s} />{s.note && <div className="text-slate-500">{s.note}</div>}</div>
-      ))}
+      <ThresholdList thresholds={c.thresholds} />
       <H>Symptoms</H>
       <p><b>Customer:</b> {c.symptoms.customer}</p>
       <p><b>Tech:</b> {c.symptoms.tech}</p>

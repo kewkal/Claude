@@ -1,650 +1,661 @@
 {
- "controller": "Honeywell JADE W7220",
- "verified": true,
- "basis": "manual",
- "source": "docs/manuals/honeywell-63-2700-11-jade.pdf (Honeywell JADE W7220 Economizer Module, 63-2700-11) p.19-25 (Table 5, Menu Structure)",
- "note": "Menu names, item labels, defaults, ranges and when items appear come from Table 5. Help text is paraphrased, not copied. The UI step for Vdc settings (0.1 V) is an app choice; Table 5 gives no increment for them.",
- "minPosNote": "Damper output is 2-10 Vdc: 2 V = closed, 10 V = full open (Table 5 DAMPER OUT range 2.0-10.0 V). Damper % ≈ (V - 2) / 8 x 100. Actual OA airflow % is not linear with blade position: verify minimum OA with a temperature-fraction or airflow measurement.",
- "menus": [
-  {
-   "id": "STATUS",
-   "label": "STATUS",
-   "items": [
+  "controller": "Honeywell JADE W7220",
+  "verified": true,
+  "basis": "manual",
+  "source": "docs/manuals/honeywell-63-2700-11-jade.pdf (Honeywell JADE W7220 Economizer Module, 63-2700-11) p.19-25 (Table 5, Menu Structure)",
+  "note": "Menu names, item labels, defaults, ranges and when items appear come from Table 5. Help text is paraphrased, not copied. The UI step for Vdc settings (0.1 V) is an app choice; Table 5 gives no increment for them.",
+  "minPosNote": "Damper output is 2-10 Vdc: 2 V = closed, 10 V = full open (Table 5 DAMPER OUT range 2.0-10.0 V). Damper % ≈ (V - 2) / 8 x 100. Actual OA airflow % is not linear with blade position: verify minimum OA with a temperature-fraction or airflow measurement.",
+  "menus": [
     {
-     "key": "ECON AVAIL",
-     "type": "status",
-     "default": "NO",
-     "help": "YES when outdoor conditions qualify for free cooling."
+      "id": "STATUS",
+      "label": "STATUS",
+      "items": [
+        {
+          "key": "ECON AVAIL",
+          "type": "status",
+          "default": "NO",
+          "help": "YES when outdoor conditions qualify for free cooling."
+        },
+        {
+          "key": "ECONOMIZING",
+          "type": "status",
+          "default": "NO",
+          "help": "YES when outdoor air is carrying first-stage cooling."
+        },
+        {
+          "key": "OCCUPIED",
+          "type": "status",
+          "default": "NO",
+          "help": "YES = 24 Vac on the OCC terminal (or OCC set to ALWAYS)."
+        },
+        {
+          "key": "HEAT PUMP",
+          "type": "status",
+          "default": "n/a",
+          "help": "Shows COOL or HEAT only when EQUIPMENT is set to HP."
+        },
+        {
+          "key": "COOL Y1-IN",
+          "type": "status",
+          "default": "OFF",
+          "help": "ON = 24 Vac on Y1-I from the thermostat or unit controller."
+        },
+        {
+          "key": "COOL Y1-OUT",
+          "type": "status",
+          "default": "OFF",
+          "help": "Stage 1 relay output to mechanical cooling."
+        },
+        {
+          "key": "COOL Y2-IN",
+          "type": "status",
+          "default": "OFF",
+          "help": "ON = 24 Vac on Y2-I."
+        },
+        {
+          "key": "COOL Y2-OUT",
+          "type": "status",
+          "default": "OFF",
+          "help": "Stage 2 relay output to mechanical cooling."
+        },
+        {
+          "key": "MA TEMP",
+          "type": "status",
+          "default": "--.-",
+          "unit": "°F",
+          "help": "Mixed air sensor reading. Shows --.- if open, shorted, or out of range."
+        },
+        {
+          "key": "DA TEMP",
+          "type": "status",
+          "default": "--.-",
+          "unit": "°F",
+          "help": "Only with a discharge-air Sylk sensor."
+        },
+        {
+          "key": "OA TEMP",
+          "type": "status",
+          "default": "--",
+          "unit": "°F",
+          "help": "Outdoor air temperature. Shows -- if invalid or disconnected."
+        },
+        {
+          "key": "OA HUM",
+          "type": "status",
+          "default": "--",
+          "unit": "%",
+          "help": "Only from an OA Sylk (C7400S) sensor."
+        },
+        {
+          "key": "RA TEMP",
+          "type": "status",
+          "default": "--",
+          "unit": "°F",
+          "help": "Only from an RA Sylk sensor."
+        },
+        {
+          "key": "RA HUM",
+          "type": "status",
+          "default": "--",
+          "unit": "%",
+          "help": "Only from an RA Sylk sensor."
+        },
+        {
+          "key": "IN CO2",
+          "type": "status",
+          "default": "---",
+          "unit": "ppm",
+          "help": "CO2 reading; adjustable with CO2 ZERO and SPAN."
+        },
+        {
+          "key": "DCV STATUS",
+          "type": "status",
+          "default": "n/a",
+          "help": "ON above DCV SET, OFF below. Only with a CO2 sensor."
+        },
+        {
+          "key": "DAMPER OUT",
+          "type": "status",
+          "default": 2.0,
+          "unit": "V",
+          "step": 0.1,
+          "help": "Signal or position sent to the actuator, 2.0-10.0 V."
+        },
+        {
+          "key": "ACT POS",
+          "type": "status",
+          "default": "n/a",
+          "unit": "%",
+          "help": "Actual actuator position (Sylk communicating actuator)."
+        },
+        {
+          "key": "ACT COUNT",
+          "type": "status",
+          "default": "n/a",
+          "help": "Actuator cycle count (one cycle = 180° of total travel)."
+        },
+        {
+          "key": "ACTUATOR",
+          "type": "status",
+          "default": "n/a",
+          "help": "OK, or an error if actuator voltage or torque is out of range."
+        },
+        {
+          "key": "EXH1 OUT",
+          "type": "status",
+          "default": "OFF",
+          "help": "ON when the damper reaches the EXH1 SET position."
+        },
+        {
+          "key": "EXH2 OUT",
+          "type": "status",
+          "default": "OFF",
+          "help": "AUX1 O output; shown only when AUX1 OUT = EXH2."
+        },
+        {
+          "key": "ERV",
+          "type": "status",
+          "default": "OFF",
+          "help": "AUX1 O output; shown only when AUX1 OUT = ERV."
+        },
+        {
+          "key": "MECH COOL ON",
+          "type": "status",
+          "default": 0,
+          "help": "Number of mechanical cooling stages active (0, 1 or 2)."
+        },
+        {
+          "key": "FAN SPEED",
+          "type": "status",
+          "default": "n/a",
+          "help": "LOW or HIGH on a 2-speed fan unit."
+        },
+        {
+          "key": "W (HEAT IN)",
+          "type": "status",
+          "default": "n/a",
+          "help": "Heat status on a 2-speed fan unit."
+        }
+      ]
     },
     {
-     "key": "ECONOMIZING",
-     "type": "status",
-     "default": "NO",
-     "help": "YES when outdoor air is carrying first-stage cooling."
+      "id": "SETPOINTS",
+      "label": "SETPOINTS",
+      "items": [
+        {
+          "key": "MAT SET",
+          "type": "number",
+          "default": 53,
+          "min": 38,
+          "max": 70,
+          "step": 1,
+          "unit": "°F",
+          "help": "Mixed air temperature the damper modulates to during free cooling."
+        },
+        {
+          "key": "LOW T LOCK",
+          "type": "number",
+          "default": 32,
+          "min": -45,
+          "max": 80,
+          "step": 1,
+          "unit": "°F",
+          "help": "Compressor lockout: at or below this OA temp, Y1-O and Y2-O stay off."
+        },
+        {
+          "key": "DRYBLB SET",
+          "type": "number",
+          "default": 63,
+          "min": 48,
+          "max": 80,
+          "step": 1,
+          "unit": "°F",
+          "help": "Dry bulb changeover. Economizes at 62°F and below with a 63°F setting; 2°F deadband."
+        },
+        {
+          "key": "DRYBLB DIF",
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 6,
+          "step": 2,
+          "unit": "°F",
+          "help": "Dual dry bulb only (C7250 on OAT + C7400S set to RA, firmware 1.15+): free cooling when OA < RA minus this value."
+        },
+        {
+          "key": "ENTH CURVE",
+          "type": "enum",
+          "default": "ES3",
+          "options": [
+            "ES1",
+            "ES2",
+            "ES3",
+            "ES4",
+            "ES5"
+          ],
+          "help": "Enthalpy changeover curve. Shown only with enthalpy changeover."
+        },
+        {
+          "key": "DCV SET",
+          "type": "number",
+          "default": 1100,
+          "min": 500,
+          "max": 2000,
+          "step": 100,
+          "unit": "ppm",
+          "help": "Shown only with a CO2 sensor. Above this, the damper opens for more OA."
+        },
+        {
+          "key": "MIN POS",
+          "type": "number",
+          "default": 2.8,
+          "min": 2,
+          "max": 10,
+          "step": 0.1,
+          "unit": "V",
+          "help": "Shown only WITHOUT a CO2 sensor. 2-speed fan units use MIN POS L (3.2 V) and MIN POS H (2.8 V)."
+        },
+        {
+          "key": "VENTMAX",
+          "type": "number",
+          "default": 2.8,
+          "min": 2,
+          "max": 10,
+          "step": 0.1,
+          "unit": "V",
+          "help": "With a CO2 sensor: ventilation at design occupancy (what MIN POS would be without DCV)."
+        },
+        {
+          "key": "VENTMIN",
+          "type": "number",
+          "default": 2.25,
+          "min": 2,
+          "max": 10,
+          "step": 0.1,
+          "unit": "V",
+          "help": "With a CO2 sensor: ventilation for building-component loads at low occupancy."
+        },
+        {
+          "key": "ERV OAT SP",
+          "type": "number",
+          "default": 32,
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "unit": "°F",
+          "help": "Only when AUX1 OUT = ERV."
+        },
+        {
+          "key": "EXH1 SET",
+          "type": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "help": "Damper position that brings on exhaust fan 1."
+        },
+        {
+          "key": "EXH2 SET",
+          "type": "number",
+          "default": 75,
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "help": "Damper position for exhaust fan 2 (AUX1 OUT = EXH2)."
+        }
+      ]
     },
     {
-     "key": "OCCUPIED",
-     "type": "status",
-     "default": "NO",
-     "help": "YES = 24 Vac on the OCC terminal (or OCC set to ALWAYS)."
+      "id": "SYSTEM SETUP",
+      "label": "SYSTEM SETUP",
+      "items": [
+        {
+          "key": "UNITS DEG",
+          "type": "enum",
+          "default": "°F",
+          "options": [
+            "°F",
+            "°C"
+          ]
+        },
+        {
+          "key": "EQUIPMENT",
+          "type": "enum",
+          "default": "CONV",
+          "options": [
+            "CONV",
+            "HP"
+          ]
+        },
+        {
+          "key": "AUX2 IN",
+          "type": "enum",
+          "default": "W1",
+          "options": [
+            "SD",
+            "W1",
+            "HP(O)",
+            "HP(B)"
+          ],
+          "help": "SD = shutdown input, W1 = heating mode. Reverts to SD if factory default is restored."
+        },
+        {
+          "key": "FAN SPEED",
+          "type": "enum",
+          "default": "2 speed",
+          "options": [
+            "1 speed",
+            "2 speed"
+          ],
+          "help": "Reverts to 1 speed if factory default is restored. JADE positions dampers; it doesn't run the fan."
+        },
+        {
+          "key": "FAN CFM",
+          "type": "number",
+          "default": 5000,
+          "min": 100,
+          "max": 50000,
+          "step": 100,
+          "unit": "cfm",
+          "help": "RTU airflow from the unit label; used only with DCV CAL auto."
+        },
+        {
+          "key": "AUX1 OUT",
+          "type": "enum",
+          "default": "NONE",
+          "options": [
+            "NONE",
+            "ERV",
+            "EXH2",
+            "SYS"
+          ],
+          "help": "SYS = 24 Vac alarm output to the thermostat/BAS."
+        },
+        {
+          "key": "OCC",
+          "type": "enum",
+          "default": "INPUT",
+          "options": [
+            "INPUT",
+            "ALWAYS"
+          ],
+          "help": "No occupancy output from the thermostat? Set ALWAYS or jumper R to OCC."
+        },
+        {
+          "key": "FACTORY DEFAULT",
+          "type": "enum",
+          "default": "NO",
+          "options": [
+            "NO",
+            "YES"
+          ],
+          "help": "YES resets every setpoint to factory defaults."
+        }
+      ]
     },
     {
-     "key": "HEAT PUMP",
-     "type": "status",
-     "default": "n/a",
-     "help": "Shows COOL or HEAT only when EQUIPMENT is set to HP."
+      "id": "ADVANCED SETUP",
+      "label": "ADVANCED SETUP",
+      "items": [
+        {
+          "key": "MA LO SET",
+          "type": "number",
+          "default": 45,
+          "min": 35,
+          "max": 65,
+          "step": 1,
+          "unit": "°F",
+          "help": "Freeze protection trigger: below this MAT the damper goes to FREEZE POS."
+        },
+        {
+          "key": "FREEZE POS",
+          "type": "enum",
+          "default": "CLO",
+          "options": [
+            "CLO",
+            "MIN"
+          ]
+        },
+        {
+          "key": "CO2 ZERO",
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 500,
+          "step": 10,
+          "unit": "ppm"
+        },
+        {
+          "key": "CO2 SPAN",
+          "type": "number",
+          "default": 2000,
+          "min": 1000,
+          "max": 3000,
+          "step": 50,
+          "unit": "ppm"
+        },
+        {
+          "key": "STG3 DLY",
+          "type": "enum",
+          "default": "2.0h",
+          "options": [
+            "0 min",
+            "5 min",
+            "15 min",
+            "30 min",
+            "45 min",
+            "1.0h",
+            "2.0h",
+            "3.0h",
+            "4.0h",
+            "OFF"
+          ],
+          "help": "Delay before the 2nd mechanical stage when the economizer is stage 1 (three-stage cooling)."
+        },
+        {
+          "key": "SD DMPR POS",
+          "type": "enum",
+          "default": "CLO",
+          "options": [
+            "CLO",
+            "OPN"
+          ],
+          "help": "Damper position on a shutdown (SD) input."
+        },
+        {
+          "key": "DA LO ALM",
+          "type": "number",
+          "default": 45,
+          "min": 35,
+          "max": 65,
+          "step": 5,
+          "unit": "°F"
+        },
+        {
+          "key": "DA HI ALM",
+          "type": "number",
+          "default": 80,
+          "min": 70,
+          "max": 180,
+          "step": 5,
+          "unit": "°F"
+        },
+        {
+          "key": "DCVCAL ENA",
+          "type": "enum",
+          "default": "MAN",
+          "options": [
+            "MAN",
+            "AUTO"
+          ],
+          "help": "AUTO needs OA, MA, RA and CO2 sensors."
+        },
+        {
+          "key": "MAT T CAL",
+          "type": "number",
+          "default": 0.0,
+          "min": -2.5,
+          "max": 2.5,
+          "step": 0.5,
+          "unit": "°F",
+          "help": "Offset for an out-of-calibration MAT sensor."
+        },
+        {
+          "key": "OAS T CAL",
+          "type": "number",
+          "default": 0.0,
+          "min": -2.5,
+          "max": 2.5,
+          "step": 0.5,
+          "unit": "°F"
+        },
+        {
+          "key": "OAS H CAL",
+          "type": "number",
+          "default": 0,
+          "min": -10,
+          "max": 10,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "key": "RA T CAL",
+          "type": "number",
+          "default": 0.0,
+          "min": -2.5,
+          "max": 2.5,
+          "step": 0.5,
+          "unit": "°F"
+        },
+        {
+          "key": "RA H CAL",
+          "type": "number",
+          "default": 0,
+          "min": -10,
+          "max": 10,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "key": "DA T CAL",
+          "type": "number",
+          "default": 0.0,
+          "min": -2.5,
+          "max": 2.5,
+          "step": 0.5,
+          "unit": "°F"
+        },
+        {
+          "key": "2SP FAN DELAY",
+          "type": "number",
+          "default": 5,
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "unit": "min"
+        }
+      ]
     },
     {
-     "key": "COOL Y1-IN",
-     "type": "status",
-     "default": "OFF",
-     "help": "ON = 24 Vac on Y1-I from the thermostat or unit controller."
+      "id": "CHECKOUT",
+      "label": "CHECKOUT",
+      "items": [
+        {
+          "key": "DAMPER MINIMUM POSITION",
+          "type": "action",
+          "help": "Drives the damper to the configured minimum position(s)."
+        },
+        {
+          "key": "DAMPER OPEN",
+          "type": "action",
+          "help": "Full open. Exhaust contacts enable too; pause to let them pull in."
+        },
+        {
+          "key": "DAMPER CLOSE",
+          "type": "action",
+          "help": "Full closed."
+        },
+        {
+          "key": "CONNECT Y1-O",
+          "type": "action",
+          "help": "Closes the Y1-O relay (stage 1 mechanical cooling)."
+        },
+        {
+          "key": "CONNECT Y2-O",
+          "type": "action",
+          "help": "Closes the Y2-O relay (stage 2 mechanical cooling)."
+        },
+        {
+          "key": "CONNECT AUX1-O",
+          "type": "action",
+          "help": "Energizes AUX1-O per its setting (ERV or SYS alarm)."
+        },
+        {
+          "key": "CONNECT EXH1",
+          "type": "action",
+          "help": "Closes the exhaust fan 1 relay."
+        }
+      ]
     },
     {
-     "key": "COOL Y1-OUT",
-     "type": "status",
-     "default": "OFF",
-     "help": "Stage 1 relay output to mechanical cooling."
-    },
-    {
-     "key": "COOL Y2-IN",
-     "type": "status",
-     "default": "OFF",
-     "help": "ON = 24 Vac on Y2-I."
-    },
-    {
-     "key": "COOL Y2-OUT",
-     "type": "status",
-     "default": "OFF",
-     "help": "Stage 2 relay output to mechanical cooling."
-    },
-    {
-     "key": "MA TEMP",
-     "type": "status",
-     "default": "--.-",
-     "unit": "°F",
-     "help": "Mixed air sensor reading. Shows --.- if open, shorted, or out of range."
-    },
-    {
-     "key": "DA TEMP",
-     "type": "status",
-     "default": "--.-",
-     "unit": "°F",
-     "help": "Only with a discharge-air Sylk sensor."
-    },
-    {
-     "key": "OA TEMP",
-     "type": "status",
-     "default": "--",
-     "unit": "°F",
-     "help": "Outdoor air temperature. Shows -- if invalid or disconnected."
-    },
-    {
-     "key": "OA HUM",
-     "type": "status",
-     "default": "--",
-     "unit": "%",
-     "help": "Only from an OA Sylk (C7400S) sensor."
-    },
-    {
-     "key": "RA TEMP",
-     "type": "status",
-     "default": "--",
-     "unit": "°F",
-     "help": "Only from an RA Sylk sensor."
-    },
-    {
-     "key": "RA HUM",
-     "type": "status",
-     "default": "--",
-     "unit": "%",
-     "help": "Only from an RA Sylk sensor."
-    },
-    {
-     "key": "IN CO2",
-     "type": "status",
-     "default": "---",
-     "unit": "ppm",
-     "help": "CO2 reading; adjustable with CO2 ZERO and SPAN."
-    },
-    {
-     "key": "DCV STATUS",
-     "type": "status",
-     "default": "n/a",
-     "help": "ON above DCV SET, OFF below. Only with a CO2 sensor."
-    },
-    {
-     "key": "DAMPER OUT",
-     "type": "status",
-     "default": 2.0,
-     "unit": "V",
-     "step": 0.1,
-     "help": "Signal or position sent to the actuator, 2.0-10.0 V."
-    },
-    {
-     "key": "ACT POS",
-     "type": "status",
-     "default": "n/a",
-     "unit": "%",
-     "help": "Actual actuator position (Sylk communicating actuator)."
-    },
-    {
-     "key": "ACT COUNT",
-     "type": "status",
-     "default": "n/a",
-     "help": "Actuator cycle count (one cycle = 180° of total travel)."
-    },
-    {
-     "key": "ACTUATOR",
-     "type": "status",
-     "default": "n/a",
-     "help": "OK, or an error if actuator voltage or torque is out of range."
-    },
-    {
-     "key": "EXH1 OUT",
-     "type": "status",
-     "default": "OFF",
-     "help": "ON when the damper reaches the EXH1 SET position."
-    },
-    {
-     "key": "EXH2 OUT",
-     "type": "status",
-     "default": "OFF",
-     "help": "AUX1 O output; shown only when AUX1 OUT = EXH2."
-    },
-    {
-     "key": "ERV",
-     "type": "status",
-     "default": "OFF",
-     "help": "AUX1 O output; shown only when AUX1 OUT = ERV."
-    },
-    {
-     "key": "MECH COOL ON",
-     "type": "status",
-     "default": 0,
-     "help": "Number of mechanical cooling stages active (0, 1 or 2)."
-    },
-    {
-     "key": "FAN SPEED",
-     "type": "status",
-     "default": "n/a",
-     "help": "LOW or HIGH on a 2-speed fan unit."
-    },
-    {
-     "key": "W (HEAT IN)",
-     "type": "status",
-     "default": "n/a",
-     "help": "Heat status on a 2-speed fan unit."
+      "id": "ALARMS",
+      "label": "ALARMS",
+      "items": []
     }
-   ]
+  ],
+  "alarmCatalog": {
+    "MA T SENS ERR": "Mixed air sensor failed or disconnected. Check wiring, then replace the sensor.",
+    "CO2 SENS ERR": "CO2 sensor failed, out of range, or disconnected.",
+    "OA SYLK T ERR": "OA Sylk sensor temperature failed or disconnected.",
+    "OA SYLK H ERR": "OA Sylk sensor humidity failed or disconnected.",
+    "RA SYLK T ERR": "RA Sylk sensor temperature failed or disconnected.",
+    "RA SYLK H ERR": "RA Sylk sensor humidity failed or disconnected.",
+    "DA SYLK T ERR": "Discharge air Sylk sensor failed or disconnected.",
+    "OA SENS T ERR": "20k OA temperature sensor failed or disconnected.",
+    "ACT ERROR": "Actuator failed or disconnected: check stall, supply voltage and count. Replace if the damper moves freely and supply is 21.6-26.4 V.",
+    "FREEZE ALARM": "OA below LOW T LOCK or MAT below MA LO SET. Clears when conditions return to normal.",
+    "SHUTDOWN ACTIVE": "AUX2 IN set to shutdown and 24 V applied.",
+    "DMP CAL RUNNING": "DCV auto damper calibration in progress.",
+    "DA SENS ALM": "Discharge air outside the DA LO/HI ALM range.",
+    "SYS ALARM": "AUX1 OUT = SYS and an alarm is active: 24 Vac on AUX1-O.",
+    "ACT UNDER V": "Actuator supply voltage out of range (low).",
+    "ACT OVER V": "Actuator supply voltage out of range (high).",
+    "ACT STALLED": "Actuator stopped before reaching the commanded position."
   },
-  {
-   "id": "SETPOINTS",
-   "label": "SETPOINTS",
-   "items": [
-    {
-     "key": "MAT SET",
-     "type": "number",
-     "default": 53,
-     "min": 38,
-     "max": 70,
-     "step": 1,
-     "unit": "°F",
-     "help": "Mixed air temperature the damper modulates to during free cooling."
-    },
-    {
-     "key": "LOW T LOCK",
-     "type": "number",
-     "default": 32,
-     "min": -45,
-     "max": 80,
-     "step": 1,
-     "unit": "°F",
-     "help": "Compressor lockout: at or below this OA temp, Y1-O and Y2-O stay off."
-    },
-    {
-     "key": "DRYBLB SET",
-     "type": "number",
-     "default": 63,
-     "min": 48,
-     "max": 80,
-     "step": 1,
-     "unit": "°F",
-     "help": "Dry bulb changeover. Economizes at 62°F and below with a 63°F setting; 2°F deadband."
-    },
-    {
-     "key": "DRYBLB DIF",
-     "type": "number",
-     "default": 0,
-     "min": 0,
-     "max": 6,
-     "step": 2,
-     "unit": "°F",
-     "help": "Dual dry bulb only (C7250 on OAT + C7400S set to RA, firmware 1.15+): free cooling when OA < RA minus this value."
-    },
-    {
-     "key": "ENTH CURVE",
-     "type": "enum",
-     "default": "ES3",
-     "options": [
-      "ES1",
-      "ES2",
-      "ES3",
-      "ES4",
-      "ES5"
-     ],
-     "help": "Enthalpy changeover curve. Shown only with enthalpy changeover."
-    },
-    {
-     "key": "DCV SET",
-     "type": "number",
-     "default": 1100,
-     "min": 500,
-     "max": 2000,
-     "step": 100,
-     "unit": "ppm",
-     "help": "Shown only with a CO2 sensor. Above this, the damper opens for more OA."
-    },
-    {
-     "key": "MIN POS",
-     "type": "number",
-     "default": 2.8,
-     "min": 2,
-     "max": 10,
-     "step": 0.1,
-     "unit": "V",
-     "help": "Shown only WITHOUT a CO2 sensor. 2-speed fan units use MIN POS L (3.2 V) and MIN POS H (2.8 V)."
-    },
-    {
-     "key": "VENTMAX",
-     "type": "number",
-     "default": 2.8,
-     "min": 2,
-     "max": 10,
-     "step": 0.1,
-     "unit": "V",
-     "help": "With a CO2 sensor: ventilation at design occupancy (what MIN POS would be without DCV)."
-    },
-    {
-     "key": "VENTMIN",
-     "type": "number",
-     "default": 2.25,
-     "min": 2,
-     "max": 10,
-     "step": 0.1,
-     "unit": "V",
-     "help": "With a CO2 sensor: ventilation for building-component loads at low occupancy."
-    },
-    {
-     "key": "ERV OAT SP",
-     "type": "number",
-     "default": 32,
-     "min": 0,
-     "max": 50,
-     "step": 1,
-     "unit": "°F",
-     "help": "Only when AUX1 OUT = ERV."
-    },
-    {
-     "key": "EXH1 SET",
-     "type": "number",
-     "default": 50,
-     "min": 0,
-     "max": 100,
-     "step": 1,
-     "unit": "%",
-     "help": "Damper position that brings on exhaust fan 1."
-    },
-    {
-     "key": "EXH2 SET",
-     "type": "number",
-     "default": 75,
-     "min": 0,
-     "max": 100,
-     "step": 1,
-     "unit": "%",
-     "help": "Damper position for exhaust fan 2 (AUX1 OUT = EXH2)."
-    }
-   ]
+  "pcModToolOnly": {
+    "ACTUATOR SLIPPAGE ALARM": "Default ENABLED. JADE checks for the expected air-temperature change when the damper moves; if it doesn't happen, it alarms that the actuator has slipped or disconnected from the damper. Sensitivity LOW (default) = 20 checks before alarm, STANDARD = 10, HIGH = 5.",
+    "ACT STALL ALARM SUPPRESSION": "Default disabled.",
+    "LOCATION OF ECONOMIZER CONTROL SENSOR": "Default before the cooling coil; AUTO if the MAT sensor sits after the coil."
   },
-  {
-   "id": "SYSTEM SETUP",
-   "label": "SYSTEM SETUP",
-   "items": [
-    {
-     "key": "UNITS DEG",
-     "type": "enum",
-     "default": "°F",
-     "options": [
-      "°F",
-      "°C"
-     ]
-    },
-    {
-     "key": "EQUIPMENT",
-     "type": "enum",
-     "default": "CONV",
-     "options": [
-      "CONV",
-      "HP"
-     ]
-    },
-    {
-     "key": "AUX2 IN",
-     "type": "enum",
-     "default": "W1",
-     "options": [
-      "SD",
-      "W1",
-      "HP(O)",
-      "HP(B)"
-     ],
-     "help": "SD = shutdown input, W1 = heating mode. Reverts to SD if factory default is restored."
-    },
-    {
-     "key": "FAN SPEED",
-     "type": "enum",
-     "default": "2 speed",
-     "options": [
-      "1 speed",
-      "2 speed"
-     ],
-     "help": "Reverts to 1 speed if factory default is restored. JADE positions dampers; it doesn't run the fan."
-    },
-    {
-     "key": "FAN CFM",
-     "type": "number",
-     "default": 5000,
-     "min": 100,
-     "max": 50000,
-     "step": 100,
-     "unit": "cfm",
-     "help": "RTU airflow from the unit label; used only with DCV CAL auto."
-    },
-    {
-     "key": "AUX1 OUT",
-     "type": "enum",
-     "default": "NONE",
-     "options": [
-      "NONE",
-      "ERV",
-      "EXH2",
-      "SYS"
-     ],
-     "help": "SYS = 24 Vac alarm output to the thermostat/BAS."
-    },
-    {
-     "key": "OCC",
-     "type": "enum",
-     "default": "INPUT",
-     "options": [
-      "INPUT",
-      "ALWAYS"
-     ],
-     "help": "No occupancy output from the thermostat? Set ALWAYS or jumper R to OCC."
-    },
-    {
-     "key": "FACTORY DEFAULT",
-     "type": "enum",
-     "default": "NO",
-     "options": [
-      "NO",
-      "YES"
-     ],
-     "help": "YES resets every setpoint to factory defaults."
-    }
-   ]
+  "setupMode": "For the first 60 minutes after power-up the JADE is in setup mode: a missing OA or Sylk device won't alarm, but the MA sensor is critical and will. After 60 minutes, any removed or failed component alarms.",
+  "strategyBySensors": {
+    "note": "JADE detects sensors by polling (p.1). Differential dry bulb needs a 20k sensor on OA plus a Sylk sensor in the RA with its DIP switch set to RA (p.2).",
+    "referential dry bulb": [
+      "C7250A 20k on OAT"
+    ],
+    "differential dry bulb": [
+      "C7250A 20k on OAT",
+      "C7400S Sylk in RA (DIP switch = RA)"
+    ],
+    "referential enthalpy": [
+      "C7400S Sylk on OA"
+    ],
+    "differential enthalpy": [
+      "C7400S Sylk on OA",
+      "C7400S Sylk on RA"
+    ]
   },
-  {
-   "id": "ADVANCED SETUP",
-   "label": "ADVANCED SETUP",
-   "items": [
-    {
-     "key": "MA LO SET",
-     "type": "number",
-     "default": 45,
-     "min": 35,
-     "max": 65,
-     "step": 1,
-     "unit": "°F",
-     "help": "Freeze protection trigger: below this MAT the damper goes to FREEZE POS."
+  "sylkDipSwitches": {
+    "value": {
+      "OA": "OFF, OFF, OFF",
+      "RA": "ON, OFF, OFF",
+      "DA": "OFF, ON, OFF"
     },
-    {
-     "key": "FREEZE POS",
-     "type": "enum",
-     "default": "CLO",
-     "options": [
-      "CLO",
-      "MIN"
-     ]
-    },
-    {
-     "key": "CO2 ZERO",
-     "type": "number",
-     "default": 0,
-     "min": 0,
-     "max": 500,
-     "step": 10,
-     "unit": "ppm"
-    },
-    {
-     "key": "CO2 SPAN",
-     "type": "number",
-     "default": 2000,
-     "min": 1000,
-     "max": 3000,
-     "step": 50,
-     "unit": "ppm"
-    },
-    {
-     "key": "STG3 DLY",
-     "type": "enum",
-     "default": "2.0h",
-     "options": [
-      "0 min",
-      "5 min",
-      "15 min",
-      "30 min",
-      "45 min",
-      "1.0h",
-      "2.0h",
-      "3.0h",
-      "4.0h",
-      "OFF"
-     ],
-     "help": "Delay before the 2nd mechanical stage when the economizer is stage 1 (three-stage cooling)."
-    },
-    {
-     "key": "SD DMPR POS",
-     "type": "enum",
-     "default": "CLO",
-     "options": [
-      "CLO",
-      "OPN"
-     ],
-     "help": "Damper position on a shutdown (SD) input."
-    },
-    {
-     "key": "DA LO ALM",
-     "type": "number",
-     "default": 45,
-     "min": 35,
-     "max": 65,
-     "step": 5,
-     "unit": "°F"
-    },
-    {
-     "key": "DA HI ALM",
-     "type": "number",
-     "default": 80,
-     "min": 70,
-     "max": 180,
-     "step": 5,
-     "unit": "°F"
-    },
-    {
-     "key": "DCVCAL ENA",
-     "type": "enum",
-     "default": "MAN",
-     "options": [
-      "MAN",
-      "AUTO"
-     ],
-     "help": "AUTO needs OA, MA, RA and CO2 sensors."
-    },
-    {
-     "key": "MAT T CAL",
-     "type": "number",
-     "default": 0.0,
-     "min": -2.5,
-     "max": 2.5,
-     "step": 0.5,
-     "unit": "°F",
-     "help": "Offset for an out-of-calibration MAT sensor."
-    },
-    {
-     "key": "OAS T CAL",
-     "type": "number",
-     "default": 0.0,
-     "min": -2.5,
-     "max": 2.5,
-     "step": 0.5,
-     "unit": "°F"
-    },
-    {
-     "key": "OAS H CAL",
-     "type": "number",
-     "default": 0,
-     "min": -10,
-     "max": 10,
-     "step": 1,
-     "unit": "%"
-    },
-    {
-     "key": "RA T CAL",
-     "type": "number",
-     "default": 0.0,
-     "min": -2.5,
-     "max": 2.5,
-     "step": 0.5,
-     "unit": "°F"
-    },
-    {
-     "key": "RA H CAL",
-     "type": "number",
-     "default": 0,
-     "min": -10,
-     "max": 10,
-     "step": 1,
-     "unit": "%"
-    },
-    {
-     "key": "DA T CAL",
-     "type": "number",
-     "default": 0.0,
-     "min": -2.5,
-     "max": 2.5,
-     "step": 0.5,
-     "unit": "°F"
-    },
-    {
-     "key": "2SP FAN DELAY",
-     "type": "number",
-     "default": 5,
-     "min": 0,
-     "max": 20,
-     "step": 1,
-     "unit": "min"
-    }
-   ]
-  },
-  {
-   "id": "CHECKOUT",
-   "label": "CHECKOUT",
-   "items": [
-    {
-     "key": "DAMPER MINIMUM POSITION",
-     "type": "action",
-     "help": "Drives the damper to the configured minimum position(s)."
-    },
-    {
-     "key": "DAMPER OPEN",
-     "type": "action",
-     "help": "Full open. Exhaust contacts enable too; pause to let them pull in."
-    },
-    {
-     "key": "DAMPER CLOSE",
-     "type": "action",
-     "help": "Full closed."
-    },
-    {
-     "key": "CONNECT Y1-O",
-     "type": "action",
-     "help": "Closes the Y1-O relay (stage 1 mechanical cooling)."
-    },
-    {
-     "key": "CONNECT Y2-O",
-     "type": "action",
-     "help": "Closes the Y2-O relay (stage 2 mechanical cooling)."
-    },
-    {
-     "key": "CONNECT AUX1-O",
-     "type": "action",
-     "help": "Energizes AUX1-O per its setting (ERV or SYS alarm)."
-    },
-    {
-     "key": "CONNECT EXH1",
-     "type": "action",
-     "help": "Closes the exhaust fan 1 relay."
-    }
-   ]
-  },
-  {
-   "id": "ALARMS",
-   "label": "ALARMS",
-   "items": []
+    "verified": true,
+    "basis": "manual",
+    "source": "docs/manuals/honeywell-63-2700-11-jade.pdf (Honeywell JADE W7220 Economizer Module, 63-2700-11) p.4",
+    "note": "C7400S Sylk sensor three-position DIP switch. Same SKU for OA, RA and DA; the DIP switch sets the role."
   }
- ],
- "alarmCatalog": {
-  "MA T SENS ERR": "Mixed air sensor failed or disconnected. Check wiring, then replace the sensor.",
-  "CO2 SENS ERR": "CO2 sensor failed, out of range, or disconnected.",
-  "OA SYLK T ERR": "OA Sylk sensor temperature failed or disconnected.",
-  "OA SYLK H ERR": "OA Sylk sensor humidity failed or disconnected.",
-  "RA SYLK T ERR": "RA Sylk sensor temperature failed or disconnected.",
-  "RA SYLK H ERR": "RA Sylk sensor humidity failed or disconnected.",
-  "DA SYLK T ERR": "Discharge air Sylk sensor failed or disconnected.",
-  "OA SENS T ERR": "20k OA temperature sensor failed or disconnected.",
-  "ACT ERROR": "Actuator failed or disconnected: check stall, supply voltage and count. Replace if the damper moves freely and supply is 21.6-26.4 V.",
-  "FREEZE ALARM": "OA below LOW T LOCK or MAT below MA LO SET. Clears when conditions return to normal.",
-  "SHUTDOWN ACTIVE": "AUX2 IN set to shutdown and 24 V applied.",
-  "DMP CAL RUNNING": "DCV auto damper calibration in progress.",
-  "DA SENS ALM": "Discharge air outside the DA LO/HI ALM range.",
-  "SYS ALARM": "AUX1 OUT = SYS and an alarm is active: 24 Vac on AUX1-O.",
-  "ACT UNDER V": "Actuator supply voltage out of range (low).",
-  "ACT OVER V": "Actuator supply voltage out of range (high).",
-  "ACT STALLED": "Actuator stopped before reaching the commanded position."
- },
- "pcModToolOnly": {
-  "ACTUATOR SLIPPAGE ALARM": "Default ENABLED. JADE checks for the expected air-temperature change when the damper moves; if it doesn't happen, it alarms that the actuator has slipped or disconnected from the damper. Sensitivity LOW (default) = 20 checks before alarm, STANDARD = 10, HIGH = 5.",
-  "ACT STALL ALARM SUPPRESSION": "Default disabled.",
-  "LOCATION OF ECONOMIZER CONTROL SENSOR": "Default before the cooling coil; AUTO if the MAT sensor sits after the coil."
- },
- "setupMode": "For the first 60 minutes after power-up the JADE is in setup mode: a missing OA or Sylk device won't alarm, but the MA sensor is critical and will. After 60 minutes, any removed or failed component alarms.",
- "strategyBySensors": {
-  "note": "JADE detects sensors by polling (p.1). Differential dry bulb needs a 20k sensor on OA plus a Sylk sensor in the RA with its DIP switch set to RA (p.2).",
-  "referential dry bulb": [
-   "C7250A 20k on OAT"
-  ],
-  "differential dry bulb": [
-   "C7250A 20k on OAT",
-   "C7400S Sylk in RA (DIP switch = RA)"
-  ],
-  "referential enthalpy": [
-   "C7400S Sylk on OA"
-  ],
-  "differential enthalpy": [
-   "C7400S Sylk on OA",
-   "C7400S Sylk on RA"
-  ]
- }
 }
