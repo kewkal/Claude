@@ -1,0 +1,16 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+
+# Raw screenshots waiting to be processed (keep the folder)
+inbox/*
+!inbox/.gitkeep
+
+# Local Claude settings
+.claude/settings.local.json
+
+# Video files are too big for git
+*.mp4
+*.mov
