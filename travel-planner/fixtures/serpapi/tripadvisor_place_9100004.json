@@ -1,0 +1,20 @@
+{
+  "search_metadata": {
+    "status": "Success"
+  },
+  "place_result": {
+    "type": "attraction",
+    "name": "Sample Hidden Garden",
+    "rating": 4.6,
+    "reviews": 900,
+    "price": "$18.00",
+    "extracted_price": 18,
+    "price_options": [
+      {
+        "title": "Garden + guided tour",
+        "price": "$32.00",
+        "extracted_price": 32
+      }
+    ]
+  }
+}

@@ -59,7 +59,8 @@
     "saturday": "9 AM\u20138 PM",
     "sunday": "9 AM\u20136 PM"
    },
-   "thumbnail": "https://picsum.photos/seed/tpplace932/400/300"
+   "thumbnail": "https://picsum.photos/seed/tpplace932/400/300",
+   "website": "https://tower.example.org/visit"
   },
   {
    "position": 3,

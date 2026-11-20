@@ -1,0 +1,25 @@
+{
+  "search_metadata": {
+    "status": "Success"
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "title": "Fixture: what's actually worth it in the city?",
+      "link": "https://www.reddit.com/r/travel/comments/fixtureA/",
+      "snippet": "Sample Castle Viewpoint at opening time was the highlight. Also the Sample Hidden Courtyard behind the cathedral."
+    },
+    {
+      "position": 2,
+      "title": "Fixture: museums for history nerds",
+      "link": "https://www.reddit.com/r/solotravel/comments/fixtureB/",
+      "snippet": "Skip the queue elsewhere and do the Sample Tile Museum, it's underrated."
+    },
+    {
+      "position": 3,
+      "title": "Must do in the city - Tripadvisor forum",
+      "link": "https://www.tripadvisor.com/ShowTopic-fixture",
+      "snippet": "Everyone says the Sample Castle Viewpoint and the sunset from the Sample Miradouro North."
+    }
+  ]
+}

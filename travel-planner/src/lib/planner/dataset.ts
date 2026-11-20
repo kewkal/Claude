@@ -76,7 +76,7 @@ function flightInput(input: PlanInput, destination: string, start: string, end: 
   };
 }
 
-function hotelInput(input: PlanInput, destination: string, start: string, end: string): HotelSearchInput {
+export function hotelInput(input: PlanInput, destination: string, start: string, end: string): HotelSearchInput {
   return {
     destination,
     checkIn: start,

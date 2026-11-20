@@ -20,6 +20,9 @@ export function fixtureName(engine: string, params: SerpParams): string {
     if (/viewpoint|scenic|photo/.test(q)) return "google_maps_photo";
     return "google_maps_sights";
   }
+  if (engine === "google_hotels" && params.property_token) return "google_hotels_property";
+  if (engine === "tripadvisor_place") return `tripadvisor_place_${params.place_id}`;
+  if (engine === "google" && /things to do|must do/i.test(String(params.q ?? ""))) return "google_activities";
   if (engine === "tripadvisor") return params.ssrc === "r" ? "tripadvisor_food" : "tripadvisor";
   return engine;
 }

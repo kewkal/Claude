@@ -36,6 +36,13 @@ export const env = {
   get claudeMonthlyBudgetUsd() {
     return num("CLAUDE_MONTHLY_BUDGET_USD", 15);
   },
+  get firecrawlApiKey() {
+    return read("FIRECRAWL_API_KEY");
+  },
+  /** Pages per month the price check may read through Firecrawl (free tier is 1,000 credits). */
+  get firecrawlMonthlyPages() {
+    return num("FIRECRAWL_MONTHLY_PAGES", 900);
+  },
   get supabaseUrl() {
     return read("SUPABASE_URL");
   },

@@ -3,6 +3,7 @@ import type { Cabin, FlightOption, FlightSearchInput, PriceInsights, Travelers }
 import type { LatLng, TravelEstimate } from "@/lib/geo";
 import type { HotelOption } from "@/lib/hotels/types";
 import type { PlaceCategory, PlaceItem } from "@/lib/places/types";
+import type { PriceCheck } from "@/lib/prices/types";
 import type { SavingsTips } from "@/lib/savings/types";
 import type { DayWeather } from "@/lib/weather-shared";
 
@@ -68,6 +69,8 @@ export interface Dataset {
   fetchedAt: string;
   /** Per-person USD prices YOU entered for items no source priced (ref -> usd; 0 = free). Not fetched data. */
   userPrices?: Record<string, number>;
+  /** "Get real prices" results: hotel prices by booking site, found activity prices, community picks. */
+  priceCheck?: PriceCheck;
 }
 
 export type CostBasis = "sourced" | "estimate" | "calculated" | "entered";

@@ -70,6 +70,7 @@ async function setUserPrice(trip: TripRecord, ref: string, usd: number | null): 
   const r = findRef(trip.dataset, ref);
   if (!r || r.kind !== "place") throw badInput("That item isn't in this trip's fetched data.");
   if (r.item.price.minUsd !== null || r.item.price.maxUsd !== null) throw badInput(`${r.item.name} already has a listed price from its source.`);
+  if (trip.dataset.priceCheck?.activities.some((a) => a.ref === ref)) throw badInput(`${r.item.name} already has a price from the price check.`);
   if (usd !== null && (!Number.isFinite(usd) || usd < 0 || usd > 10000)) throw badInput("Enter a price between $0 and $10,000.");
   const userPrices = { ...(trip.dataset.userPrices ?? {}) };
   if (usd === null) delete userPrices[ref];

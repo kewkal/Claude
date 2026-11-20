@@ -1,7 +1,7 @@
 // Pure budget math (no I/O). Claude never computes money; this module does.
 import { valueScore } from "@/lib/flights/sort";
 import type { AppSettings } from "@/lib/settings-shared";
-import { findRef, type CostBreakdown, type CostLine, type Dataset, type PlanDay, type PlanInput, type RefFlight, type RefHotel, type VersionKey } from "./types";
+import { findRef, type CostBreakdown, type CostLine, type Dataset, type PlanDay, type PlanInput, type RefFlight, type RefHotel, type Slot, type VersionKey } from "./types";
 
 export const BUFFER_PCT = 0.1;
 
@@ -37,7 +37,24 @@ export function chooseHotel(ds: Dataset, key: VersionKey): RefHotel | null {
   return byRating(opts.filter((h) => h.tier === "Luxury"))[0] ?? byRating(opts)[0];
 }
 
-export function lodgingCost(h: RefHotel, ds: Dataset): { amount: number; basis: CostLine["basis"]; note: string } {
+/** Price-check result for a hotel: the cheapest booking site's whole-stay total, when it beats Google's headline. */
+export function cheapestHotelOffer(h: RefHotel, ds: Dataset) {
+  const offers = ds.priceCheck?.hotels.find((x) => x.ref === h.ref)?.offers ?? [];
+  const best = offers.find((o) => o.totalUsd !== null);
+  if (!best || (h.totalRate !== null && best.totalUsd! >= h.totalRate)) return null;
+  return { offer: best, count: offers.length };
+}
+
+export function lodgingCost(h: RefHotel, ds: Dataset): { amount: number; basis: CostLine["basis"]; note: string; sourceUrl?: string } {
+  const cheaper = cheapestHotelOffer(h, ds);
+  if (cheaper) {
+    return {
+      amount: cheaper.offer.totalUsd! * ds.rooms,
+      basis: ds.rooms > 1 ? "calculated" : "sourced",
+      note: `${h.name}: cheapest of ${cheaper.count} booking sites is ${cheaper.offer.seller}, total for ${ds.nights} nights${ds.rooms > 1 ? ` × ${ds.rooms} rooms` : ""}${h.totalRate !== null ? ` (Google's headline was $${Math.round(h.totalRate)})` : ""}`,
+      sourceUrl: cheaper.offer.link,
+    };
+  }
   if (h.totalRate !== null) {
     return {
       amount: h.totalRate * ds.rooms,
@@ -52,15 +69,45 @@ export function lodgingCost(h: RefHotel, ds: Dataset): { amount: number; basis: 
   };
 }
 
-export function foodEstimate(key: VersionKey, input: Pick<PlanInput, "travelers">, days: number, settings: AppSettings): { amount: number; note: string } {
+export function foodEstimate(
+  key: VersionKey,
+  input: Pick<PlanInput, "travelers">,
+  days: number,
+  settings: AppSettings,
+  /** Planned restaurants with a real per-person USD price; each replaces that slot's default meal cost. */
+  priced: { slot: Slot; usd: number }[] = [],
+): { amount: number; note: string } {
   const [b, l, d] = MEAL_LEVELS[key];
   const m = settings.mealCostByPriceLevel;
   const perDay = m[b] + m[l] + m[d];
   const n = people(input);
+  const slotDefault: Record<Slot, number> = { morning: m[b], afternoon: m[l], evening: m[d] };
+  const swap = priced.slice(0, days * 3).reduce((s, p) => s + p.usd - slotDefault[p.slot], 0);
+  const base = `Estimate from your Settings: breakfast ${"$".repeat(b)} $${m[b]} + lunch ${"$".repeat(l)} $${m[l]} + dinner ${"$".repeat(d)} $${m[d]} = $${perDay}/person/day × ${n} people × ${days} days`;
   return {
-    amount: perDay * n * days,
-    note: `Estimate from your Settings: breakfast ${"$".repeat(b)} $${m[b]} + lunch ${"$".repeat(l)} $${m[l]} + dinner ${"$".repeat(d)} $${m[d]} = $${perDay}/person/day × ${n} people × ${days} days`,
+    amount: Math.max(0, Math.round((perDay * days + swap) * n)),
+    note: priced.length ? `${base}. ${priced.length} planned meal${priced.length > 1 ? "s" : ""} use${priced.length > 1 ? "" : "s"} the restaurant's own listed price instead.` : base,
   };
+}
+
+/** Planned restaurants with a per-person USD price (middle of Google's range, or a converted/found price). */
+export function pricedMeals(days: PlanDay[], ds: Dataset): { slot: Slot; usd: number }[] {
+  const out: { slot: Slot; usd: number }[] = [];
+  for (const d of days)
+    for (const b of d.blocks)
+      for (const it of b.items) {
+        const r = findRef(ds, it.ref);
+        if (!r || r.kind !== "place" || r.item.category !== "food") continue;
+        const { minUsd, maxUsd } = r.item.price;
+        const usd = minUsd !== null && maxUsd !== null ? (minUsd + maxUsd) / 2 : (maxUsd ?? minUsd ?? foundPrice(ds, it.ref));
+        if (usd !== null && usd > 0) out.push({ slot: b.slot, usd });
+      }
+  return out;
+}
+
+/** Per-person USD price the price check found for an item no source priced in USD. */
+export function foundPrice(ds: Dataset, ref: string): number | null {
+  return ds.priceCheck?.activities.find((a) => a.ref === ref)?.usd ?? null;
 }
 
 /**
@@ -76,6 +123,7 @@ export function activitiesCost(
   let amount = 0;
   let userAmount = 0;
   let userCount = 0;
+  let found = 0;
   const unpriced: string[] = [];
   const n = people(input);
   for (const d of days)
@@ -86,10 +134,12 @@ export function activitiesCost(
         const r = findRef(ds, it.ref);
         if (!r || r.kind !== "place" || r.item.category === "food") continue;
         const price = r.item.price;
-        const usd = price.maxUsd ?? price.minUsd;
+        const usd = price.maxUsd ?? price.minUsd ?? foundPrice(ds, it.ref);
         const mine = ds.userPrices?.[it.ref];
-        if (usd !== null) amount += usd * n;
-        else if (mine !== undefined) {
+        if (usd !== null) {
+          amount += usd * n;
+          if (price.maxUsd === null && price.minUsd === null) found += 1;
+        } else if (mine !== undefined) {
           userAmount += mine * n;
           userCount += 1;
         } else unpriced.push(r.item.name);
@@ -99,7 +149,7 @@ export function activitiesCost(
     userAmount,
     userCount,
     unpriced,
-    note: `Listed prices × ${n} people (upper end of ranges).${unpriced.length ? ` ${unpriced.length} item${unpriced.length > 1 ? "s" : ""} with no listed USD price counted as $0.` : ""}`,
+    note: `Listed prices × ${n} people (upper end of ranges).${found ? ` ${found} price${found > 1 ? "s" : ""} from the price check (Tripadvisor, official sites, converted currencies).` : ""}${unpriced.length ? ` ${unpriced.length} item${unpriced.length > 1 ? "s" : ""} with no listed USD price counted as $0.` : ""}`,
   };
 }
 
@@ -126,7 +176,7 @@ export function computeCosts(
   const h = v.hotelRef ? findRef(ds, v.hotelRef) : null;
   if (h?.kind === "hotel") {
     const c = lodgingCost(h.item, ds);
-    lines.push({ key: "lodging", label: "Lodging", ...c, sourceUrl: h.item.link ?? ds.hotels?.googleHotelsUrl });
+    lines.push({ key: "lodging", label: "Lodging", ...c, sourceUrl: c.sourceUrl ?? h.item.link ?? ds.hotels?.googleHotelsUrl });
   } else {
     lines.push({ key: "lodging", label: "Lodging", amount: 0, basis: "calculated", note: "No hotel with a price was found — not included" });
   }
@@ -141,7 +191,7 @@ export function computeCosts(
       note: `Prices you entered for ${act.userCount} item${act.userCount > 1 ? "s" : ""} no source priced, × ${people(input)} people`,
     });
   }
-  const food = foodEstimate(v.key, input, ds.dates.length, settings);
+  const food = foodEstimate(v.key, input, ds.dates.length, settings, pricedMeals(v.days, ds));
   lines.push({ key: "food", label: "Food", amount: food.amount, basis: "estimate", note: food.note });
   lines.push({
     key: "transport",

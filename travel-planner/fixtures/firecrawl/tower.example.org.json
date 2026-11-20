@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "data": {
+    "markdown": "# Visit the Sample Tower\n\nOpening hours: 10:00 to 18:00\n\n## Tickets\n\n| Ticket | Price |\n|---|---|\n\nAdults: €10\n\nSeniors (65+): €5\n\nChildren under 12: free entry\n\nBuy tickets online to skip the line.\n",
+    "metadata": {
+      "statusCode": 200
+    }
+  }
+}

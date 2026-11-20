@@ -1,0 +1,65 @@
+{
+  "search_metadata": {
+    "status": "Success"
+  },
+  "name": "Fixture property",
+  "featured_prices": [
+    {
+      "source": "Booking.com",
+      "link": "https://www.booking.com/fixture",
+      "official": false,
+      "rate_per_night": {
+        "lowest": "$60",
+        "extracted_lowest": 60
+      },
+      "total_rate": {
+        "lowest": "$300",
+        "extracted_lowest": 300
+      }
+    }
+  ],
+  "prices": [
+    {
+      "source": "Expedia",
+      "link": "https://www.expedia.com/fixture",
+      "rate_per_night": {
+        "lowest": "$64",
+        "extracted_lowest": 64
+      },
+      "total_rate": {
+        "lowest": "$320",
+        "extracted_lowest": 320
+      }
+    },
+    {
+      "source": "Booking.com",
+      "link": "https://www.booking.com/fixture-2",
+      "rate_per_night": {
+        "lowest": "$66",
+        "extracted_lowest": 66
+      },
+      "total_rate": {
+        "lowest": "$330",
+        "extracted_lowest": 330
+      }
+    },
+    {
+      "source": "Fixture Hotels Official",
+      "official": true,
+      "link": "https://hotel.example.org/book",
+      "free_cancellation": true,
+      "rate_per_night": {
+        "lowest": "$70",
+        "extracted_lowest": 70
+      },
+      "total_rate": {
+        "lowest": "$350",
+        "extracted_lowest": 350
+      }
+    },
+    {
+      "source": "No Price Site",
+      "link": "https://noprice.example.org"
+    }
+  ]
+}

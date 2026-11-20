@@ -35,6 +35,8 @@ Personal, single-user, mobile-first trip planner. It pulls real-time flights, ho
    | `CLAUDE_MONTHLY_BUDGET_USD` | e.g. `15` |
    | `SUPABASE_URL` | Project Settings → API → Project URL |
    | `SUPABASE_SECRET_KEY` | Project Settings → API keys → **secret** key (`sb_secret_…`) or the legacy `service_role` key |
+   | `FIRECRAWL_API_KEY` | optional. Free key from firecrawl.dev (1,000 pages/month). Lets **Get real prices** read admission prices off attraction websites. |
+   | `FIRECRAWL_MONTHLY_PAGES` | optional, default `900` |
    | `CRON_SECRET` | any random string. Vercel Cron sends it to `/api/cron/keepalive` daily so the free Supabase project never pauses. |
 
 4. **Run locally.**

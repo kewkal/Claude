@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "data": {
+    "markdown": "# Sample Modern Art Center\n\nExhibitions change every season. Check our calendar for what's on.\n",
+    "metadata": {
+      "statusCode": 200
+    }
+  }
+}
