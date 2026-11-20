@@ -12,9 +12,10 @@ import { milesFrom } from "@/lib/airports";
 import { originAirports, travelersLabel } from "@/components/inputs";
 import { PlaceDetailsSheet } from "@/components/PlaceCard";
 import { AiText, Badge, ErrorState, Rating } from "@/components/ui";
+import { cheapestHotelOffer } from "@/lib/planner/budget";
 import { BudgetBar, CostTable } from "./CostTable";
 import { DayCard } from "./DayCard";
-import { PriceCheckPanel } from "./PriceCheckPanel";
+import { FilledBanner, PriceCheckPanel, type FilledSummary } from "./PriceCheckPanel";
 import { SavingsPanel } from "./SavingsPanel";
 
 export function TripView({
@@ -42,6 +43,7 @@ export function TripView({
   const [name, setName] = useState(trip.name);
   const [showRemoved, setShowRemoved] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [filled, setFilled] = useState<FilledSummary | null>(null);
 
   const ds = trip.dataset;
   const v = trip.plan.versions[vk];
@@ -71,6 +73,12 @@ export function TripView({
     run(`regen:${date}`, async () => {
       if (!window.confirm(`Regenerate ${fmtDate(date)} for the ${VERSION_LABEL[vk]} version? This is one Claude call; other days stay as they are.`)) return;
       const r = await api<{ trip: TripRecord }>(`/api/trips/${trip.id}/regenerate-day`, { method: "POST", json: { version: vk, date } });
+      setTrip(r.trip);
+    });
+
+  const describe = () =>
+    run("describe", async () => {
+      const r = await api<{ trip: TripRecord }>(`/api/trips/${trip.id}/describe`, { method: "POST", json: { version: vk } });
       setTrip(r.trip);
     });
 
@@ -105,6 +113,7 @@ export function TripView({
   const c = v.costs;
   const f = flight?.kind === "flight" ? flight.item : null;
   const h = hotel?.kind === "hotel" ? hotel.item : null;
+  const hotelDeal = h ? cheapestHotelOffer(h, ds) : null;
   const firstSeg = f?.segments[0];
   const lastSeg = f?.segments[f.segments.length - 1];
 
@@ -166,6 +175,15 @@ export function TripView({
           <div className="mt-3">
             <BudgetBar costs={c} />
           </div>
+          {!readOnly && !ds.priceCheck && (
+            <button
+              type="button"
+              className="no-print mt-3 w-full rounded-xl bg-ok-soft px-3 py-2.5 text-left text-sm font-semibold text-ok"
+              onClick={() => document.getElementById("real-prices")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            >
+              💲 {c.unpricedItems.length ? `${c.unpricedItems.length} stop${c.unpricedItems.length > 1 ? "s have" : " has"} no price yet. ` : ""}Get real prices for hotels & tickets ↓
+            </button>
+          )}
           {!readOnly && (
             <div className="no-print mt-4 flex flex-wrap gap-2">
               <button type="button" className={`btn btn-sm ${editing ? "" : "btn-ghost"}`} onClick={() => setEditing((e) => !e)} aria-pressed={editing}>
@@ -225,6 +243,7 @@ export function TripView({
       {printMode && <h2 className="section-title">{VERSION_LABEL[vk]} version</h2>}
 
       {error && <ErrorState message={error.message} code={error.code} />}
+      {filled && <FilledBanner f={filled} onClose={() => setFilled(null)} />}
       {busy && busy !== "edit" && <p className="text-sm font-semibold text-accent">Working…</p>}
       {editing && (
         <p className="no-print rounded-xl bg-accent-soft px-3 py-2 text-sm text-accent">
@@ -330,7 +349,10 @@ export function TripView({
                 <p className="eyebrow">🏨 Stay</p>
                 {h && (
                   <p className="text-right">
-                    <span className="text-lg font-extrabold leading-none">{fmtUsd(h.ratePerNight)}</span>
+                    {hotelDeal?.offer.perNightUsd != null && h.ratePerNight != null && hotelDeal.offer.perNightUsd < h.ratePerNight && (
+                      <span className="mr-1 text-sm text-muted line-through">{fmtUsd(h.ratePerNight)}</span>
+                    )}
+                    <span className={`text-lg font-extrabold leading-none ${hotelDeal ? "text-ok" : ""}`}>{fmtUsd(hotelDeal?.offer.perNightUsd ?? h.ratePerNight)}</span>
                     <span className="text-xs text-muted">/night</span>
                   </p>
                 )}
@@ -346,6 +368,20 @@ export function TripView({
                   <p className="mt-1 text-xs text-muted">
                     Check-in {h.checkInTime ?? "—"} · Check-out {h.checkOutTime ?? "—"}
                   </p>
+                  {hotelDeal && (
+                    <p className="mt-2 text-sm">
+                      <span className="chip mr-1.5 bg-ok-soft text-ok">Real price</span>
+                      {fmtUsd(hotelDeal.offer.totalUsd)} total on{" "}
+                      {hotelDeal.offer.link ? (
+                        <a href={hotelDeal.offer.link} target="_blank" rel="noopener noreferrer" className="font-semibold text-accent">
+                          {hotelDeal.offer.seller} ↗
+                        </a>
+                      ) : (
+                        hotelDeal.offer.seller
+                      )}
+                      {h.totalRate !== null && <span className="text-muted"> · saves {fmtUsd(h.totalRate - hotelDeal.offer.totalUsd!)}</span>}
+                    </p>
+                  )}
                   {(h.link || ds.hotels?.googleHotelsUrl) && (
                     <a href={h.link ?? ds.hotels!.googleHotelsUrl!} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs font-semibold text-accent">
                       Book / view ↗
@@ -374,6 +410,11 @@ export function TripView({
           <h2 className="section-title">Day by day</h2>
           <span className="text-xs text-muted">{v.days.length} days</span>
         </div>
+        {!readOnly && v.days.some((d) => !d.story && d.blocks.some((b) => b.items.length)) && (
+          <button type="button" className="btn btn-ghost w-full" onClick={describe} disabled={!!busy}>
+            {busy === "describe" ? "Writing…" : "✍️ Describe how each day will feel (1 Claude call)"}
+          </button>
+        )}
         {v.days.map((d, i) => (
           <DayCard
             key={`${vk}-${d.date}`}
@@ -387,13 +428,15 @@ export function TripView({
             usedRefs={used}
             onEdit={edit}
             onRegenerate={() => regenerate(d.date)}
+            onDescribe={describe}
+            travelers={trip.inputs.travelers}
             onOpenPlace={setOpenPlace}
             busy={!!busy}
           />
         ))}
       </section>
 
-      <PriceCheckPanel trip={trip} version={vk} readOnly={readOnly} onTrip={setTrip} />
+      <PriceCheckPanel trip={trip} version={vk} readOnly={readOnly} onTrip={setTrip} onFilled={setFilled} />
 
       <SavingsPanel trip={trip} version={vk} readOnly={readOnly} onTrip={setTrip} />
 

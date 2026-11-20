@@ -9,10 +9,18 @@ const MAX_NOTE = 280;
 const PRICE_RE = /(?:US)?\$\s?\d[\d,]*(?:\.\d+)?(?:\s?(?:–|-|to)\s?\$?\d[\d,]*(?:\.\d+)?)?/gi;
 const RATING_RE = /\b\d(?:\.\d)?\s?(?:\/\s?5\s?)?(?:stars?|★)/gi;
 
-export function cleanNote(note: unknown): string | undefined {
+/** Day descriptions: drop any whole sentence that states a price or rating (stripping words would leave fragments). */
+export function cleanStory(story: unknown, max = 480): string | undefined {
+  if (typeof story !== "string") return undefined;
+  const sentences = story.match(/[^.!?]+[.!?]*/g) ?? [];
+  const kept = sentences.filter((s) => !new RegExp(PRICE_RE.source, "i").test(s) && !new RegExp(RATING_RE.source, "i").test(s));
+  return cleanNote(kept.join("").trim(), max) || undefined;
+}
+
+export function cleanNote(note: unknown, max = MAX_NOTE): string | undefined {
   if (typeof note !== "string") return undefined;
   let s = note.replace(PRICE_RE, "").replace(RATING_RE, "").replace(/\s{2,}/g, " ").replace(/\s+([.,;:!?])/g, "$1").trim();
-  if (s.length > MAX_NOTE) s = `${s.slice(0, MAX_NOTE - 1).trimEnd()}…`;
+  if (s.length > max) s = `${s.slice(0, max - 1).trimEnd()}…`;
   return s || undefined;
 }
 
@@ -54,6 +62,11 @@ function validateDay(raw: RawDay | undefined, date: string, ds: Dataset, used: S
       used.add(ref);
       block.items.push({ ref, note: cleanNote(it.note) });
     }
+  }
+  const story = cleanStory(raw.story);
+  if (story) {
+    day.story = story;
+    day.storyRefs = day.blocks.flatMap((b) => b.items.map((i) => i.ref));
   }
   return day;
 }

@@ -114,6 +114,12 @@ export interface PlanDay {
   date: string;
   theme?: string; // AI
   tip?: string; // AI
+  /** AI: 2–3 sentences on how the day will feel and flow. */
+  story?: string;
+  /** The stops the story was written for; if the day's stops change, the story is marked out of date. */
+  storyRefs?: string[];
+  /** Computed from the day's stops (not AI): the 1–2 trip styles this day is about. */
+  vibe?: TripStyle[];
   blocks: PlanBlock[];
 }
 

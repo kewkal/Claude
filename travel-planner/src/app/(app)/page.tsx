@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { STYLE_META } from "@/lib/planner/styles";
 import { useEffect, useState } from "react";
 import { api, ApiError } from "@/lib/client/api";
 import { loadSession, saveSession, useSettings } from "@/lib/client/useSettings";
@@ -41,16 +42,7 @@ const STEPS = [
   "Checking every item against the fetched data…",
 ];
 
-const STYLE_EMOJI: Record<TripStyle, string> = {
-  cinematic: "🎬",
-  cultural: "🏛️",
-  adventure: "🧗",
-  luxury: "💎",
-  relaxation: "🌴",
-  foodie: "🍜",
-  nightlife: "🍸",
-  romantic: "💞",
-};
+const STYLE_EMOJI = Object.fromEntries(Object.entries(STYLE_META).map(([k, m]) => [k, m.emoji])) as Record<TripStyle, string>;
 
 function FormSection({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
   return (
