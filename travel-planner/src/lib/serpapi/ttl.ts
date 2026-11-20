@@ -15,6 +15,7 @@ export const TTL_SECONDS: Record<string, number> = {
   google_maps_directions: 7 * DAY,
   tripadvisor: 7 * DAY,
   tripadvisor_reviews: 7 * DAY,
+  tripadvisor_place: 7 * DAY,
   google_events: 24 * HOUR,
   youtube: 7 * DAY,
   google: 30 * DAY,

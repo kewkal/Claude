@@ -14,6 +14,7 @@ import { PlaceDetailsSheet } from "@/components/PlaceCard";
 import { AiText, Badge, ErrorState, Rating } from "@/components/ui";
 import { BudgetBar, CostTable } from "./CostTable";
 import { DayCard } from "./DayCard";
+import { PriceCheckPanel } from "./PriceCheckPanel";
 import { SavingsPanel } from "./SavingsPanel";
 
 export function TripView({
@@ -391,6 +392,8 @@ export function TripView({
           />
         ))}
       </section>
+
+      <PriceCheckPanel trip={trip} version={vk} readOnly={readOnly} onTrip={setTrip} />
 
       <SavingsPanel trip={trip} version={vk} readOnly={readOnly} onTrip={setTrip} />
 

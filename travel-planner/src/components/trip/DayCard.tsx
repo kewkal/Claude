@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { api, ApiError } from "@/lib/client/api";
-import { fmtDayShort, fmtMiles, fmtTime } from "@/lib/format";
+import { fmtDayShort, fmtMiles, fmtTime, fmtUsd } from "@/lib/format";
 import { TRAVEL_ESTIMATE_NOTE } from "@/lib/geo";
 import { findRef, SLOTS, type Dataset, type PlanDay, type RefPlace, type Slot, type TripEditClient } from "@/lib/planner/types";
 import { isVerified, SOURCE_LABEL } from "@/lib/places/types";
+import { SOURCE_NAME, type FoundPrice } from "@/lib/prices/types";
 import { isRainy, weatherIcon } from "@/lib/weather-shared";
 import { MapView } from "@/components/MapView";
 import { priceLabel } from "@/components/PlaceCard";
@@ -25,8 +26,16 @@ interface Live {
  * Sourced price when there is one. Otherwise "Price not listed" — tap to enter your own (0 = free).
  * Yours shows as "· yours" and is counted on its own budget line.
  */
-function PriceChip({ p, mine, readOnly, onSet }: { p: RefPlace; mine: number | undefined; readOnly: boolean; onSet: (usd: number | null) => void }) {
+function PriceChip({ p, mine, found, readOnly, onSet }: { p: RefPlace; mine: number | undefined; found?: FoundPrice; readOnly: boolean; onSet: (usd: number | null) => void }) {
   const sourced = p.price.minUsd !== null || p.price.maxUsd !== null;
+  if (!sourced && found) {
+    const title = `${SOURCE_NAME[found.source]} shows ${found.display}${found.fx ? ` (converted at the ECB rate)` : ""}`;
+    return (
+      <span className="chip shrink-0 bg-ok-soft text-ok" title={title}>
+        {found.usd === 0 ? "Free" : fmtUsd(found.usd, !Number.isInteger(found.usd))} · {found.source === "listed" ? "converted" : SOURCE_NAME[found.source]}
+      </span>
+    );
+  }
   if (sourced || p.price.level !== null) {
     // Real USD amount, or a Google price level like "$$" (restaurants are covered by the food estimate).
     return <span className="chip shrink-0 bg-surface-2 text-text">{priceLabel(p)}</span>;
@@ -233,7 +242,7 @@ export function DayCard({
                               <button type="button" className="text-left text-[1.02rem] font-semibold leading-snug hover:underline disabled:no-underline" onClick={() => onOpenPlace(p)} disabled={readOnly}>
                                 {p.name}
                               </button>
-                              <PriceChip p={p} mine={ds.userPrices?.[p.ref]} readOnly={readOnly} onSet={(usd) => onEdit({ op: "set_price", ref: p.ref, usd })} />
+                              <PriceChip p={p} mine={ds.userPrices?.[p.ref]} found={ds.priceCheck?.activities.find((a) => a.ref === p.ref)} readOnly={readOnly} onSet={(usd) => onEdit({ op: "set_price", ref: p.ref, usd })} />
                             </div>
                             <p className="mt-1 text-[0.82rem] leading-snug text-muted">
                               <span className="capitalize">{p.types[0] ?? p.category}</span>
