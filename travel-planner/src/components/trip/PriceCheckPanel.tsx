@@ -18,7 +18,34 @@ function FxNote({ fx }: { fx: NonNullable<FoundPrice["fx"]> }) {
 }
 
 /** "Get real prices": hotel prices by booking site, ticket prices, and what Reddit/Tripadvisor forums recommend. */
-export function PriceCheckPanel({ trip, version, readOnly, onTrip }: { trip: TripRecord; version: VersionKey; readOnly: boolean; onTrip: (t: TripRecord) => void }) {
+export interface FilledSummary {
+  before: number;
+  after: number;
+  hotels: number;
+  activities: number;
+}
+
+/** One-line summary of what a price check filled in (shown at the top of the trip after a run). */
+export function FilledBanner({ f, onClose }: { f: FilledSummary; onClose: () => void }) {
+  return (
+    <div role="status" className="flex items-start gap-3 rounded-xl border border-ok/30 bg-ok-soft p-4 text-sm">
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold text-ok">✓ Real prices filled in across your plan</p>
+        <p className="mt-1">
+          {f.hotels > 0 && `Hotel${f.hotels > 1 ? "s" : ""} compared across booking sites`}
+          {f.hotels > 0 && f.activities > 0 && " · "}
+          {f.activities > 0 && `${f.activities} activit${f.activities > 1 ? "ies" : "y"} priced (green chips in each day)`}
+          {f.hotels + f.activities === 0 && "No new prices were found"}. Total {fmtUsd(f.before)} → <span className="font-semibold">{fmtUsd(f.after)}</span>.
+        </p>
+      </div>
+      <button type="button" className="text-muted" aria-label="Dismiss" onClick={onClose}>
+        ✕
+      </button>
+    </div>
+  );
+}
+
+export function PriceCheckPanel({ trip, version, readOnly, onTrip, onFilled }: { trip: TripRecord; version: VersionKey; readOnly: boolean; onTrip: (t: TripRecord) => void; onFilled?: (f: FilledSummary) => void }) {
   const pc = trip.dataset.priceCheck;
   const [plan, setPlan] = useState<PriceCheckPlan | null>(null);
   const [busy, setBusy] = useState(false);
@@ -40,8 +67,19 @@ export function PriceCheckPanel({ trip, version, readOnly, onTrip }: { trip: Tri
     setBusy(true);
     setError(null);
     try {
+      const before = trip.plan.versions[version].costs.total;
       const r = await api<{ trip: TripRecord }>(`/api/trips/${trip.id}/prices`, { method: "POST" });
+      const next = r.trip.dataset.priceCheck;
+      const summary: FilledSummary = {
+        before,
+        after: r.trip.plan.versions[version].costs.total,
+        hotels: next?.hotels.filter((h) => h.offers.length).length ?? 0,
+        activities: next?.activities.length ?? 0,
+      };
+      onFilled?.(summary);
       onTrip(r.trip);
+      // Show the user where the prices landed: the top of the trip, with the updated totals.
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e) {
       setError(e as ApiError);
     } finally {
@@ -62,13 +100,14 @@ export function PriceCheckPanel({ trip, version, readOnly, onTrip }: { trip: Tri
       .join(" + ");
 
   return (
-    <section className="space-y-3" aria-label="Real prices">
+    <section id="real-prices" className="scroll-mt-28 space-y-3" aria-label="Real prices">
       <div>
         <h2 className="section-title">Real prices</h2>
         <p className="text-sm text-muted">Hotel prices across booking sites, ticket prices from Tripadvisor and official websites, and the places Reddit and Tripadvisor forums recommend for your trip styles.</p>
       </div>
 
       {error && <ErrorState message={error.message} code={error.code} />}
+
 
       {!pc && !readOnly && (
         <div className="card space-y-3 p-4">

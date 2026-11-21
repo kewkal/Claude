@@ -110,6 +110,26 @@ export function foundPrice(ds: Dataset, ref: string): number | null {
   return ds.priceCheck?.activities.find((a) => a.ref === ref)?.usd ?? null;
 }
 
+/** Tickets for one day (non-food stops) × people, with the same price priority as the budget: listed → found → yours. */
+export function dayTickets(day: PlanDay, ds: Dataset, input: Pick<PlanInput, "travelers">): { usd: number; priced: number; unpriced: number } {
+  let usd = 0;
+  let priced = 0;
+  let unpriced = 0;
+  const n = people(input);
+  for (const b of day.blocks)
+    for (const it of b.items) {
+      const r = findRef(ds, it.ref);
+      if (!r || r.kind !== "place" || r.item.category === "food") continue;
+      const p = r.item.price.maxUsd ?? r.item.price.minUsd ?? foundPrice(ds, it.ref) ?? ds.userPrices?.[it.ref] ?? null;
+      if (p === null) unpriced++;
+      else {
+        priced++;
+        usd += p * n;
+      }
+    }
+  return { usd: Math.round(usd), priced, unpriced };
+}
+
 /**
  * Activities with a listed USD price (sourced) × people, plus prices you entered for items no source priced.
  * Food-category items are covered by the food estimate.

@@ -6,6 +6,9 @@ import type { Dataset, Pace, PlanDay, PlanInput, RefFlight, RefHotel, VersionKey
 
 export const ITEMS_PER_DAY: Record<Pace, string> = { chill: "2–3", balanced: "3–4", packed: "5–6" };
 
+export const STORY_DESCRIPTION =
+  "2–3 sentences (≤ 60 words) describing how this day will feel and flow, second person: the mood, the pace, how the stops connect from morning to night. Name only places on this day. No prices, ratings, or hours.";
+
 const ITEM = {
   type: "object",
   additionalProperties: false,
@@ -19,10 +22,11 @@ const ITEM = {
 export const DAY_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["date", "theme", "tip", "morning", "afternoon", "evening"],
+  required: ["date", "theme", "story", "tip", "morning", "afternoon", "evening"],
   properties: {
     date: { type: "string", description: "yyyy-mm-dd" },
-    theme: { type: "string" },
+    theme: { type: "string", description: "A short title for the day, e.g. 'Old town & a sunset sail'." },
+    story: { type: "string", description: STORY_DESCRIPTION },
     tip: { type: "string" },
     morning: { type: "array", items: ITEM },
     afternoon: { type: "array", items: ITEM },
@@ -55,6 +59,7 @@ export interface RawItem {
 export interface RawDay {
   date: string;
   theme: string;
+  story?: string;
   tip: string;
   morning: RawItem[];
   afternoon: RawItem[];
@@ -176,7 +181,8 @@ export function fixtureItinerary(ds: Dataset, key: VersionKey, pace: Pace): RawI
     if (!last && fi < food.length) evening.push({ ref: food[fi++].ref, note: "Fixture note: book ahead for dinner." });
     const ev = events.find((e) => e.event?.startDate === date);
     if (ev && !last) evening.push({ ref: ev.ref, note: "Fixture note: event on this date." });
-    return { date, theme: `Fixture day ${di + 1}`, tip: "Fixture tip.", morning, afternoon, evening };
+    const story = morning.length ? `You'll start slow at ${ds.places.find((p) => p.ref === morning[0].ref)?.name ?? "the first stop"}, then ease into the afternoon before a relaxed dinner. Costs $50 and rated 4.8 stars.` : "A light travel day.";
+    return { date, theme: `Fixture day ${di + 1}`, story, tip: "Fixture tip.", morning, afternoon, evening };
   });
   if (days[0]) days[0].afternoon.push({ ref: "P999", note: "Invented place that must be stripped." });
   if (days[1] && days[0]?.morning[0]) days[1].morning.push({ ...days[0].morning[0] });
@@ -189,6 +195,7 @@ export function fixtureDay(ds: Dataset, date: string, used: Set<string>): { day:
     day: {
       date,
       theme: "Fixture regenerated day",
+      story: "A fresh take on the day with a calmer rhythm.",
       tip: "Fixture tip.",
       morning: free.slice(0, 1).map((p) => ({ ref: p.ref, note: "Fixture regenerated." })),
       afternoon: free.slice(1, 2).map((p) => ({ ref: p.ref, note: "Fixture regenerated." })),

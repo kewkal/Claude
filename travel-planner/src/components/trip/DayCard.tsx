@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { api, ApiError } from "@/lib/client/api";
 import { fmtDayShort, fmtMiles, fmtTime, fmtUsd } from "@/lib/format";
+import type { Travelers } from "@/lib/flights/types";
+import { dayTickets } from "@/lib/planner/budget";
+import { STYLE_META, vibeLabel } from "@/lib/planner/styles";
 import { TRAVEL_ESTIMATE_NOTE } from "@/lib/geo";
 import { findRef, SLOTS, type Dataset, type PlanDay, type RefPlace, type Slot, type TripEditClient } from "@/lib/planner/types";
 import { isVerified, SOURCE_LABEL } from "@/lib/places/types";
@@ -81,8 +84,10 @@ export function DayCard({
   usedRefs,
   onEdit,
   onRegenerate,
+  onDescribe,
   onOpenPlace,
   busy,
+  travelers,
 }: {
   day: PlanDay;
   index: number;
@@ -94,8 +99,10 @@ export function DayCard({
   usedRefs: Set<string>;
   onEdit: (e: TripEditClient) => void;
   onRegenerate: () => void;
+  onDescribe: () => void;
   onOpenPlace: (p: RefPlace) => void;
   busy: boolean;
+  travelers: Travelers;
 }) {
   const [open, setOpen] = useState(true);
   const [showMap, setShowMap] = useState(false);
@@ -118,6 +125,10 @@ export function DayCard({
   const otherDates = ds.dates.filter((d) => d !== day.date);
   const unused = ds.places.filter((p) => !usedRefs.has(p.ref) && (!p.event?.startDate || p.event.startDate === day.date));
   const travelMin = legs.reduce((s, it) => s + (it.travel?.minutes ?? 0), 0);
+  const tickets = dayTickets(day, ds, { travelers });
+  const refsNow = flat.map((i) => i.ref).join(",");
+  const storyStale = !!day.story && (day.storyRefs ?? []).join(",") !== refsNow;
+  const vibe = day.vibe ?? [];
 
   async function liveTimes() {
     setLiveBusy(true);
@@ -150,9 +161,13 @@ export function DayCard({
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="font-bold leading-tight">{fmtDayShort(day.date)}</h3>
+          <p className={`truncate text-sm font-semibold ${vibe.length ? "text-accent" : "text-muted"}`}>
+            {vibe.length ? `${vibe.map((s) => STYLE_META[s].emoji).join("")} ${vibeLabel(vibe)}` : flat.length ? "Mixed day" : index === 0 ? "✈️ Travel day" : "Free day"}
+          </p>
           <p className="truncate text-xs text-muted">
-            {flat.length ? `${flat.length} stop${flat.length > 1 ? "s" : ""}` : "Free day"}
+            {flat.length ? `${flat.length} stop${flat.length > 1 ? "s" : ""}` : "No stops"}
             {travelMin > 0 && ` · ~${travelMin} min travel`}
+
             {!open && places.length > 0 && ` · ${places.slice(0, 3).map((p) => p.name).join(", ")}`}
           </p>
         </div>
@@ -170,7 +185,25 @@ export function DayCard({
 
       {open && (
         <div className="border-t border-border px-4 pb-4 pt-3">
-          {day.theme && <AiNote>{day.theme}</AiNote>}
+          {day.theme && <p className="text-[1.05rem] font-bold leading-snug">{day.theme}</p>}
+          {day.story ? (
+            <div className={storyStale ? "opacity-60" : ""}>
+              <AiNote>{day.story}</AiNote>
+            </div>
+          ) : null}
+          {(tickets.priced > 0 || tickets.unpriced > 0) && (
+            <p className="mt-2 text-sm text-muted">
+              🎟️ Tickets today:{" "}
+              <span className="font-semibold text-text">{tickets.priced ? fmtUsd(tickets.usd) : "—"}</span>
+              {tickets.priced > 0 && ` for ${travelers.adults + travelers.children}`}
+              {tickets.unpriced > 0 && ` · ${tickets.unpriced} stop${tickets.unpriced > 1 ? "s" : ""} not priced yet`}
+            </p>
+          )}
+          {!readOnly && (!day.story || storyStale) && flat.length > 0 && (
+            <button type="button" className="no-print mt-1 text-xs font-semibold text-accent" onClick={onDescribe} disabled={busy}>
+              {storyStale ? "Stops changed since this was written · ✍️ Rewrite" : "✍️ Describe this day"}
+            </button>
+          )}
 
           <div className="mt-2 space-y-1">
             {day.blocks.map((b) => {

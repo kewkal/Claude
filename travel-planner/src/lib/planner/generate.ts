@@ -3,13 +3,14 @@ import { claudeJson } from "@/lib/claude";
 import { env } from "@/lib/env";
 import type { AppSettings } from "@/lib/settings-shared";
 import { chooseFlight, chooseHotel, computeCosts } from "./budget";
-import { fixtureDay, fixtureItinerary, ITINERARY_SCHEMA, regenerateDayPrompt, SINGLE_DAY_SCHEMA, systemPrompt, versionPrompt, type RawDay, type RawItinerary } from "./prompt";
-import { attachTravel, refsInDays, validateItinerary, validateSingleDay } from "./validate";
+import { fixtureDay, fixtureItinerary, ITINERARY_SCHEMA, STORY_DESCRIPTION, regenerateDayPrompt, SINGLE_DAY_SCHEMA, systemPrompt, versionPrompt, type RawDay, type RawItinerary } from "./prompt";
+import { attachTravel, cleanStory, refsInDays, validateItinerary, validateSingleDay } from "./validate";
+import { dayVibe } from "./vibe";
 import { findRef, VERSION_KEYS, type Dataset, type PlanInput, type PlanVersion, type TripPlan, type VersionKey } from "./types";
 
 /** Re-attach travel estimates and recompute costs after any change. */
 export function recomputeVersion(v: PlanVersion, ds: Dataset, input: PlanInput, settings: AppSettings): PlanVersion {
-  const days = attachTravel(v.days, ds, v.hotelRef);
+  const days = attachTravel(v.days, ds, v.hotelRef).map((d) => ({ ...d, vibe: dayVibe(d, ds, input.styles) }));
   return { ...v, days, costs: computeCosts({ ...v, days }, ds, input, settings) };
 }
 
@@ -85,4 +86,47 @@ export async function regenerateDay(plan: TripPlan, key: VersionKey, date: strin
   const { day, removed } = validateSingleDay(data, date, ds, used);
   const days = v.days.map((d) => (d.date === date ? day : d));
   return recomputeVersion({ ...v, days, removed: [...v.removed, ...removed], generatedAt: new Date().toISOString() }, ds, input, settings);
+}
+
+const DESCRIBE_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["days"],
+  properties: {
+    days: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["date", "story"],
+        properties: { date: { type: "string" }, story: { type: "string", description: STORY_DESCRIPTION } },
+      },
+    },
+  },
+};
+
+/** Write (or rewrite) the "how the day will feel" description for every day of one version. One Claude call. */
+export async function describeDays(plan: TripPlan, key: VersionKey, input: PlanInput, ds: Dataset, settings: AppSettings): Promise<PlanVersion> {
+  const v = plan.versions[key];
+  const lines = v.days.map((d) => {
+    const stops = d.blocks.flatMap((b) => b.items.map((i) => `${b.slot}: ${i.ref} ${(findRef(ds, i.ref)?.item as { name?: string } | undefined)?.name ?? ""}`));
+    return `${d.date}${d.theme ? ` (${d.theme})` : ""}\n  ${stops.length ? stops.join("\n  ") : "no stops planned"}`;
+  });
+  const { data } = await claudeJson<{ days: { date: string; story: string }[] }>({
+    system: systemPrompt(ds),
+    user: `This is the ${key.toUpperCase()} itinerary. Trip styles: ${input.styles.join(", ") || "general"}. Pace: ${input.pace}.
+For each date, write how the day will feel and flow. Use only the stops listed for that date.
+
+${lines.join("\n")}`,
+    schema: DESCRIBE_SCHEMA,
+    note: `describe-days:${key}:${ds.destination}`,
+    maxTokens: 8000,
+    fixture: () => ({ days: v.days.map((d) => ({ date: d.date, story: `A fixture description of ${d.date}: unhurried morning, lively evening.` })) }),
+  });
+  const byDate = new Map(data.days.map((d) => [d.date, cleanStory(d.story)]));
+  const days = v.days.map((d) => {
+    const story = byDate.get(d.date);
+    return story ? { ...d, story, storyRefs: d.blocks.flatMap((b) => b.items.map((i) => i.ref)) } : d;
+  });
+  return recomputeVersion({ ...v, days }, ds, input, settings);
 }
